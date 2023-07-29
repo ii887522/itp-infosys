@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "wayou.vscode-todo-highlight",
+    "ms-python.flake8",
+    "ms-python.isort",
+    "ms-python.black-formatter",
+    "boto3typed.boto3-ide"
+  ],
+  "unwantedRecommendations": ["hookyqr.beautify"]
+}

@@ -6,5 +6,5 @@ dnf install git -y
 git clone https://github.com/ii887522/internship-information-system.git
 cd internship-information-system
 dnf install python-pip -y
-pip3 install flask pymysql boto3
+pip3 install -r requirements.txt
 python3 app.py
