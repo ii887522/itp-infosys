@@ -1,13 +1,12 @@
 import boto3
 from flask import Flask, render_template, request
-from pymysql.connections import Connection
 
 import config
 
 app = Flask(__name__)
-db_conn = Connection(
-    host=config.customhost, port=3306, user=config.customuser, password=config.custompass, db=config.customdb
-)
+# db_conn = Connection(
+#     host=config.customhost, port=3306, user=config.customuser, password=config.custompass, db=config.customdb
+# )
 
 
 @app.route("/", methods=["GET", "POST"])
