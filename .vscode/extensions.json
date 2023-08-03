@@ -1,12 +1,19 @@
 {
   "recommendations": [
-    "esbenp.prettier-vscode",
+    "boto3typed.boto3-ide",
+    "dbaeumer.vscode-eslint",
     "editorconfig.editorconfig",
-    "wayou.vscode-todo-highlight",
+    "esbenp.prettier-vscode",
     "ms-python.flake8",
     "ms-python.isort",
     "ms-python.black-formatter",
-    "boto3typed.boto3-ide"
+    "vue.volar",
+    "wayou.vscode-todo-highlight"
   ],
-  "unwantedRecommendations": ["hookyqr.beautify"]
+  "unwantedRecommendations": [
+    "dbaeumer.jshint",
+    "hookyqr.beautify",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "octref.vetur"
+  ]
 }

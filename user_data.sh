@@ -3,8 +3,10 @@
 
 #!/bin/bash
 dnf install git -y
-git clone https://github.com/ii887522/internship-information-system.git
-cd internship-information-system
+git clone https://github.com/ii887522/itp-infosys.git
+cd itp-infosys
+npm install
+npx quasar build
 dnf install python-pip -y
 pip3 install -r requirements.txt
-python3 app.py
+python3 server/app.py

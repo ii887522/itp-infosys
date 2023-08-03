@@ -1,17 +1,16 @@
 import boto3
+import config
 from flask import Flask, render_template, request
 
-import config
-
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../dist/spa")
 # db_conn = Connection(
 #     host=config.customhost, port=3306, user=config.customuser, password=config.custompass, db=config.customdb
 # )
 
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    return render_template("pages/Home.html")
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
 
 
 @app.route("/about", methods=["POST"])
