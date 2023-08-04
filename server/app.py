@@ -8,9 +8,8 @@ app = Flask(__name__, static_folder="../dist/spa", static_url_path="/")
 # )
 
 
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
-def catch_all(path):
+@app.errorhandler(404)
+def catch_all(error):
     return app.send_static_file("index.html")
 
 
