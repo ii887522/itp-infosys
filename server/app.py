@@ -2,15 +2,15 @@ import boto3
 import config
 from flask import Flask, render_template, request
 
-app = Flask(__name__, template_folder="../dist/spa")
+app = Flask(__name__, static_folder="../dist/spa", static_url_path="/")
 # db_conn = Connection(
 #     host=config.customhost, port=3306, user=config.customuser, password=config.custompass, db=config.customdb
 # )
 
 
-@app.route("/", methods=["GET"])
-def index():
-    return render_template("index.html")
+@app.errorhandler(404)
+def catch_all(error):
+    return app.send_static_file("index.html")
 
 
 @app.route("/about", methods=["POST"])
