@@ -1,5 +1,5 @@
 <template>
-  <q-card class="bg-amber-1 cursor-pointer q-hoverable" v-ripple>
+  <q-card class="bg-amber-1 cursor-pointer q-hoverable" v-ripple @click="onClick">
     <span class="q-focus-helper"></span>
     <div class="full-width bg-primary" style="height: 8px; border-radius: 8px 8px 0 0"></div>
 
@@ -44,6 +44,16 @@
 <script setup lang="ts">
 import { type Internship } from 'src/models/itp-post'
 import { categoryColor } from 'src/consts/itp-post'
+import { useRouter } from 'vue-router'
+import { useInternshipDetailsStore } from 'stores/itp-post-store'
 
-defineProps<{ value: Internship }>()
+const props = defineProps<{ value: Internship }>()
+
+const router = useRouter()
+const detailsStore = useInternshipDetailsStore()
+
+function onClick() {
+  detailsStore.value = props.value
+  router.push('/itp-post/internship-details')
+}
 </script>
