@@ -36,38 +36,6 @@ export const allLocations = [
   'Wangsa Maju',
 ]
 
-//   <!-- Title -->
-//   <!-- Company name -->
-
-//   <!--
-//     IT jobs categories
-//     - Artifical Intelligence -- red
-//     - Backend -- pink
-//     - Cybersecurity -- purple
-//     - Data Science -- deep-purple
-//     - Frontend -- indigo
-//     - Full Stack -- blue
-//     - Gaming -- light-blue
-//     - Internet of Things -- cyan
-//     - Networking -- teal
-//   -->
-
-//   <!-- Allowance ranges from RM 0 until RM 2000 and above -->
-
-//   <!-- Locations
-//     - Cheras
-//     - Mid Valley City
-//     - Taman Connaught
-//     - Petaling Jaya
-//     - Wangsa Maju
-//     - Titiwangsa
-//   -->
-
-//   <!-- Learning Outcomes -->
-//   <!-- Description -->
-
-//   <!-- search and filter internship -->
-//   <!-- list internships -->
 export const internships: readonly Internship[] = [
   {
     title: 'Software Engineer',
