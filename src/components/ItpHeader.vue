@@ -41,7 +41,7 @@ const showSearch = ref(false)
 .slide {
   &-enter-active,
   &-leave-active {
-    transition: transform 0.2s linear;
+    transition: transform 0.1s linear;
   }
 
   &-enter-from,

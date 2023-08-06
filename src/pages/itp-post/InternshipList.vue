@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page padding>
     <q-table
       grid
       :columns="columns"
@@ -34,7 +34,9 @@ import { type Internship } from 'src/models/itp-post'
 import InternshipCard from 'components/itp-post/InternshipCard.vue'
 import { useInternshipSearchStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
+import { useMeta } from 'quasar'
 
+useMeta({ title: 'Internships | MyITPHub' })
 const searchStore = useInternshipSearchStore()
 
 const columns = [
@@ -74,6 +76,8 @@ const columns = [
     field: 'learning_outcomes',
   },
 ]
+
+searchStore.reset()
 
 function getRowKey(row: Internship) {
   return `${row.title}#${row.company_name}`

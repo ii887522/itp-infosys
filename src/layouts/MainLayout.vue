@@ -3,7 +3,11 @@
     <itp-header />
 
     <q-page-container>
-      <router-view />
+      <router-view v-slot="{ Component, route }">
+        <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" :key="route.path">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </q-page-container>
   </q-layout>
 </template>
