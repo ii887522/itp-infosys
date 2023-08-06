@@ -1,5 +1,5 @@
 Flask==2.3.2
-pymysql==1.1.0
+mariadb==1.1.7
 boto3==1.28.18
 black==23.7.0
 isort==5.12.0
