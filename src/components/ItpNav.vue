@@ -3,6 +3,7 @@
     <q-item
       v-for="(item, index) in items"
       :key="index"
+      v-show="shows[index]"
       class="col-auto row items-center text-secondary"
       :to="item.to"
       clickable
@@ -16,7 +17,32 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{ items?: { to?: string; icon: string; label: string; onClick?: () => void }[] }>(), {
-  items: () => [],
-})
+import { onBeforeRouteUpdate, type RouteLocationNormalized, useRouter } from 'vue-router'
+import { ref } from 'vue'
+
+const router = useRouter()
+
+const props = withDefaults(
+  defineProps<{
+    items?: {
+      to?: string
+      icon: string
+      label: string
+      onClick?: () => void
+      show?: (to: RouteLocationNormalized) => boolean
+    }[]
+  }>(),
+  {
+    items: () => [],
+  }
+)
+
+const shows = ref<boolean[]>([])
+
+onBeforeRouteUpdate(calcItemsVisibility)
+calcItemsVisibility(router.currentRoute.value)
+
+function calcItemsVisibility(to: RouteLocationNormalized) {
+  shows.value = props.items.map(item => item.show?.call(item, to) ?? true)
+}
 </script>

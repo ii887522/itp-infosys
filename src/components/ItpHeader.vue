@@ -20,6 +20,7 @@ import { ref } from 'vue'
 import ItpNav from './ItpNav.vue'
 import UserCard from './UserCard.vue'
 import InternshipSearch from './itp-post/InternshipSearch.vue'
+import { type RouteLocationNormalized, onBeforeRouteUpdate } from 'vue-router'
 
 const nav = [
   {
@@ -28,6 +29,7 @@ const nav = [
     onClick: () => {
       showSearch.value = !showSearch.value
     },
+    show: (to: RouteLocationNormalized) => to.fullPath === '/',
   },
   { to: '/', icon: 'info', label: 'Menu' },
   { to: '/', icon: 'info', label: 'Menu' },
@@ -35,6 +37,10 @@ const nav = [
 ]
 
 const showSearch = ref(false)
+
+onBeforeRouteUpdate(() => {
+  showSearch.value = false
+})
 </script>
 
 <style scoped lang="scss">
