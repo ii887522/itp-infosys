@@ -3,3 +3,16 @@
   white-space: nowrap;
   overflow: hidden;
 }
+
+a {
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $primary;
+  }
+
+  &:active {
+    color: $secondary;
+  }
+}
