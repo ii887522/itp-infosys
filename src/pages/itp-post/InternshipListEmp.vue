@@ -14,7 +14,7 @@
       wrap-cells
     >
       <template #top-right>
-        <q-btn icon="add" color="positive" label="Add Internship" />
+        <q-btn icon="add" color="positive" label="Add Internship" to="/emp/itp-post/internships/add" />
       </template>
 
       <template #header-cell="props">

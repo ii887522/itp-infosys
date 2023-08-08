@@ -16,6 +16,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/itp-post/InternshipDetails.vue'),
       },
       { path: 'emp/itp-post/internships', component: () => import('pages/itp-post/InternshipListEmp.vue') },
+      { path: 'emp/itp-post/internships/add', component: () => import('pages/itp-post/InternshipAdd.vue') },
     ],
   },
 
