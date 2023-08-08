@@ -1,5 +1,5 @@
 <template>
-  <q-card>
+  <q-card class="bg-amber-1">
     <q-card-section>
       <div class="text-h5 q-mb-lg">Internship Application</div>
 
@@ -14,6 +14,7 @@
           outlined
           counter
           lazy-rules="ondemand"
+          bg-color="white"
           :rules="[value => value || 'Resume is required']"
         >
           <template #label>
@@ -23,7 +24,16 @@
           </template>
         </q-file>
 
-        <q-input class="q-mb-lg" name="remarks" clearable label-slot autogrow v-model="remarks" outlined>
+        <q-input
+          class="q-mb-lg"
+          name="remarks"
+          clearable
+          label-slot
+          autogrow
+          v-model="remarks"
+          outlined
+          bg-color="white"
+        >
           <template #label>
             <q-icon name="description" left size="xs" />
             <span>Note to Employer</span>
