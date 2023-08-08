@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-8">
         <div class="q-mb-md">
-          <q-btn class="q-mr-sm" icon="arrow_back" to="/" size="xl" unelevated round dense />
+          <q-btn class="q-mr-sm" icon="arrow_back" to="internships" size="xl" unelevated round dense />
           <span class="vertical-middle text-h4">{{ store.value.title }}</span>
         </div>
 
