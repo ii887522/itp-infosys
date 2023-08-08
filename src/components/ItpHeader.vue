@@ -29,7 +29,8 @@ const nav = [
     onClick: () => {
       showSearch.value = !showSearch.value
     },
-    show: (to: RouteLocationNormalized) => to.fullPath === '/',
+    show: (to: RouteLocationNormalized) =>
+      to.fullPath === '/stud/itp-post/internships' || to.fullPath === '/emp/itp-post/internships',
   },
   { to: '/', icon: 'info', label: 'Menu' },
   { to: '/', icon: 'info', label: 'Menu' },

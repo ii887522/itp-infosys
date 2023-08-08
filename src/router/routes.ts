@@ -6,15 +6,17 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/itp-post/InternshipList.vue') },
+      { path: 'stud/itp-post/internships', component: () => import('pages/itp-post/InternshipListStud.vue') },
       {
-        path: 'itp-post/internship-details',
+        path: 'stud/itp-post/internship-details',
         beforeEnter: () => {
           const store = useInternshipDetailsStore()
           return store.value.title !== '' ? true : '/'
         },
         component: () => import('pages/itp-post/InternshipDetails.vue'),
       },
+      { path: 'emp/itp-post/internships', component: () => import('pages/itp-post/InternshipListEmp.vue') },
+      { path: 'emp/itp-post/internships/add', component: () => import('pages/itp-post/InternshipAdd.vue') },
     ],
   },
 

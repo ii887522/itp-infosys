@@ -54,6 +54,6 @@ const detailsStore = useInternshipDetailsStore()
 
 function onClick() {
   detailsStore.value = props.value
-  router.push('/itp-post/internship-details')
+  router.push('internship-details')
 }
 </script>

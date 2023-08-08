@@ -11,6 +11,7 @@ export interface Internship {
   company_size: number
   address: string
   company_url: string
+  vacancy_count: number
 }
 
 export function makeInternship(): Internship {
@@ -25,5 +26,6 @@ export function makeInternship(): Internship {
     company_size: 0,
     address: '',
     company_url: '',
+    vacancy_count: 0,
   }
 }

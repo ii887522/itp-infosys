@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-8">
         <div class="q-mb-md">
-          <q-btn class="q-mr-sm" icon="arrow_back" to="/" size="xl" unelevated round dense />
+          <q-btn class="q-mr-sm" icon="arrow_back" size="xl" unelevated round dense @click="router.back()" />
           <span class="vertical-middle text-h4">{{ store.value.title }}</span>
         </div>
 
@@ -129,7 +129,9 @@ import { useMeta } from 'quasar'
 import { categoryColor } from 'src/consts/itp-post'
 import sanitizeHtml from 'sanitize-html'
 import InternshipAppForm from 'components/itp-post/InternshipAppForm.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const store = useInternshipDetailsStore()
 useMeta({ title: `${store.value.title} | MyITPHub` })
 
