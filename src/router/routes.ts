@@ -11,7 +11,7 @@ const routes: RouteRecordRaw[] = [
         path: 'stud/itp-post/internship-details',
         beforeEnter: () => {
           const store = useInternshipDetailsStore()
-          return store.value.title !== '' ? true : '/'
+          return store.value.title !== '' ? true : '/stud/itp-post/internships'
         },
         component: () => import('pages/itp-post/InternshipDetails.vue'),
       },
