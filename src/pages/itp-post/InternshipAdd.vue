@@ -16,6 +16,7 @@
               label-slot
               v-model="title"
               outlined
+              bg-color="white"
               :rules="[value => !isTextEmpty(value) || 'Title is required']"
             >
               <template #label>
@@ -37,6 +38,7 @@
               outlined
               multiple
               use-chips
+              bg-color="white"
               :rules="[value => !isArrayEmpty(value) || 'At least 1 category is required']"
             >
               <template #label>
@@ -57,7 +59,7 @@
             </q-select>
           </div>
 
-          <div class="col-6 q-mb-xs">
+          <div class="col-4 q-mb-xs">
             <div class="text-grey-7">
               <q-icon class="q-mr-sm" name="payments" size="sm" />
               <span>Allowances</span>
@@ -87,28 +89,49 @@
             </div>
           </div>
 
-          <div class="col-6 q-mb-xs">
+          <div class="col-4 q-mb-xs">
             <q-select
               name="location"
-              clearable
               behavior="menu"
               label-slot
               v-model="location"
               :options="allLocations"
               outlined
-              :rules="[value => !isTextEmpty(value) || 'Location is required']"
+              bg-color="white"
             >
               <template #label>
                 <q-icon class="q-mr-sm" name="location_on" size="sm" />
                 <span>Location</span>
-                <span class="text-negative"> *</span>
               </template>
             </q-select>
+          </div>
+
+          <div class="col-4 q-mb-xs">
+            <q-input
+              name="vacancy_count"
+              type="number"
+              label-slot
+              v-model="vacancyCount"
+              outlined
+              bg-color="white"
+              min="0"
+              :rules="[
+                value => !isTextEmpty(value) || 'Vacancy count is required',
+                value => Number(value) >= 0 || 'Vacancy count must be positive',
+              ]"
+            >
+              <template #label>
+                <q-icon class="q-mr-xs" name="calculate" size="sm" />
+                <span>Vacancy Count</span>
+                <span class="text-negative"> *</span>
+              </template>
+            </q-input>
           </div>
 
           <div class="col-12">
             <q-icon name="school" size="md" left />
             <span class="vertical-middle text-h6">Learning Outcomes</span>
+            <span class="text-negative text-h6"> *</span>
           </div>
 
           <input-list class="col-6 q-mb-xs" v-model="learningOutcomes" v-slot="{ index, onItemChange }">
@@ -118,13 +141,30 @@
               v-model="learningOutcomes[index]"
               outlined
               dense
+              bg-color="white"
+              :error="learningOutcomesError"
+              error-message="At least 1 learning outcome is required"
               @update:model-value="value => onItemChange(index, value as string | null)"
+              @blur="onLearningOutcomesChange(learningOutcomes)"
             />
           </input-list>
 
           <div class="col-12 q-mt-md">
             <q-icon name="description" size="md" left />
             <span class="vertical-middle text-h6">Description</span>
+            <span class="text-negative text-h6"> *</span>
+          </div>
+
+          <div class="col-12 q-mb-md">
+            <q-editor :class="{ error: descriptionError }" v-model="description" />
+
+            <div v-show="descriptionError" class="q-ml-sm q-mt-xs text-negative text-caption">
+              Description is required
+            </div>
+          </div>
+
+          <div class="col-12 text-center">
+            <q-btn type="submit" icon="add" label="Add" color="positive" />
           </div>
         </q-form>
       </q-card-section>
@@ -133,7 +173,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useMeta } from 'quasar'
 import { isTextEmpty, isArrayEmpty } from 'src/common'
 import { allCategories, categoryColor, minAllowance, maxAllowance, allLocations } from 'src/consts/itp-post'
@@ -144,10 +184,33 @@ useMeta({ title: 'Add Internship | MyITPHub' })
 const title = ref('')
 const categories = ref([])
 const allowanceRange = ref({ min: minAllowance, max: maxAllowance })
-const location = ref('')
+const location = ref(allLocations[0])
 const learningOutcomes = ref([''])
+const learningOutcomesError = ref(false)
+const description = ref('')
+const descriptionError = ref(false)
+const vacancyCount = ref(1)
+
+watch(description, onDescriptionChange)
+watch(learningOutcomes, onLearningOutcomesChange)
+
+function onDescriptionChange(value: string | null) {
+  descriptionError.value = isTextEmpty(value)
+}
+
+function onLearningOutcomesChange(value: string[]) {
+  learningOutcomesError.value = value.length === 1 && isTextEmpty(value[0])
+}
 
 function add() {
+  // Validate
+  onDescriptionChange(description.value)
+  onLearningOutcomesChange(learningOutcomes.value)
+
+  // Can proceed to add this internship ?
+  if (descriptionError.value || learningOutcomesError.value) return
+
+  // Add this internship
   console.log('ADDING INTERNSHIP...')
 }
 </script>

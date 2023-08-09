@@ -1,14 +1,6 @@
 <template>
   <div v-for="index in modelValue.length" :key="index" v-bind="$attrs">
     <slot :index="index - 1" :onItemChange="onItemChange"></slot>
-    <!-- <q-input
-      name="learning_outcome"
-      clearable
-      v-model="learningOutcomes[index - 1]"
-      outlined
-      dense
-      @update:model-value="value => onItemChange(index - 1, value as string | null)"
-    /> -->
   </div>
 </template>
 
