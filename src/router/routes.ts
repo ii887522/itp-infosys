@@ -1,5 +1,5 @@
 import { RouteRecordRaw } from 'vue-router'
-import { useInternshipDetailsStore } from 'stores/itp-post-store'
+import { useInternshipDetailsStore, useInternshipEditStore } from 'stores/itp-post-store'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -17,6 +17,14 @@ const routes: RouteRecordRaw[] = [
       },
       { path: 'emp/itp-post/internships', component: () => import('pages/itp-post/InternshipListEmp.vue') },
       { path: 'emp/itp-post/internships/add', component: () => import('pages/itp-post/InternshipAdd.vue') },
+      {
+        path: 'emp/itp-post/internships/edit',
+        beforeEnter: () => {
+          const store = useInternshipEditStore()
+          return store.title !== '' ? true : '/emp/itp-post/internships'
+        },
+        component: () => import('pages/itp-post/InternshipEdit.vue'),
+      },
     ],
   },
 

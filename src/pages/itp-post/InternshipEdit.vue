@@ -4,17 +4,17 @@
       <q-card-section>
         <div class="q-mb-md">
           <q-btn class="q-mr-sm" icon="arrow_back" to="/emp/itp-post/internships" size="xl" unelevated round dense />
-          <span class="vertical-middle text-h4">Add Internship</span>
+          <span class="vertical-middle text-h4">Edit Internship</span>
         </div>
 
-        <q-form class="row q-col-gutter-md" @submit="add">
+        <q-form class="row q-col-gutter-md" @submit="edit">
           <div class="col-6 q-mb-xs">
             <q-input
               name="title"
               clearable
               autofocus
               label-slot
-              v-model="title"
+              v-model="store.title"
               outlined
               bg-color="white"
               :rules="[value => !isTextEmpty(value) || 'Title is required']"
@@ -33,7 +33,7 @@
               clearable
               behavior="menu"
               label-slot
-              v-model="categories"
+              v-model="store.categories"
               :options="allCategories"
               outlined
               multiple
@@ -72,14 +72,14 @@
                 label-always
                 markers
                 drag-range
-                :left-label-value="`RM ${allowanceRange.min}`"
-                :right-label-value="`RM ${allowanceRange.max}${
-                  allowanceRange.max !== maxAllowance ? '' : ' and above'
+                :left-label-value="`RM ${store.allowanceRange.min}`"
+                :right-label-value="`RM ${store.allowanceRange.max}${
+                  store.allowanceRange.max !== maxAllowance ? '' : ' and above'
                 }`"
                 :min="minAllowance"
                 :max="maxAllowance"
                 :step="100"
-                v-model="allowanceRange"
+                v-model="store.allowanceRange"
                 switch-label-side
               />
             </div>
@@ -94,7 +94,7 @@
               name="location"
               behavior="menu"
               label-slot
-              v-model="location"
+              v-model="store.location"
               :options="allLocations"
               outlined
               bg-color="white"
@@ -111,7 +111,7 @@
               ref="vacancyCountInput"
               name="vacancy_count"
               label-slot
-              v-model="vacancyCount"
+              v-model="store.vacancyCount"
               outlined
               bg-color="white"
               :rules="[value => !isTextEmpty(value) || 'Vacancy count is required']"
@@ -130,18 +130,18 @@
             <span class="text-negative text-h6"> *</span>
           </div>
 
-          <input-list class="col-6 q-mb-xs" v-model="learningOutcomes" v-slot="{ index, onItemChange }">
+          <input-list class="col-6 q-mb-xs" v-model="store.learningOutcomes" v-slot="{ index, onItemChange }">
             <q-input
               :name="`learning_outcome_${index}`"
               clearable
-              v-model="learningOutcomes[index]"
+              v-model="store.learningOutcomes[index]"
               outlined
               dense
               bg-color="white"
               :error="learningOutcomesError"
               error-message="At least 1 learning outcome is required"
               @update:model-value="value => onItemChange(index, value as string | null)"
-              @blur="onLearningOutcomesChange(learningOutcomes)"
+              @blur="onLearningOutcomesChange(store.learningOutcomes)"
             />
           </input-list>
 
@@ -152,7 +152,7 @@
           </div>
 
           <div class="col-12 q-mb-md">
-            <q-editor :class="{ error: descriptionError }" v-model="description" />
+            <q-editor :class="{ error: descriptionError }" v-model="store.description" />
 
             <div v-show="descriptionError" class="q-ml-sm q-mt-xs text-negative text-caption">
               Description is required
@@ -160,7 +160,7 @@
           </div>
 
           <div class="col-12 text-center">
-            <q-btn type="submit" icon="add" label="Add" color="positive" />
+            <q-btn type="submit" icon="edit" label="Edit" color="info" />
           </div>
         </q-form>
       </q-card-section>
@@ -174,20 +174,15 @@ import { useMeta, type QInput } from 'quasar'
 import { isTextEmpty, isArrayEmpty } from 'src/common'
 import { allCategories, categoryColor, minAllowance, maxAllowance, allLocations } from 'src/consts/itp-post'
 import InputList from 'components/InputList.vue'
+import { useInternshipEditStore } from 'stores/itp-post-store'
 import AutoNumeric from 'autonumeric'
 
-useMeta({ title: 'Add Internship | MyITPHub' })
+useMeta({ title: 'Edit Internship | MyITPHub' })
 
+const store = useInternshipEditStore()
 const vacancyCountInput = ref<QInput | null>(null)
-const title = ref('')
-const categories = ref([])
-const allowanceRange = ref({ min: minAllowance, max: maxAllowance })
-const location = ref(allLocations[0])
-const learningOutcomes = ref([''])
 const learningOutcomesError = ref(false)
-const description = ref('')
 const descriptionError = ref(false)
-const vacancyCount = ref('1')
 
 onMounted(() => {
   new AutoNumeric(vacancyCountInput.value?.nativeEl as HTMLElement, null, {
@@ -201,8 +196,8 @@ onMounted(() => {
   })
 })
 
-watch(description, onDescriptionChange)
-watch(learningOutcomes, onLearningOutcomesChange)
+watch(() => store.description, onDescriptionChange)
+watch(() => store.learningOutcomes, onLearningOutcomesChange)
 
 function onDescriptionChange(value: string | null) {
   descriptionError.value = isTextEmpty(value)
@@ -212,15 +207,15 @@ function onLearningOutcomesChange(value: string[]) {
   learningOutcomesError.value = value.length === 1 && isTextEmpty(value[0])
 }
 
-function add() {
+function edit() {
   // Validate
-  onDescriptionChange(description.value)
-  onLearningOutcomesChange(learningOutcomes.value)
+  onDescriptionChange(store.description)
+  onLearningOutcomesChange(store.learningOutcomes)
 
   // Can proceed to add this internship ?
   if (descriptionError.value || learningOutcomesError.value) return
 
-  // Add this internship
-  console.log('ADDING INTERNSHIP...')
+  // Update this internship
+  console.log('UPDATING THIS INTERNSHIP...')
 }
 </script>
