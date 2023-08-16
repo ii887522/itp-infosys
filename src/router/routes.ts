@@ -25,6 +25,9 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('pages/itp-post/InternshipEdit.vue'),
       },
+      { path: 'stud/login', component: () => import('pages/user/StudentLogin.vue'), },
+      { path: 'stud/signup', component: () => import('pages/user/StudentSignUp.vue'), },
+      { path: 'emp/login', component: () => import('pages/user/EmployeeLogin.vue'), },
     ],
   },
 
