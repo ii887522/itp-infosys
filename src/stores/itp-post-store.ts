@@ -20,7 +20,13 @@ export const useInternshipSearchStore = defineStore('itp-post/internship-search'
   return { category, minAllowance, location, q, reset }
 })
 
-export const useInternshipDetailsStore = defineStore('itp-post/internship-details', () => {
+export const useInternshipDetailsStudStore = defineStore('itp-post/internship-details-stud', () => {
+  const value = ref<Internship>(makeInternship())
+
+  return { value }
+})
+
+export const useInternshipDetailsEmpStore = defineStore('itp-post/internship-details-emp', () => {
   const value = ref<Internship>(makeInternship())
 
   return { value }

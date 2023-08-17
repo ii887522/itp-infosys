@@ -124,7 +124,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useInternshipDetailsStore } from 'stores/itp-post-store'
+import { useInternshipDetailsStudStore } from 'stores/itp-post-store'
 import { useMeta } from 'quasar'
 import { categoryColor } from 'src/consts/itp-post'
 import sanitizeHtml from 'sanitize-html'
@@ -132,7 +132,7 @@ import InternshipAppForm from 'components/itp-post/InternshipAppForm.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const store = useInternshipDetailsStore()
+const store = useInternshipDetailsStudStore()
 useMeta({ title: `${store.value.title} | MyITPHub` })
 
 const slide = ref(0)
