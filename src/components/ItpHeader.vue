@@ -32,7 +32,7 @@ const nav = [
     show: (to: RouteLocationNormalized) =>
       to.fullPath === '/stud/itp-post/internships' || to.fullPath === '/emp/itp-post/internships',
   },
-  { to: '/', icon: 'info', label: 'Menu' },
+  { to: '/stud/itp-post/internship-application-queue', icon: 'list', label: 'My Application' },
   { to: '/', icon: 'info', label: 'Menu' },
   { to: '/', icon: 'info', label: 'Menu' },
 ]
