@@ -20,8 +20,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/itp-post/InternshipDetailsStud.vue'),
       },
       {
-        path: 'stud/itp-post/internship-application-queue',
-        component: () => import('pages/itp-post/InternshipApplicationQueueStud.vue'),
+        path: 'stud/itp-post/internship-app-queue',
+        component: () => import('pages/itp-post/InternshipAppQueueStud.vue'),
       },
       { path: 'emp/itp-post/internships', component: () => import('pages/itp-post/InternshipListEmp.vue') },
       {
@@ -40,6 +40,10 @@ const routes: RouteRecordRaw[] = [
           return store.title !== '' ? true : '/emp/itp-post/internships'
         },
         component: () => import('pages/itp-post/InternshipEdit.vue'),
+      },
+      {
+        path: 'emp/itp-post/internship-app-queue',
+        component: () => import('pages/itp-post/InternshipAppQueueEmp.vue'),
       },
     ],
   },

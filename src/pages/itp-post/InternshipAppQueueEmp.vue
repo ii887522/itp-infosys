@@ -4,8 +4,8 @@
       class="bg-grey-1"
       :columns="columns"
       title-class="text-h4"
-      title="My Internship Application"
-      :rows="applications"
+      title="Student Internship Applications"
+      :rows="incomingApplications"
       row-key="resume_url"
       :rows-per-page-options="rowsPerPageOptions"
     >
@@ -36,12 +36,24 @@
           />
 
           <q-btn
-            icon="cancel"
-            color="negative"
+            class="q-mr-md"
+            icon="thumb_up"
+            :color="props.row.status !== 'pending' ? 'grey-5' : 'positive'"
             dense
-            label="Cancel"
+            label="Accept"
             outline
-            @click="openConfirmDelDialog(props.row.title, props.row.company_name)"
+            :disable="props.row.status !== 'pending'"
+            @click="openConfirmAcceptDialog(props.row.title, props.row.student_name)"
+          />
+
+          <q-btn
+            icon="thumb_down"
+            :color="props.row.status !== 'pending' ? 'grey-5' : 'negative'"
+            dense
+            label="Reject"
+            outline
+            :disable="props.row.status !== 'pending'"
+            @click="openConfirmRejectDialog(props.row.title, props.row.student_name)"
           />
         </q-td>
       </template>
@@ -57,12 +69,12 @@
 </template>
 
 <script setup lang="ts">
-import { applications } from 'src/consts/itp-post'
+import { incomingApplications } from 'src/consts/itp-post'
 import { useMeta, useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
 import { rowsPerPageOptions, statusIcon, statusColor } from 'src/consts'
-import { Application } from 'src/models/itp-post'
-import InternshipApplicationDialog from 'components/itp-post/InternshipApplicationDialog.vue'
+import { type IncomingApplication } from 'src/models/itp-post'
+import InternshipAppEmpDialog from 'components/itp-post/InternshipAppEmpDialog.vue'
 
 useMeta({ title: 'My Internship Application | MyITPHub' })
 const { dialog } = useQuasar()
@@ -78,12 +90,12 @@ const columns: any[] = [
     icon: 'title',
   },
   {
-    name: 'company-name',
-    label: 'Company',
-    field: 'company_name',
+    name: 'student-name',
+    label: 'Student',
+    field: 'student_name',
     align: 'left',
     sortable: true,
-    icon: 'apartment',
+    icon: 'person',
   },
   {
     name: 'status',
@@ -98,21 +110,33 @@ const columns: any[] = [
     field: '',
     align: 'center',
     icon: 'settings',
-    style: 'width: 256px',
+    style: 'width: 350px',
   },
 ]
 
-function openDetailsDialog(row: Application) {
-  dialog({ component: InternshipApplicationDialog, componentProps: { value: row } })
+function openDetailsDialog(row: IncomingApplication) {
+  dialog({ component: InternshipAppEmpDialog, componentProps: { value: row } })
 }
 
-function openConfirmDelDialog(title: string, companyName: string) {
+function openConfirmAcceptDialog(title: string, studentName: string) {
   dialog({
-    title: '<span class="text-negative">Cancel Application</span>',
-    message: `Are you sure you want to cancel the internship application for ${sanitizeHtml(title)} in ${sanitizeHtml(
-      companyName
-    )}? <span class="text-negative">CANCEL ACTION CANNOT BE UNDONE</span>`,
-    ok: { icon: 'delete', label: 'Remove', color: 'negative' },
+    title: '<span class="text-positive">Accept Application</span>',
+    message: `Are you sure you want to accept the internship application for ${sanitizeHtml(title)} by ${sanitizeHtml(
+      studentName
+    )}? <span class="text-negative">ACCEPT ACTION CANNOT BE UNDONE</span>`,
+    ok: { icon: 'thumb_up', label: 'Accept', color: 'positive' },
+    cancel: { icon: 'close', label: 'Cancel', flat: true },
+    html: true,
+  })
+}
+
+function openConfirmRejectDialog(title: string, studentName: string) {
+  dialog({
+    title: '<span class="text-negative">Reject Application</span>',
+    message: `Are you sure you want to reject the internship application for ${sanitizeHtml(title)} by ${sanitizeHtml(
+      studentName
+    )}? <span class="text-negative">REJECT ACTION CANNOT BE UNDONE</span>`,
+    ok: { icon: 'thumb_down', label: 'Reject', color: 'negative' },
     cancel: { icon: 'close', label: 'Cancel', flat: true },
     html: true,
   })

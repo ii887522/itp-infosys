@@ -643,3 +643,41 @@ export const applications = [
     resume_url: 'https://www.tarc.edu.my/favicon.png',
   },
 ]
+
+export const incomingApplications = [
+  {
+    title: 'Software Engineer',
+    student_name: 'Yong Chi Min',
+    status: 'pending',
+    note_to_employer: 'hihi',
+    resume_url: 'https://www.tarc.edu.my/favicon.png',
+  },
+  {
+    title: 'Software Engineer',
+    student_name: 'Yong Chi Min',
+    status: 'accepted',
+    note_to_employer: '',
+    resume_url: 'https://www.tarc.edu.my/favicon.png',
+  },
+  {
+    title: 'Software Engineer',
+    student_name: 'Yong Chi Min',
+    status: 'rejected',
+    note_to_employer: 'hihi',
+    resume_url: 'https://www.tarc.edu.my/favicon.png',
+  },
+  {
+    title: 'Software Engineer',
+    student_name: 'Yong Chi Min',
+    status: 'pending',
+    note_to_employer: '',
+    resume_url: 'https://www.tarc.edu.my/favicon.png',
+  },
+  {
+    title: 'Software Engineer',
+    student_name: 'Yong Chi Min',
+    status: 'pending',
+    note_to_employer: 'hihi',
+    resume_url: 'https://www.tarc.edu.my/favicon.png',
+  },
+]

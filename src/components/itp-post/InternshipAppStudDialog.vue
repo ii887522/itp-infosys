@@ -44,10 +44,10 @@
 
 <script setup lang="ts">
 import { useDialogPluginComponent } from 'quasar'
-import { type Application } from 'src/models/itp-post'
+import { type OutgoingApplication } from 'src/models/itp-post'
 import { statusColor, statusIcon } from 'src/consts'
 
-defineProps<{ value: Application }>()
+defineProps<{ value: OutgoingApplication }>()
 
 defineEmits([
   // REQUIRED; need to specify some events that your
