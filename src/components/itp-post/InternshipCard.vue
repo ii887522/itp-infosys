@@ -45,12 +45,12 @@
 import { type Internship } from 'src/models/itp-post'
 import { categoryColor } from 'src/consts/itp-post'
 import { useRouter } from 'vue-router'
-import { useInternshipDetailsStore } from 'stores/itp-post-store'
+import { useInternshipDetailsStudStore } from 'stores/itp-post-store'
 
 const props = defineProps<{ value: Internship }>()
 
 const router = useRouter()
-const detailsStore = useInternshipDetailsStore()
+const detailsStore = useInternshipDetailsStudStore()
 
 function onClick() {
   detailsStore.value = props.value

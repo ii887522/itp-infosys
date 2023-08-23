@@ -1,5 +1,9 @@
 import { RouteRecordRaw } from 'vue-router'
-import { useInternshipDetailsStore, useInternshipEditStore } from 'stores/itp-post-store'
+import {
+  useInternshipDetailsStudStore,
+  useInternshipEditStore,
+  useInternshipDetailsEmpStore,
+} from 'stores/itp-post-store'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -10,12 +14,24 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'stud/itp-post/internship-details',
         beforeEnter: () => {
-          const store = useInternshipDetailsStore()
+          const store = useInternshipDetailsStudStore()
           return store.value.title !== '' ? true : '/stud/itp-post/internships'
         },
-        component: () => import('pages/itp-post/InternshipDetails.vue'),
+        component: () => import('pages/itp-post/InternshipDetailsStud.vue'),
+      },
+      {
+        path: 'stud/itp-post/internship-app-queue',
+        component: () => import('pages/itp-post/InternshipAppQueueStud.vue'),
       },
       { path: 'emp/itp-post/internships', component: () => import('pages/itp-post/InternshipListEmp.vue') },
+      {
+        path: 'emp/itp-post/internship-details',
+        beforeEnter: () => {
+          const store = useInternshipDetailsEmpStore()
+          return store.value.title !== '' ? true : '/emp/itp-post/internships'
+        },
+        component: () => import('pages/itp-post/InternshipDetailsEmp.vue'),
+      },
       { path: 'emp/itp-post/internships/add', component: () => import('pages/itp-post/InternshipAdd.vue') },
       {
         path: 'emp/itp-post/internships/edit',
@@ -24,6 +40,10 @@ const routes: RouteRecordRaw[] = [
           return store.title !== '' ? true : '/emp/itp-post/internships'
         },
         component: () => import('pages/itp-post/InternshipEdit.vue'),
+      },
+      {
+        path: 'emp/itp-post/internship-app-queue',
+        component: () => import('pages/itp-post/InternshipAppQueueEmp.vue'),
       },
     ],
   },
