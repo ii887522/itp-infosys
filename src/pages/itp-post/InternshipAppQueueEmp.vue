@@ -76,7 +76,7 @@ import { rowsPerPageOptions, statusIcon, statusColor } from 'src/consts'
 import { type IncomingApplication } from 'src/models/itp-post'
 import InternshipAppEmpDialog from 'components/itp-post/InternshipAppEmpDialog.vue'
 
-useMeta({ title: 'My Internship Application | MyITPHub' })
+useMeta({ title: 'Student Internship Application | MyITPHub' })
 const { dialog } = useQuasar()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
