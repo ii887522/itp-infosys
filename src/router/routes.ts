@@ -10,7 +10,11 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: 'stud/itp-post/internships', component: () => import('pages/itp-post/InternshipListStud.vue') },
+      {
+        path: 'stud/itp-post/internships',
+        component: () => import('pages/itp-post/InternshipListStud.vue'),
+        alias: '',
+      },
       {
         path: 'stud/itp-post/internship-details',
         beforeEnter: () => {
