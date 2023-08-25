@@ -8,11 +8,14 @@
                         <q-card-section>
                             <q-form @submit="registerStudent" class="q-gutter-md">
                                 <q-input filled v-model="studentName" label="Student Name" dense class="input-field" :rules="[requiredRule]"/>
-                                <q-input filled v-model="studentId" label="Student ID" dense class="input-field" required :rules="[requiredRule, studentIdRule]"/> <!-- example: if 22WMR00111 -->
-                                <q-input filled v-model="studentEmail" label="Student Email" dense class="input-field" required :rules="[requiredRule, studentEmailRule]"/>
-                                <q-input filled v-model="personalEmail" label="Personal Email" dense class="input-field" required :rules="[requiredRule, personalEmailRule, nonStudentEmailRule]"/>
-                                <q-input filled v-model="password" label="Password" type="password" dense class="input-field" required :rules="[requiredRule, passwordRule]"/>
-                                <q-input filled v-model="confirmPassword" label="Confirm Password" type="password" dense class="input-field" required :rules="[requiredRule, confirmPasswordRule]"/>
+                                <q-input filled v-model="studentId" label="Student ID" dense class="input-field" placeholder="22WMR00111" :rules="[requiredRule, studentIdRule]"/>
+                                <q-input filled v-model="icNo" label="IC Number" dense class="input-field" placeholder="012345-67-8900" :rules="[requiredRule, icNumberRule]"/>
+                                <q-select filled v-model="gender" :options="genders" label="Gender" dense class="input-field" :rules="[requiredRule]" />
+                                <q-select filled v-model="programme" :options="programmes" label="Programme" dense class="input-field" :rules="[requiredRule]" />
+                                <q-input filled v-model="studentEmail" label="Student Email" dense class="input-field" placeholder="someone-wm19@student.tarc.edu.my" :rules="[requiredRule, studentEmailRule]"/>
+                                <q-input filled v-model="personalEmail" label="Personal Email" dense class="input-field" placeholder="someone@example.com" :rules="[requiredRule, personalEmailRule, nonStudentEmailRule]"/>
+                                <q-input filled v-model="password" label="Password" type="password" dense class="input-field" :rules="[requiredRule, passwordRule]"/>
+                                <q-input filled v-model="confirmPassword" label="Confirm Password" type="password" dense class="input-field" :rules="[requiredRule, confirmPasswordRule]"/>
 
                                 <div>
                                     <q-btn type="submit" label="Sign Up" color="primary" class="q-mt-md"/>
@@ -32,21 +35,29 @@ import { ref } from 'vue'
 import { useMeta, type QInput } from 'quasar'
 import { useRouter } from 'vue-router'
 import { isTextEmpty } from 'src/common';
-import { isText } from '@vue/compiler-core';
+import { allGenders, allProgrammes } from 'src/consts/student'
 
 useMeta({ title: 'Student Sign Up | MyITPHub' })
 
 const studentName = ref('');
 const studentId = ref('');
+const icNo = ref('');
+const gender = ref([]);
+const programme = ref([]);
 const studentEmail = ref('');
 const personalEmail = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const router = useRouter();
 
+const model = ref<string | null>(null);
+const programmes = allProgrammes;
+const genders = allGenders;
+
 // validation rules
 const requiredRule = (value: string) => !isTextEmpty(value) || 'This field is required';
 const studentIdRule = (value: string) => /^[0-9]{2}[A-Z]{3}[0-9]{5}$/.test(value) || 'Invalid Student ID format';
+const icNumberRule = (value: string) => /^\d{6}-\d{2}-\d{4}$/.test(value) || 'Invalid IC Number format';
 const studentEmailRule = (value: string) => /.+@student\.tarc\.edu\.my$/.test(value) || 'Student email must end with "@student.tarc.edu.my"';
 const personalEmailRule = (value: string) => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(value) || 'Invalid personal email format';
 const nonStudentEmailRule = (value: string) => /^((?!\@student\.tarc\.edu\.my).)*$/.test(value) || 'Personal email must not end with "@student.tarc.edu.my"';
@@ -56,8 +67,15 @@ const confirmPasswordRule = (value: string) => value === password.value || 'Pass
 const registerStudent = () => {
   // Perform authentication logic here
   // Example: Can make an API request to verify the credentials
+
   // If success, navigate to the student dashboard
-  router.push('/dashboard');
+  if (studentName.value && studentId.value && studentEmail.value && personalEmail.value && password.value && confirmPassword.value) {
+    alert('Registration successful!');
+    router.push('/dashboard');
+  }
+  else {
+    alert('Registration failed. Please fill in all required fields.');
+  }
 }
 
 const resetForm = () => {
@@ -78,6 +96,6 @@ const resetForm = () => {
 }
 
 .input-field {
-  min-width: 250px;
+  min-width: 300px;
 }
 </style>
