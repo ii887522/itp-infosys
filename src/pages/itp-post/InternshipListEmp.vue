@@ -168,6 +168,6 @@ function openConfirmDelDialog(title: string) {
 
 function viewDetails(row: Internship) {
   detailsStore.value = row
-  router.push('internship-details')
+  router.push('/emp/itp-post/internship-details')
 }
 </script>
