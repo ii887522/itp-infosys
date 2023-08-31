@@ -159,6 +159,35 @@
             </div>
           </div>
 
+          <div class="relative-position full-width">
+            <q-field
+              no-error-icon
+              name="accept_rules"
+              v-model="acceptRules"
+              borderless
+              :rules="[
+                value =>
+                  value ||
+                  'You must read and agree with the TARUMT industrial training rules and regulations to post a new internship',
+              ]"
+            >
+              <template #control="{ modelValue, emitValue }">
+                <q-checkbox :model-value="modelValue" @update:model-value="emitValue">
+                  <span>I have read and agree with the</span>
+                </q-checkbox>
+              </template>
+            </q-field>
+
+            <a
+              class="q-pl-xs absolute"
+              style="text-decoration: underline; left: 246px; bottom: 37.5px"
+              href="https://www.tarc.edu.my/files/admissions/termcondition2023/C627BD51-F25B-4CA6-AE5E-A8E19ADF4603.pdf"
+              target="_blank"
+            >
+              TARUMT industrial training rules and regulations
+            </a>
+          </div>
+
           <div class="col-12 text-center">
             <q-btn type="submit" icon="add" label="Add" color="positive" />
           </div>
@@ -188,6 +217,7 @@ const learningOutcomesError = ref(false)
 const description = ref('')
 const descriptionError = ref(false)
 const vacancyCount = ref('1')
+const acceptRules = ref(false)
 
 onMounted(() => {
   new AutoNumeric(vacancyCountInput.value?.nativeEl as HTMLElement, null, {
