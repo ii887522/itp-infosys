@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { type Internship, makeInternship } from 'src/models/itp-post'
 import { minAllowance, maxAllowance } from 'src/consts/itp-post'
 import { type Router } from 'vue-router'
+import { api } from 'boot/axios'
 
 export const useInternshipSearchStore = defineStore('itp-post/internship-search', () => {
   const category = ref('')
@@ -58,4 +59,21 @@ export const useInternshipEditStore = defineStore('itp-post/internship-edit', ()
   }
 
   return { title, categories, allowanceRange, location, vacancyCount, learningOutcomes, description, navigate }
+})
+
+export const useStore = defineStore('itp-post', () => {
+  const internships = ref([])
+  const loading = ref(false)
+
+  // Init
+  if (internships.value.length === 0) listInternships()
+
+  async function listInternships() {
+    loading.value = true
+    const resp = await api.get('/itp-post/internships')
+    internships.value = resp.data
+    loading.value = false
+  }
+
+  return { internships, loading, listInternships }
 })

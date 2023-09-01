@@ -5,12 +5,14 @@
       :columns="columns"
       title-class="text-h4"
       title="Internships"
-      :rows="internships"
+      :rows="store.internships"
       :row-key="getRowKey"
       hide-pagination
       :pagination="{ rowsPerPage: 0 }"
       :filter="searchStore"
       :filter-method="filter"
+      :loading="store.loading"
+      color="primary"
     >
       <template #item="{ row }">
         <div class="q-pa-md col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
@@ -19,7 +21,7 @@
       </template>
 
       <template #no-data>
-        <div class="text-negative">
+        <div v-show="!store.loading" class="text-negative">
           <q-icon name="warning" left size="sm" />
           <span class="text-body1">No matching records found. Please broaden your searches.</span>
         </div>
@@ -29,15 +31,16 @@
 </template>
 
 <script setup lang="ts">
-import { internships } from 'src/consts/itp-post'
 import { type Internship } from 'src/models/itp-post'
 import InternshipCard from 'components/itp-post/InternshipCard.vue'
 import { useInternshipSearchStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
 import { useMeta } from 'quasar'
+import { useStore } from 'stores/itp-post-store'
 
 useMeta({ title: 'Internships | MyITPHub' })
 const searchStore = useInternshipSearchStore()
+const store = useStore()
 
 const columns = [
   {
@@ -77,6 +80,7 @@ const columns = [
   },
 ]
 
+// Init
 searchStore.reset()
 
 function getRowKey(row: Internship) {
