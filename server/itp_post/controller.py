@@ -1,10 +1,13 @@
 import json
 
+import boto3
+import config
 from common.db_connection import DbConnection
 from flask import Blueprint, request
 
 itp_post_controller = Blueprint("itp_post_controller", __name__)
 db_conn = DbConnection.get_instance()
+s3 = boto3.client("s3")
 
 
 @itp_post_controller.route("/internships", methods=["GET"])
@@ -69,6 +72,28 @@ LIMIT ?
                 "company_url": row[11],
                 "vacancy_count": row[12],
             }
+            for row in db_rows
+        ]
+
+    finally:
+        cursor.close()
+
+
+@itp_post_controller.route("/companies/<company_name>/photos", methods=["GET"])
+def list_company_photos(company_name: str):
+    cursor = db_conn.cursor()
+
+    try:
+        # Fetch a list of company photo S3 keys from the database
+        cursor.execute("SELECT url FROM photo WHERE company_name = ?", (company_name,))
+        db_conn.commit()
+        db_rows = cursor.fetchall()
+
+        # Generate S3 presigned URL for each company photo S3 key
+        return [
+            s3.generate_presigned_url(
+                "get_object", Params={"Bucket": config.custombucket, "Key": f"{company_name}/{row[0]}"}, ExpiresIn=10
+            )
             for row in db_rows
         ]
 

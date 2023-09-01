@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { type Internship, makeInternship } from 'src/models/itp-post'
 import { minAllowance, maxAllowance } from 'src/consts/itp-post'
 import { type Router } from 'vue-router'
@@ -63,17 +63,22 @@ export const useInternshipEditStore = defineStore('itp-post/internship-edit', ()
 
 export const useStore = defineStore('itp-post', () => {
   const internships = ref([])
+  const companyPhotoUrl = reactive<{ [companyName: string]: string[] }>({})
   const loading = ref(false)
 
-  // Init
-  if (internships.value.length === 0) listInternships()
-
   async function listInternships() {
+    if (internships.value.length !== 0) return
     loading.value = true
     const resp = await api.get('/itp-post/internships')
     internships.value = resp.data
     loading.value = false
   }
 
-  return { internships, loading, listInternships }
+  async function listCompanyPhotos(companyName: string) {
+    if (companyPhotoUrl[companyName]) return
+    const resp = await api.get(`/itp-post/companies/${companyName}/photos`)
+    companyPhotoUrl[companyName] = resp.data
+  }
+
+  return { internships, companyPhotoUrl, loading, listInternships, listCompanyPhotos }
 })

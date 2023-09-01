@@ -11,6 +11,13 @@ INSERT INTO company VALUES(
   "https://www.tarc.edu.my/"
 );
 
+INSERT INTO photo VALUES
+	("1693573544565.jpg", "CMY Enterprise"),
+	("1693573554756.jpeg", "CMY Enterprise"),
+	("1693573564371.webp", "CMY Enterprise"),
+	("1693573575273.jpg", "CMY Enterprise"),
+	("1693573588279.jpeg", "CMY Enterprise");
+
 INSERT INTO internship VALUES
 (
 	"Software Engineer",
