@@ -82,6 +82,7 @@ const columns = [
 
 // Init
 searchStore.reset()
+store.listInternships()
 
 function getRowKey(row: Internship) {
   return `${row.title}#${row.company_name}`
