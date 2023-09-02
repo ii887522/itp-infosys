@@ -8,6 +8,7 @@
       :rows="incomingApplications"
       row-key="resume_url"
       :rows-per-page-options="rowsPerPageOptions"
+      :pagination="{ rowsPerPage: defaultRowsPerPage }"
     >
       <template #header-cell="props">
         <q-th :props="props">
@@ -72,7 +73,7 @@
 import { incomingApplications } from 'src/consts/itp-post'
 import { useMeta, useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
-import { rowsPerPageOptions, statusIcon, statusColor } from 'src/consts'
+import { rowsPerPageOptions, statusIcon, statusColor, defaultRowsPerPage } from 'src/consts'
 import { type IncomingApplication } from 'src/models/itp-post'
 import InternshipAppEmpDialog from 'components/itp-post/InternshipAppEmpDialog.vue'
 

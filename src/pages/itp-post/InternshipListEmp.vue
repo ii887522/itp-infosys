@@ -8,7 +8,7 @@
       :rows="internships"
       :row-key="getRowKey"
       :rows-per-page-options="rowsPerPageOptions"
-      :pagination="{ rowsPerPage: 10 }"
+      :pagination="{ rowsPerPage: defaultRowsPerPage }"
       :filter="searchStore"
       :filter-method="filter"
       wrap-cells
@@ -63,7 +63,7 @@ import { type Internship } from 'src/models/itp-post'
 import { useInternshipSearchStore, useInternshipEditStore, useInternshipDetailsEmpStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
 import { useMeta, useQuasar } from 'quasar'
-import { rowsPerPageOptions } from 'src/consts'
+import { rowsPerPageOptions, defaultRowsPerPage } from 'src/consts'
 import { categoryColor } from 'src/consts/itp-post'
 import sanitizeHtml from 'sanitize-html'
 import { useRouter } from 'vue-router'

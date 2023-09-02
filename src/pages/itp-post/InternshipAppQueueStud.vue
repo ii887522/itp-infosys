@@ -8,6 +8,7 @@
       :rows="store.applications"
       row-key="resume_url"
       :rows-per-page-options="rowsPerPageOptions"
+      :pagination="{ rowsPerPage: defaultRowsPerPage }"
       :loading="store.loadingApplications"
       color="primary"
     >
@@ -62,7 +63,7 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useMeta, useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
-import { rowsPerPageOptions, statusIcon, statusColor } from 'src/consts'
+import { rowsPerPageOptions, statusIcon, statusColor, defaultRowsPerPage } from 'src/consts'
 import { type OutgoingApplication } from 'src/models/itp-post'
 import InternshipAppStudDialog from 'components/itp-post/InternshipAppStudDialog.vue'
 import { useStore } from 'stores/itp-post-store'
