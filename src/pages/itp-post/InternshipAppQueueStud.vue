@@ -5,9 +5,12 @@
       :columns="columns"
       title-class="text-h4"
       title="My Internship Application"
-      :rows="applications"
+      :rows="store.applications"
       row-key="resume_url"
       :rows-per-page-options="rowsPerPageOptions"
+      :pagination="{ rowsPerPage: defaultRowsPerPage }"
+      :loading="store.loadingApplications"
+      color="primary"
     >
       <template #header-cell="props">
         <q-th :props="props">
@@ -47,7 +50,7 @@
       </template>
 
       <template #no-data>
-        <div class="text-negative">
+        <div v-show="!store.loadingApplications" class="text-negative">
           <q-icon name="warning" left size="sm" />
           <span class="text-body1">No matching records found. Please broaden your searches.</span>
         </div>
@@ -57,15 +60,17 @@
 </template>
 
 <script setup lang="ts">
-import { applications } from 'src/consts/itp-post'
+import { onMounted, onUnmounted } from 'vue'
 import { useMeta, useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
-import { rowsPerPageOptions, statusIcon, statusColor } from 'src/consts'
+import { rowsPerPageOptions, statusIcon, statusColor, defaultRowsPerPage } from 'src/consts'
 import { type OutgoingApplication } from 'src/models/itp-post'
 import InternshipAppStudDialog from 'components/itp-post/InternshipAppStudDialog.vue'
+import { useStore } from 'stores/itp-post-store'
 
 useMeta({ title: 'My Internship Application | MyITPHub' })
 const { dialog } = useQuasar()
+const store = useStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
@@ -101,6 +106,20 @@ const columns: any[] = [
     style: 'width: 256px',
   },
 ]
+
+// Init
+store.listApplications('21WMR05319')
+let timer: NodeJS.Timer
+
+onMounted(() => {
+  timer = setInterval(() => {
+    store.listApplications('21WMR05319')
+  }, 3_540_000)
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
 
 function openDetailsDialog(row: OutgoingApplication) {
   dialog({ component: InternshipAppStudDialog, componentProps: { value: row } })

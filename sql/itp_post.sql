@@ -96,7 +96,7 @@ INSERT INTO category VALUES
 	("Artifical Intelligence", "AI Engineer", "CMY Enterprise"),
 	("Data Science", "AI Engineer", "CMY Enterprise"),
 	("Backend", "Backend Developer", "CMY Enterprise");
-	
+
 INSERT INTO learning_outcome VALUES
 	("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "Software Engineer", "CMY Enterprise"),
 	("Quisque fermentum metus sed nibh pharetra, ac semper arcu tincidunt.", "Software Engineer", "CMY Enterprise"),
@@ -142,3 +142,6 @@ SELECT url FROM photo WHERE company_name = "CMY Enterprise";
 
 -- Create a new internship application from the student into the database
 INSERT INTO application VALUES ("21WMR05319.pdf", "", "Software Engineer", "CMY Enterprise", DEFAULT, "21WMR05319");
+
+-- Fetch a page of internship applications from the database
+SELECT title, company_name, `status`, note_to_employer, resume_url FROM application WHERE resume_url > "" LIMIT 1000;

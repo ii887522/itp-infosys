@@ -64,15 +64,17 @@ export const useInternshipEditStore = defineStore('itp-post/internship-edit', ()
 export const useStore = defineStore('itp-post', () => {
   const internships = ref([])
   const companyPhotoUrl = reactive<{ [companyName: string]: string[] }>({})
-  const loading = ref(false)
+  const loadingInternships = ref(false)
   const applyingInternship = ref(false)
+  const applications = ref([])
+  const loadingApplications = ref(false)
 
   async function listInternships() {
     if (internships.value.length !== 0) return
-    loading.value = true
+    loadingInternships.value = true
     const resp = await api.get('/itp-post/internships')
     internships.value = resp.data
-    loading.value = false
+    loadingInternships.value = false
   }
 
   async function listCompanyPhotos(companyName: string) {
@@ -115,13 +117,24 @@ export const useStore = defineStore('itp-post', () => {
     applyingInternship.value = false
   }
 
+  async function listApplications(studentId: string) {
+    if (applications.value.length !== 0) return
+    loadingApplications.value = true
+    const resp = await api.get(`/itp-post/students/${studentId}/applications`)
+    applications.value = resp.data
+    loadingApplications.value = false
+  }
+
   return {
     internships,
     companyPhotoUrl,
-    loading,
+    loadingInternships,
     applyingInternship,
+    applications,
+    loadingApplications,
     listInternships,
     listCompanyPhotos,
     applyInternship,
+    listApplications,
   }
 })
