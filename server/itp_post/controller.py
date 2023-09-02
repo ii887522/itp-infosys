@@ -128,3 +128,50 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
 
     finally:
         cursor.close()
+
+
+@itp_post_controller.route("/students/<student_id>/applications", methods=["GET"])
+def list_student_applications(student_id: str):
+    # Input
+    next = request.args.get("next", "")
+    size = request.args.get("size", 1000, type=int)
+
+    cursor = db_conn.cursor()
+
+    try:
+        # Fetch a page of internship applications from the database
+        cursor.execute(
+            """
+SELECT title, company_name, `status`, note_to_employer, resume_url
+FROM application
+WHERE student_id = ? AND resume_url > ?
+LIMIT ?
+""",
+            (student_id, next, size),
+        )
+        db_conn.commit()
+        db_rows = cursor.fetchall()
+
+        # Output
+        return [
+            {
+                "title": row[0],
+                "company_name": row[1],
+                "status": row[2],
+                "note_to_employer": row[3],
+                "resume_url": s3.generate_presigned_url(
+                    "get_object",
+                    Params={
+                        "Bucket": config.custombucket,
+                        "Key": f"companies/{row[1]}/internships/{row[0]}/applications/{student_id}.pdf",
+                        # So that PDF file will be displayed in the browser instead of being downloaded
+                        "ResponseContentType": "application/pdf",
+                        "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
+                    },
+                ),
+            }
+            for row in db_rows
+        ]
+
+    finally:
+        cursor.close()

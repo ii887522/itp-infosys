@@ -11,7 +11,7 @@
       :pagination="{ rowsPerPage: 0 }"
       :filter="searchStore"
       :filter-method="filter"
-      :loading="store.loading"
+      :loading="store.loadingInternships"
       color="primary"
     >
       <template #item="{ row }">
@@ -21,7 +21,7 @@
       </template>
 
       <template #no-data>
-        <div v-show="!store.loading" class="text-negative">
+        <div v-show="!store.loadingInternships" class="text-negative">
           <q-icon name="warning" left size="sm" />
           <span class="text-body1">No matching records found. Please broaden your searches.</span>
         </div>

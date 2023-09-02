@@ -23,13 +23,27 @@
             </div>
           </div>
 
-          <div class="col-12 q-mt-md">
+          <div class="col-6 q-mt-md">
             <div class="text-grey-7">
               <q-icon class="q-mr-sm" name="description" />
               <span class="text-caption">Note to employer</span>
             </div>
 
             <div>{{ value.note_to_employer }}</div>
+          </div>
+
+          <div class="col-6 q-mt-md">
+            <div class="text-grey-7">
+              <q-icon class="q-mr-sm" name="description" />
+              <span class="text-caption">Resume / CV</span>
+            </div>
+
+            <div>
+              <a :href="value.resume_url" target="_blank">
+                <q-icon name="open_in_new" left size="xs" />
+                <span>Open PDF file</span>
+              </a>
+            </div>
           </div>
         </div>
       </q-card-section>
