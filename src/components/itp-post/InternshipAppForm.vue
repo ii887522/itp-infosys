@@ -15,11 +15,13 @@
           counter
           lazy-rules="ondemand"
           bg-color="white"
+          accept="application/pdf"
+          hint="Only PDF format is accepted"
           :rules="[value => value || 'Resume is required']"
         >
           <template #label>
             <q-icon name="attach_file" left size="xs" />
-            <span>Resume / CV</span>
+            <span>Resume / CV PDF file</span>
             <span class="text-negative"> *</span>
           </template>
         </q-file>
@@ -41,7 +43,13 @@
         </q-input>
 
         <div class="text-center">
-          <q-btn type="submit" icon="touch_app" label="Apply For This Internship Now" color="primary" />
+          <q-btn
+            type="submit"
+            icon="touch_app"
+            label="Apply For This Internship Now"
+            color="primary"
+            :loading="store.applyingInternship"
+          />
         </div>
       </q-form>
     </q-card-section>
@@ -50,11 +58,34 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useStore } from 'stores/itp-post-store'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+
+const props = defineProps<{ companyName: string; internshipTitle: string; studentId: string }>()
+
+const store = useStore()
+const router = useRouter()
+const { notify } = useQuasar()
 
 const resume = ref()
 const remarks = ref('')
 
-function apply() {
-  console.log('APPLY FOR THIS INTERNSHIP NOW')
+async function apply() {
+  await store.applyInternship({
+    company_name: props.companyName,
+    internship_title: props.internshipTitle,
+    student_id: props.studentId,
+    note_to_employer: remarks.value,
+    resume: resume.value,
+  })
+
+  router.back()
+
+  notify({
+    type: 'positive',
+    message: `Successfully applied internship "${props.internshipTitle}" in ${props.companyName}`,
+    icon: 'done',
+  })
 }
 </script>

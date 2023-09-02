@@ -136,3 +136,9 @@ WHERE internship.title > "" OR internship.title = "" AND internship.company_name
 GROUP BY internship.title, internship.company_name
 ORDER BY internship.title, internship.company_name
 LIMIT 1000;
+
+-- Fetch a list of company photo S3 keys from the database
+SELECT url FROM photo WHERE company_name = "CMY Enterprise";
+
+-- Create a new internship application from the student into the database
+INSERT INTO application VALUES ("21WMR05319.pdf", "", "Software Engineer", "CMY Enterprise", DEFAULT, "21WMR05319");

@@ -65,6 +65,7 @@ export const useStore = defineStore('itp-post', () => {
   const internships = ref([])
   const companyPhotoUrl = reactive<{ [companyName: string]: string[] }>({})
   const loading = ref(false)
+  const applyingInternship = ref(false)
 
   async function listInternships() {
     if (internships.value.length !== 0) return
@@ -80,5 +81,47 @@ export const useStore = defineStore('itp-post', () => {
     companyPhotoUrl[companyName] = resp.data
   }
 
-  return { internships, companyPhotoUrl, loading, listInternships, listCompanyPhotos }
+  async function applyInternship({
+    company_name,
+    internship_title,
+    student_id,
+    note_to_employer = '',
+    resume,
+  }: {
+    company_name: string
+    internship_title: string
+    student_id: string
+    note_to_employer: string
+    resume: File
+  }) {
+    applyingInternship.value = true
+
+    // Notify the server we want to apply for an internship and receive an S3 presigned post URL from it
+    const resp = await api.post(
+      `/itp-post/companies/${company_name}/internships/${internship_title}/applications/${student_id}`,
+      { note_to_employer }
+    )
+
+    // Prepare S3 file upload request
+    const payload = new FormData()
+    Object.entries(resp.data.fields).forEach(([key, value]) => {
+      payload.append(key, value as string | Blob)
+    })
+    payload.append('file', resume)
+
+    // Upload the resume to S3 bucket
+    await api.post(resp.data.url, payload)
+
+    applyingInternship.value = false
+  }
+
+  return {
+    internships,
+    companyPhotoUrl,
+    loading,
+    applyingInternship,
+    listInternships,
+    listCompanyPhotos,
+    applyInternship,
+  }
 })

@@ -45,8 +45,16 @@
         </ul>
       </div>
 
-      <div class="col-4">
-        <internship-app-form />
+      <div class="col-4 relative-position">
+        <internship-app-form
+          class="absolute full-width"
+          :company-name="detailsStore.value.company_name"
+          :internship-title="detailsStore.value.title"
+          student-id="21WMR05319"
+        />
+
+        <!-- TODO: Remove v-show="false" after implement API to get my list of internship applications -->
+        <internship-already-applied v-show="false" class="absolute full-width" />
       </div>
     </div>
 
@@ -129,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useInternshipDetailsStudStore } from 'stores/itp-post-store'
 import { useMeta } from 'quasar'
 import { categoryColor } from 'src/consts/itp-post'
@@ -137,6 +145,7 @@ import sanitizeHtml from 'sanitize-html'
 import InternshipAppForm from 'components/itp-post/InternshipAppForm.vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'stores/itp-post-store'
+import InternshipAlreadyApplied from 'src/components/itp-post/InternshipAlreadyApplied.vue'
 
 const router = useRouter()
 const detailsStore = useInternshipDetailsStudStore()
@@ -145,7 +154,18 @@ const store = useStore()
 useMeta({ title: `${detailsStore.value.title} | MyITPHub` })
 
 const slide = ref(0)
+let timer: NodeJS.Timeout
 
 // Init
 store.listCompanyPhotos(detailsStore.value.company_name)
+
+onMounted(() => {
+  timer = setInterval(() => {
+    store.listCompanyPhotos(detailsStore.value.company_name)
+  }, 3_540_000)
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
 </script>
