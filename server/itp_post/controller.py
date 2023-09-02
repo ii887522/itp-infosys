@@ -92,10 +92,39 @@ def list_company_photos(company_name: str):
         # Generate S3 presigned URL for each company photo S3 key
         return [
             s3.generate_presigned_url(
-                "get_object", Params={"Bucket": config.custombucket, "Key": f"{company_name}/{row[0]}"}, ExpiresIn=10
+                "get_object",
+                Params={"Bucket": config.custombucket, "Key": f"companies/{company_name}/photos/{row[0]}"},
             )
             for row in db_rows
         ]
+
+    finally:
+        cursor.close()
+
+
+@itp_post_controller.route(
+    "/companies/<company_name>/internships/<internship_title>/applications/<student_id>", methods=["POST"]
+)
+def apply_internship(company_name: str, internship_title: str, student_id: str):
+    # Input
+    note_to_employer = request.json.get("note_to_employer", "") if request.json else ""
+
+    cursor = db_conn.cursor()
+
+    try:
+        # Create internship application record in the database
+        cursor.execute(
+            "INSERT INTO application VALUES (?, ?, ?, ?, DEFAULT, ?)",
+            (f"{student_id}.pdf", note_to_employer, internship_title, company_name, student_id),
+        )
+        db_conn.commit()
+
+        # Generate S3 presigned URL for the student to upload their resume
+        return s3.generate_presigned_post(
+            config.custombucket,
+            f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+            ExpiresIn=10,
+        )
 
     finally:
         cursor.close()
