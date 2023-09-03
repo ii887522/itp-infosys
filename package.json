@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "quasar dev",
+    "build": "quasar build",
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore"
   },
@@ -15,14 +16,17 @@
     "autonumeric": "^4.9.0",
     "axios": "^1.2.1",
     "fuse.js": "^6.6.2",
+    "lodash": "^4.17.21",
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",
     "sanitize-html": "^2.11.0",
+    "swiper": "^10.2.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },
   "devDependencies": {
     "@quasar/app-vite": "^1.0.0",
+    "@types/lodash": "^4.14.197",
     "@types/node": "^12.20.21",
     "@types/sanitize-html": "^2.9.0",
     "@typescript-eslint/eslint-plugin": "^5.10.0",

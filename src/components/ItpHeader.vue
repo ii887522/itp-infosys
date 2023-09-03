@@ -30,11 +30,13 @@ const nav = [
       showSearch.value = !showSearch.value
     },
     show: (to: RouteLocationNormalized) =>
-      to.fullPath === '/stud/itp-post/internships' || to.fullPath === '/emp/itp-post/internships',
+      to.fullPath === '/' ||
+      to.fullPath === '/stud/itp-post/internships' ||
+      to.fullPath === '/emp/itp-post/internships',
   },
-  { to: '/', icon: 'info', label: 'Menu' },
-  { to: '/', icon: 'info', label: 'Menu' },
-  { to: '/', icon: 'info', label: 'Menu' },
+  { to: '/stud/itp-post/internship-app-queue', icon: 'list', label: 'My Application' },
+  { to: '/admin/itp-prog', icon: 'construction', label: 'Program' },
+  { to: '/emp/itp-post/internship-app-queue', icon: 'list', label: 'Student Applications' },
 ]
 
 const showSearch = ref(false)

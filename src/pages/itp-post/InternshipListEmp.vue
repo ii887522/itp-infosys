@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page class="bg-wallpaper" padding>
     <q-table
       class="bg-grey-1"
       :columns="columns"
@@ -8,7 +8,7 @@
       :rows="internships"
       :row-key="getRowKey"
       :rows-per-page-options="rowsPerPageOptions"
-      :pagination="{ rowsPerPage: 10 }"
+      :pagination="{ rowsPerPage: defaultRowsPerPage }"
       :filter="searchStore"
       :filter-method="filter"
       wrap-cells
@@ -41,7 +41,7 @@
 
       <template #body-cell-actions="props">
         <q-td :props="props">
-          <q-btn icon="visibility" flat round color="info" dense />
+          <q-btn icon="visibility" flat round color="info" dense @click="viewDetails(props.row)" />
           <q-btn icon="edit" flat round color="warning" dense @click="editStore.navigate(router, props.row)" />
           <q-btn icon="delete" flat round color="negative" dense @click="openConfirmDelDialog(props.row.title)" />
         </q-td>
@@ -60,10 +60,10 @@
 <script setup lang="ts">
 import { internships } from 'src/consts/itp-post'
 import { type Internship } from 'src/models/itp-post'
-import { useInternshipSearchStore, useInternshipEditStore } from 'stores/itp-post-store'
+import { useInternshipSearchStore, useInternshipEditStore, useInternshipDetailsEmpStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
 import { useMeta, useQuasar } from 'quasar'
-import { rowsPerPageOptions } from 'src/consts'
+import { rowsPerPageOptions, defaultRowsPerPage } from 'src/consts'
 import { categoryColor } from 'src/consts/itp-post'
 import sanitizeHtml from 'sanitize-html'
 import { useRouter } from 'vue-router'
@@ -73,6 +73,7 @@ const { dialog } = useQuasar()
 const router = useRouter()
 const searchStore = useInternshipSearchStore()
 const editStore = useInternshipEditStore()
+const detailsStore = useInternshipDetailsEmpStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
@@ -163,5 +164,10 @@ function openConfirmDelDialog(title: string) {
     cancel: { icon: 'close', label: 'Cancel', flat: true },
     html: true,
   })
+}
+
+function viewDetails(row: Internship) {
+  detailsStore.value = row
+  router.push('/emp/itp-post/internship-details')
 }
 </script>

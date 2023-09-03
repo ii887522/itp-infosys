@@ -29,3 +29,39 @@ export function makeInternship(): Internship {
     vacancy_count: 0,
   }
 }
+
+export interface OutgoingApplication {
+  title: string
+  company_name: string
+  status?: string
+  note_to_employer?: string
+  resume_url?: string
+}
+
+export function makeOutgoingApplication(): OutgoingApplication {
+  return {
+    title: '',
+    company_name: '',
+    status: '',
+    note_to_employer: '',
+    resume_url: '',
+  }
+}
+
+export interface IncomingApplication {
+  title: string
+  student_name: string
+  status: string
+  note_to_employer: string
+  resume_url: string
+}
+
+export function makeIncomingApplication(): IncomingApplication {
+  return {
+    title: '',
+    student_name: '',
+    status: '',
+    note_to_employer: '',
+    resume_url: '',
+  }
+}
