@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page class="bg-wallpaper" padding>
     <q-table
       grid
       :columns="columns"

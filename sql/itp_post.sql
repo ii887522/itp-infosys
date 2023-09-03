@@ -141,7 +141,13 @@ LIMIT 1000;
 SELECT url FROM photo WHERE company_name = "CMY Enterprise";
 
 -- Create a new internship application from the student into the database
-INSERT INTO application VALUES ("21WMR05319.pdf", "", "Software Engineer", "CMY Enterprise", DEFAULT, "21WMR05319");
+INSERT INTO application VALUES ("21WMR05319", "Software Engineer", "CMY Enterprise", "abc", DEFAULT);
 
 -- Fetch a page of internship applications from the database
-SELECT title, company_name, `status`, note_to_employer, resume_url FROM application WHERE resume_url > "" LIMIT 1000;
+SELECT title, company_name, `status`, note_to_employer
+FROM application
+WHERE student_id = "21WMR05319" AND (title > "" OR title = "" AND company_name > "")
+LIMIT 1000;
+
+-- Cancel an existing internship application from the database
+DELETE FROM application WHERE student_id = "21WMR05319" AND title = "Backend Engineer" AND company_name = "CMY Enterprise";

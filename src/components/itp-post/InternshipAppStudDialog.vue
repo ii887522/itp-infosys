@@ -18,8 +18,8 @@
             <div class="text-grey-7 text-caption">Status</div>
 
             <div>
-              <q-icon :name="statusIcon[value.status]" left size="xs" :color="statusColor[value.status]" />
-              <span :class="`text-${statusColor[value.status]}`">{{ value.status.toUpperCase() }}</span>
+              <q-icon :name="statusIcon[value.status ?? '']" left size="xs" :color="statusColor[value.status ?? '']" />
+              <span :class="`text-${statusColor[value.status ?? '']}`">{{ value.status?.toUpperCase() }}</span>
             </div>
           </div>
 

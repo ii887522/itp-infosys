@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, reactive } from 'vue'
-import { type Internship, makeInternship } from 'src/models/itp-post'
+import { type Internship, makeInternship, type OutgoingApplication } from 'src/models/itp-post'
 import { minAllowance, maxAllowance } from 'src/consts/itp-post'
 import { type Router } from 'vue-router'
 import { api } from 'boot/axios'
+import { sortedIndexBy } from 'lodash'
 
 export const useInternshipSearchStore = defineStore('itp-post/internship-search', () => {
   const category = ref('')
@@ -66,8 +67,9 @@ export const useStore = defineStore('itp-post', () => {
   const companyPhotoUrl = reactive<{ [companyName: string]: string[] }>({})
   const loadingInternships = ref(false)
   const applyingInternship = ref(false)
-  const applications = ref([])
+  const applications = ref<OutgoingApplication[]>([])
   const loadingApplications = ref(false)
+  const cancelingApplication = ref(false)
 
   async function listInternships() {
     if (internships.value.length !== 0) return
@@ -106,13 +108,20 @@ export const useStore = defineStore('itp-post', () => {
 
     // Prepare S3 file upload request
     const payload = new FormData()
-    Object.entries(resp.data.fields).forEach(([key, value]) => {
+    Object.entries(resp.data.resume_upload_url.fields).forEach(([key, value]) => {
       payload.append(key, value as string | Blob)
     })
     payload.append('file', resume)
 
     // Upload the resume to S3 bucket
-    await api.post(resp.data.url, payload)
+    await api.post(resp.data.resume_upload_url.url, payload)
+
+    // Update the list of applications so that the student does not need to refresh the page
+    applications.value.splice(
+      sortedIndexBy(applications.value, resp.data.payload, value => `${value.title}#${value.company_name}`),
+      0,
+      resp.data.payload
+    )
 
     applyingInternship.value = false
   }
@@ -125,6 +134,22 @@ export const useStore = defineStore('itp-post', () => {
     loadingApplications.value = false
   }
 
+  async function cancelApplication(company_name: string, internship_title: string, student_id: string) {
+    cancelingApplication.value = true
+
+    const resp = await api.delete(
+      `/itp-post/companies/${company_name}/internships/${internship_title}/applications/${student_id}`
+    )
+
+    // Update the list of applications so that the student does not need to refresh the page
+    applications.value.splice(
+      sortedIndexBy(applications.value, resp.data, value => `${value.title}#${value.company_name}`),
+      1
+    )
+
+    cancelingApplication.value = false
+  }
+
   return {
     internships,
     companyPhotoUrl,
@@ -132,9 +157,11 @@ export const useStore = defineStore('itp-post', () => {
     applyingInternship,
     applications,
     loadingApplications,
+    cancelingApplication,
     listInternships,
     listCompanyPhotos,
     applyInternship,
     listApplications,
+    cancelApplication,
   }
 })

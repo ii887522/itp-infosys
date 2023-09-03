@@ -491,44 +491,6 @@ export const internships: readonly Internship[] = [
   },
 ]
 
-export const applications = [
-  {
-    title: 'Software Engineer',
-    company_name: 'CMY Enterprise',
-    status: 'pending',
-    note_to_employer: 'hihi',
-    resume_url: 'https://www.tarc.edu.my/favicon.png',
-  },
-  {
-    title: 'Software Engineer',
-    company_name: 'CMY Enterprise',
-    status: 'accepted',
-    note_to_employer: '',
-    resume_url: 'https://www.tarc.edu.my/favicon.png',
-  },
-  {
-    title: 'Software Engineer',
-    company_name: 'CMY Enterprise',
-    status: 'rejected',
-    note_to_employer: 'hihi',
-    resume_url: 'https://www.tarc.edu.my/favicon.png',
-  },
-  {
-    title: 'Software Engineer',
-    company_name: 'CMY Enterprise',
-    status: 'pending',
-    note_to_employer: '',
-    resume_url: 'https://www.tarc.edu.my/favicon.png',
-  },
-  {
-    title: 'Software Engineer',
-    company_name: 'CMY Enterprise',
-    status: 'pending',
-    note_to_employer: 'hihi',
-    resume_url: 'https://www.tarc.edu.my/favicon.png',
-  },
-]
-
 export const incomingApplications = [
   {
     title: 'Software Engineer',

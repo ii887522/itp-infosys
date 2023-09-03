@@ -114,17 +114,36 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
     try:
         # Create internship application record in the database
         cursor.execute(
-            "INSERT INTO application VALUES (?, ?, ?, ?, DEFAULT, ?)",
-            (f"{student_id}.pdf", note_to_employer, internship_title, company_name, student_id),
+            "INSERT INTO application VALUES (?, ?, ?, ?, DEFAULT)",
+            (student_id, internship_title, company_name, note_to_employer),
         )
         db_conn.commit()
 
-        # Generate S3 presigned URL for the student to upload their resume
-        return s3.generate_presigned_post(
-            config.custombucket,
-            f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
-            ExpiresIn=10,
-        )
+        # Output
+        return {
+            "payload": {
+                "title": internship_title,
+                "company_name": company_name,
+                "status": "pending",
+                "note_to_employer": note_to_employer,
+                "resume_url": s3.generate_presigned_url(
+                    "get_object",
+                    Params={
+                        "Bucket": config.custombucket,
+                        "Key": f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+                        # So that PDF file will be displayed in the browser instead of being downloaded
+                        "ResponseContentType": "application/pdf",
+                        "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
+                    },
+                ),
+            },
+            # Generate S3 presigned URL for the student to upload their resume
+            "resume_upload_url": s3.generate_presigned_post(
+                config.custombucket,
+                f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+                ExpiresIn=10,
+            ),
+        }
 
     finally:
         cursor.close()
@@ -133,8 +152,10 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
 @itp_post_controller.route("/students/<student_id>/applications", methods=["GET"])
 def list_student_applications(student_id: str):
     # Input
-    next = request.args.get("next", "")
+    next = request.args.get("next", "").split("#")
     size = request.args.get("size", 1000, type=int)
+    next_title = next[0]
+    next_company_name = next[1] if 1 < len(next) else None
 
     cursor = db_conn.cursor()
 
@@ -142,12 +163,12 @@ def list_student_applications(student_id: str):
         # Fetch a page of internship applications from the database
         cursor.execute(
             """
-SELECT title, company_name, `status`, note_to_employer, resume_url
+SELECT title, company_name, `status`, note_to_employer
 FROM application
-WHERE student_id = ? AND resume_url > ?
+WHERE student_id = ? AND (title > ? OR title = ? AND company_name > ?)
 LIMIT ?
 """,
-            (student_id, next, size),
+            (student_id, next_title, next_title, next_company_name, size),
         )
         db_conn.commit()
         db_rows = cursor.fetchall()
@@ -172,6 +193,27 @@ LIMIT ?
             }
             for row in db_rows
         ]
+
+    finally:
+        cursor.close()
+
+
+@itp_post_controller.route(
+    "/companies/<company_name>/internships/<internship_title>/applications/<student_id>", methods=["DELETE"]
+)
+def cancel_application(company_name: str, internship_title: str, student_id: str):
+    cursor = db_conn.cursor()
+
+    try:
+        # Delete internship application record from the database
+        cursor.execute(
+            "DELETE FROM application WHERE student_id = ? AND title = ? AND company_name = ?",
+            (student_id, internship_title, company_name),
+        )
+        db_conn.commit()
+
+        # Output
+        return {"title": internship_title, "company_name": company_name}
 
     finally:
         cursor.close()

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-body1" padding>
+  <q-page class="bg-wallpaper text-body1" padding>
     <div class="row">
       <div class="col-8">
         <div class="q-mb-md">

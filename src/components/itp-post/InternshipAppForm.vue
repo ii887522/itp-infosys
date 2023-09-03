@@ -59,13 +59,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useStore } from 'stores/itp-post-store'
-import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 
 const props = defineProps<{ companyName: string; internshipTitle: string; studentId: string }>()
 
 const store = useStore()
-const router = useRouter()
 const { notify } = useQuasar()
 
 const resume = ref()
@@ -80,11 +78,9 @@ async function apply() {
     resume: resume.value,
   })
 
-  router.back()
-
   notify({
     type: 'positive',
-    message: `Successfully applied internship "${props.internshipTitle}" in ${props.companyName}`,
+    message: `Successfully applied internship "${props.internshipTitle}" from ${props.companyName}`,
     icon: 'done',
   })
 }

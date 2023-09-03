@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page class="bg-wallpaper" padding>
     <q-table
       class="bg-grey-1"
       :columns="columns"
@@ -69,7 +69,7 @@ import InternshipAppStudDialog from 'components/itp-post/InternshipAppStudDialog
 import { useStore } from 'stores/itp-post-store'
 
 useMeta({ title: 'My Internship Application | MyITPHub' })
-const { dialog } = useQuasar()
+const { dialog, notify } = useQuasar()
 const store = useStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,6 +134,31 @@ function openConfirmDelDialog(title: string, companyName: string) {
     ok: { icon: 'delete', label: 'Remove', color: 'negative' },
     cancel: { icon: 'close', label: 'Cancel', flat: true },
     html: true,
+  }).onOk(async () => {
+    // Tell the student the internship application is canceling
+    const notif = notify({
+      group: false,
+      timeout: 0,
+      type: 'ongoing',
+      spinner: true,
+      message: `Canceling internship application "${title}" from ${companyName}`,
+      ignoreDefaults: true,
+      position: 'top',
+    })
+
+    // Cancel the requested internship application
+    await store.cancelApplication(companyName, title, '21WMR05319')
+
+    // Signal the student that the internship applicaton is successfully canceled
+    notif({
+      timeout: 5000,
+      type: 'positive',
+      spinner: false,
+      icon: 'done',
+      message: `Successfully canceled the internship application "${title}" from ${companyName}`,
+      progress: true,
+      actions: [{ label: 'Close', color: 'white', flat: false, outline: true }],
+    })
   })
 }
 </script>
