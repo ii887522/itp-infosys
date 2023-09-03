@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page class="bg-wallpaper" padding>
     <q-card class="bg-grey-1">
       <q-card-section>
         <div class="q-mb-md">

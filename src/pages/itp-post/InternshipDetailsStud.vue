@@ -1,5 +1,5 @@
 <template>
-  <q-page class="text-body1" padding>
+  <q-page class="bg-wallpaper text-body1" padding>
     <div class="row">
       <div class="col-8">
         <div class="q-mb-md">
@@ -65,7 +65,7 @@
     <div class="text-h5 q-mb-md">Company Photos</div>
 
     <q-carousel
-      class="q-mb-xl"
+      class="q-mb-xl bg-transparent"
       animated
       infinite
       swipeable
