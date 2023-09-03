@@ -30,6 +30,15 @@
 
                         <br/>
                         <!-- Company Details -->
+                        <!--
+                            <div v-if="isCompanyFound">
+                                <p>Company Name: {{ isCompanyFound.companyName }}</p><br/>
+                                <p>Company Address: {{ isCompanyFound.companyAddress }}</p><br/>
+                                <p>Working Days: {{ isCompanyFound.workingDays }}</p><br/>
+                                <p>Working Hours: {{ isCompanyFound.workingHours }}</p><br/>
+                                <p>Opens For: {{ isCompanyFound.opensFor }}</p>
+                            </div>
+                        -->
                         <q-form @submit="updateCompany">
                             <q-expansion-item popup icon="business" label="Edit Company Details">
                                 <q-separator/>
@@ -51,6 +60,8 @@
                                             color="primary"
                                             inline
                                         />
+                                        <br/>
+                                        <q-btn label="Save Changes" color="primary" type="submit" />
                                     </q-card-section>
                                 </q-card>
                                 
@@ -111,6 +122,21 @@ companyName - list (once database has been implemented)
 */
 
 // Update company details
+/*
+const searchCompany = async () => {
+  try {
+    const response = await fetch(`/api/company?name=${searchCompanyName.value}`);
+    if (response.ok) {
+      companyDetails.value = await response.json();
+    } else {
+      console.error('Failed to fetch company details');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+*/
+
 const workingDays = ref('');
 const workingHours = ref('');
 const companyAddress = ref('');
