@@ -53,8 +53,14 @@
           student-id="21WMR05319"
         />
 
-        <!-- TODO: Remove v-show="false" after implement API to get my list of internship applications -->
-        <internship-already-applied v-show="false" class="absolute full-width" />
+        <internship-already-applied
+          v-show="
+            store.loadingApplications ||
+            sortedFindBy(store.applications, detailsStore.value, value => `${value.title}#${value.company_name}`) !== -1
+          "
+          class="absolute full-width"
+          :loading="store.loadingApplications"
+        />
       </div>
     </div>
 
@@ -146,6 +152,7 @@ import InternshipAppForm from 'components/itp-post/InternshipAppForm.vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'stores/itp-post-store'
 import InternshipAlreadyApplied from 'src/components/itp-post/InternshipAlreadyApplied.vue'
+import { sortedFindBy } from 'src/common'
 
 const router = useRouter()
 const detailsStore = useInternshipDetailsStudStore()
@@ -156,8 +163,12 @@ useMeta({ title: `${detailsStore.value.title} | MyITPHub` })
 const slide = ref(0)
 let timer: NodeJS.Timeout
 
-// Init
-store.listCompanyPhotos(detailsStore.value.company_name)
+  // Init
+;(async () => {
+  // Running the below 2 statements at the same time can cause the Flask server to crash, so await is needed
+  await store.listApplications('21WMR05319')
+  store.listCompanyPhotos(detailsStore.value.company_name)
+})()
 
 onMounted(() => {
   timer = setInterval(() => {

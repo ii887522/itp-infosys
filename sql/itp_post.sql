@@ -148,3 +148,6 @@ SELECT title, company_name, `status`, note_to_employer
 FROM application
 WHERE student_id = "21WMR05319" AND (title > "" OR title = "" AND company_name > "")
 LIMIT 1000;
+
+-- Cancel an existing internship application from the database
+DELETE FROM application WHERE student_id = "21WMR05319" AND title = "Backend Engineer" AND company_name = "CMY Enterprise";

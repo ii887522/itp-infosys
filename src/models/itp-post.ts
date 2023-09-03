@@ -33,9 +33,9 @@ export function makeInternship(): Internship {
 export interface OutgoingApplication {
   title: string
   company_name: string
-  status: string
-  note_to_employer: string
-  resume_url: string
+  status?: string
+  note_to_employer?: string
+  resume_url?: string
 }
 
 export function makeOutgoingApplication(): OutgoingApplication {

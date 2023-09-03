@@ -119,7 +119,7 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
         )
         db_conn.commit()
 
-        # Generate S3 presigned URL for the student to upload their resume
+        # Output
         return {
             "payload": {
                 "title": internship_title,
@@ -137,6 +137,7 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
                     },
                 ),
             },
+            # Generate S3 presigned URL for the student to upload their resume
             "resume_upload_url": s3.generate_presigned_post(
                 config.custombucket,
                 f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
@@ -197,4 +198,22 @@ LIMIT ?
         cursor.close()
 
 
-# @itp_post_controller.route("/students/<student_id>/applications/")
+@itp_post_controller.route(
+    "/companies/<company_name>/internships/<internship_title>/applications/<student_id>", methods=["DELETE"]
+)
+def cancel_application(company_name: str, internship_title: str, student_id: str):
+    cursor = db_conn.cursor()
+
+    try:
+        # Delete internship application record from the database
+        cursor.execute(
+            "DELETE FROM application WHERE student_id = ? AND title = ? AND company_name = ?",
+            (student_id, internship_title, company_name),
+        )
+        db_conn.commit()
+
+        # Output
+        return {"title": internship_title, "company_name": company_name}
+
+    finally:
+        cursor.close()

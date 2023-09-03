@@ -69,6 +69,7 @@ export const useStore = defineStore('itp-post', () => {
   const applyingInternship = ref(false)
   const applications = ref<OutgoingApplication[]>([])
   const loadingApplications = ref(false)
+  const cancelingApplication = ref(false)
 
   async function listInternships() {
     if (internships.value.length !== 0) return
@@ -133,6 +134,22 @@ export const useStore = defineStore('itp-post', () => {
     loadingApplications.value = false
   }
 
+  async function cancelApplication(company_name: string, internship_title: string, student_id: string) {
+    cancelingApplication.value = true
+
+    const resp = await api.delete(
+      `/itp-post/companies/${company_name}/internships/${internship_title}/applications/${student_id}`
+    )
+
+    // Update the list of applications so that the student does not need to refresh the page
+    applications.value.splice(
+      sortedIndexBy(applications.value, resp.data, value => `${value.title}#${value.company_name}`),
+      1
+    )
+
+    cancelingApplication.value = false
+  }
+
   return {
     internships,
     companyPhotoUrl,
@@ -140,9 +157,11 @@ export const useStore = defineStore('itp-post', () => {
     applyingInternship,
     applications,
     loadingApplications,
+    cancelingApplication,
     listInternships,
     listCompanyPhotos,
     applyInternship,
     listApplications,
+    cancelApplication,
   }
 })
