@@ -146,5 +146,5 @@ INSERT INTO application VALUES ("21WMR05319", "Software Engineer", "CMY Enterpri
 -- Fetch a page of internship applications from the database
 SELECT title, company_name, `status`, note_to_employer
 FROM application
-WHERE student_id = "21WMR05319" AND resume_url > ?
+WHERE student_id = "21WMR05319" AND (title > "" OR title = "" AND company_name > "")
 LIMIT 1000;

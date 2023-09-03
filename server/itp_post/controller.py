@@ -120,11 +120,29 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
         db_conn.commit()
 
         # Generate S3 presigned URL for the student to upload their resume
-        return s3.generate_presigned_post(
-            config.custombucket,
-            f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
-            ExpiresIn=10,
-        )
+        return {
+            "payload": {
+                "title": internship_title,
+                "company_name": company_name,
+                "status": "pending",
+                "note_to_employer": note_to_employer,
+                "resume_url": s3.generate_presigned_url(
+                    "get_object",
+                    Params={
+                        "Bucket": config.custombucket,
+                        "Key": f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+                        # So that PDF file will be displayed in the browser instead of being downloaded
+                        "ResponseContentType": "application/pdf",
+                        "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
+                    },
+                ),
+            },
+            "resume_upload_url": s3.generate_presigned_post(
+                config.custombucket,
+                f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+                ExpiresIn=10,
+            ),
+        }
 
     finally:
         cursor.close()
