@@ -147,7 +147,46 @@ INSERT INTO application VALUES ("21WMR05319", "Software Engineer", "CMY Enterpri
 SELECT title, company_name, `status`, note_to_employer
 FROM application
 WHERE student_id = "21WMR05319" AND (title > "" OR title = "" AND company_name > "")
+ORDER BY title, company_name
 LIMIT 1000;
 
 -- Cancel an existing internship application from the database
 DELETE FROM application WHERE student_id = "21WMR05319" AND title = "Backend Engineer" AND company_name = "CMY Enterprise";
+
+-- Fetch a page of internships posted by a given company from the database
+SELECT
+  internship.title,
+  JSON_ARRAYAGG(DISTINCT category.`value`) categories,
+  min_allowance,
+  max_allowance,
+  `location`,
+  JSON_ARRAYAGG(DISTINCT learning_outcome.`value`) learning_outcomes,
+  internship.`description`,
+  vacancy_count
+FROM internship
+  LEFT JOIN category
+    ON internship.title = category.itp_title AND internship.company_name = category.company_name
+  LEFT JOIN learning_outcome
+    ON internship.title = learning_outcome.itp_title AND internship.company_name = learning_outcome.company_name
+WHERE internship.company_name = "CMY Enterprise" AND internship.title > ""
+GROUP BY internship.title
+ORDER BY internship.title
+LIMIT 1000;
+
+-- Remove an existing internship from the database
+DELETE FROM internship WHERE title = "Software Engineer" AND company_name = "CMY Enterprise";
+
+-- Update an existing internship in the database
+UPDATE internship
+SET title = "Software Engineer", min_allowance = 500, max_allowance = 1200, location = "Cheras", `description` = "updated", vacancy_count = 3
+WHERE title = "Software Engineer" AND company_name = "CMY Enterprise";
+
+DELETE FROM category WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
+INSERT INTO category VALUES
+	("Backend", "Software Engineer", "CMY Enterprise"),
+	("Frontend", "Software Engineer", "CMY Enterprise"),
+	("Full Stack", "Software Engineer", "CMY Enterprise"),
+
+UPDATE learning_outcome SET `value` = "Lorem ipsum dolor sit amet, consectetur adipiscing elit." WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
+UPDATE learning_outcome SET `value` = "Lorem ipsum dolor sit amet, consectetur adipiscing elits." WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
+UPDATE learning_outcome SET `value` = "Quisque fermentum metus sed nibh pharetra, ac semper arcu tincidunt." WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";

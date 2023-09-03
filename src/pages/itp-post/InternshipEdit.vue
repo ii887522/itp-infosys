@@ -14,7 +14,7 @@
               clearable
               autofocus
               label-slot
-              v-model="store.title"
+              v-model="editStore.newTitle"
               outlined
               bg-color="white"
               :rules="[value => !isTextEmpty(value) || 'Title is required']"
@@ -33,7 +33,7 @@
               clearable
               behavior="menu"
               label-slot
-              v-model="store.categories"
+              v-model="editStore.categories"
               :options="allCategories"
               outlined
               multiple
@@ -72,14 +72,14 @@
                 label-always
                 markers
                 drag-range
-                :left-label-value="`RM ${store.allowanceRange.min}`"
-                :right-label-value="`RM ${store.allowanceRange.max}${
-                  store.allowanceRange.max !== maxAllowance ? '' : ' and above'
+                :left-label-value="`RM ${editStore.allowanceRange.min}`"
+                :right-label-value="`RM ${editStore.allowanceRange.max}${
+                  editStore.allowanceRange.max !== maxAllowance ? '' : ' and above'
                 }`"
                 :min="minAllowance"
                 :max="maxAllowance"
                 :step="100"
-                v-model="store.allowanceRange"
+                v-model="editStore.allowanceRange"
                 switch-label-side
               />
             </div>
@@ -94,7 +94,7 @@
               name="location"
               behavior="menu"
               label-slot
-              v-model="store.location"
+              v-model="editStore.location"
               :options="allLocations"
               outlined
               bg-color="white"
@@ -111,7 +111,7 @@
               ref="vacancyCountInput"
               name="vacancy_count"
               label-slot
-              v-model="store.vacancyCount"
+              v-model="editStore.vacancyCount"
               outlined
               bg-color="white"
               :rules="[value => !isTextEmpty(value) || 'Vacancy count is required']"
@@ -130,18 +130,18 @@
             <span class="text-negative text-h6"> *</span>
           </div>
 
-          <input-list class="col-6 q-mb-xs" v-model="store.learningOutcomes" v-slot="{ index, onItemChange }">
+          <input-list class="col-6 q-mb-xs" v-model="editStore.learningOutcomes" v-slot="{ index, onItemChange }">
             <q-input
               :name="`learning_outcome_${index}`"
               clearable
-              v-model="store.learningOutcomes[index]"
+              v-model="editStore.learningOutcomes[index]"
               outlined
               dense
               bg-color="white"
               :error="learningOutcomesError"
-              error-message="At least 1 learning outcome is required"
+              :error-message="learningOutcomesErrorMsg"
               @update:model-value="value => onItemChange(index, value as string | null)"
-              @blur="onLearningOutcomesChange(store.learningOutcomes)"
+              @blur="onLearningOutcomesChange(editStore.learningOutcomes)"
             />
           </input-list>
 
@@ -152,7 +152,7 @@
           </div>
 
           <div class="col-12 q-mb-md">
-            <q-editor :class="{ error: descriptionError }" v-model="store.description" />
+            <q-editor :class="{ error: descriptionError }" v-model="editStore.description" />
 
             <div v-show="descriptionError" class="q-ml-sm q-mt-xs text-negative text-caption">
               Description is required
@@ -160,7 +160,7 @@
           </div>
 
           <div class="col-12 text-center">
-            <q-btn type="submit" icon="edit" label="Edit" color="info" />
+            <q-btn type="submit" icon="edit" label="Edit" color="info" :loading="store.updatingInternship" />
           </div>
         </q-form>
       </q-card-section>
@@ -170,18 +170,22 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
-import { useMeta, type QInput } from 'quasar'
+import { useMeta, type QInput, useQuasar } from 'quasar'
 import { isTextEmpty, isArrayEmpty } from 'src/common'
 import { allCategories, categoryColor, minAllowance, maxAllowance, allLocations } from 'src/consts/itp-post'
 import InputList from 'components/InputList.vue'
 import { useInternshipEditStore } from 'stores/itp-post-store'
 import AutoNumeric from 'autonumeric'
+import { useStore } from 'stores/itp-post-store'
 
 useMeta({ title: 'Edit Internship | MyITPHub' })
 
-const store = useInternshipEditStore()
+const { notify } = useQuasar()
+const store = useStore()
+const editStore = useInternshipEditStore()
 const vacancyCountInput = ref<QInput | null>(null)
 const learningOutcomesError = ref(false)
+const learningOutcomesErrorMsg = ref('')
 const descriptionError = ref(false)
 
 onMounted(() => {
@@ -196,26 +200,50 @@ onMounted(() => {
   })
 })
 
-watch(() => store.description, onDescriptionChange)
-watch(() => store.learningOutcomes, onLearningOutcomesChange)
+watch(() => editStore.description, onDescriptionChange)
+watch(() => editStore.learningOutcomes, onLearningOutcomesChange)
 
 function onDescriptionChange(value: string | null) {
   descriptionError.value = isTextEmpty(value)
 }
 
 function onLearningOutcomesChange(value: string[]) {
-  learningOutcomesError.value = value.length === 1 && isTextEmpty(value[0])
+  if (value.length === 1 && isTextEmpty(value[0])) {
+    learningOutcomesError.value = true
+    learningOutcomesErrorMsg.value = 'At least 1 learning outcome is required'
+  } else if (new Set(value.map(learningOutcome => learningOutcome.trim())).size !== value.length) {
+    learningOutcomesError.value = true
+    learningOutcomesErrorMsg.value = 'Duplicate learning outcomes are not allowed'
+  } else {
+    learningOutcomesError.value = false
+  }
 }
 
-function edit() {
+async function edit() {
   // Validate
-  onDescriptionChange(store.description)
-  onLearningOutcomesChange(store.learningOutcomes)
+  onDescriptionChange(editStore.description)
+  onLearningOutcomesChange(editStore.learningOutcomes)
 
   // Can proceed to add this internship ?
   if (descriptionError.value || learningOutcomesError.value) return
 
   // Update this internship
-  console.log('UPDATING THIS INTERNSHIP...')
+  await store.updateInternship(editStore.oldTitle, {
+    title: editStore.newTitle,
+    company_name: 'CMY Enterprise',
+    categories: editStore.categories,
+    min_allowance: editStore.allowanceRange.min,
+    max_allowance: editStore.allowanceRange.max,
+    location: editStore.location,
+    learning_outcomes: editStore.learningOutcomes.filter(learningOutcome => !isTextEmpty(learningOutcome)),
+    description: editStore.description,
+    vacancy_count: Number(editStore.vacancyCount),
+  })
+
+  notify({
+    type: 'positive',
+    message: `Successfully edited internship "${editStore.newTitle}"`,
+    icon: 'done',
+  })
 }
 </script>

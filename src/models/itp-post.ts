@@ -7,10 +7,10 @@ export interface Internship {
   location: string
   learning_outcomes: string[]
   description: string
-  company_description: string
-  company_size: number
-  address: string
-  company_url: string
+  company_description?: string
+  company_size?: number
+  address?: string
+  company_url?: string
   vacancy_count: number
 }
 

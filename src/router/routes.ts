@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
         path: 'emp/itp-post/internships/edit',
         beforeEnter: () => {
           const store = useInternshipEditStore()
-          return store.title !== '' ? true : '/emp/itp-post/internships'
+          return store.newTitle !== '' ? true : '/emp/itp-post/internships'
         },
         component: () => import('pages/itp-post/InternshipEdit.vue'),
       },

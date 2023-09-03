@@ -35,7 +35,8 @@ export const useInternshipDetailsEmpStore = defineStore('itp-post/internship-det
 })
 
 export const useInternshipEditStore = defineStore('itp-post/internship-edit', () => {
-  const title = ref('')
+  const oldTitle = ref('')
+  const newTitle = ref('')
   const categories = ref<string[]>([])
   const allowanceRange = ref({ min: minAllowance, max: maxAllowance })
   const location = ref('')
@@ -44,7 +45,8 @@ export const useInternshipEditStore = defineStore('itp-post/internship-edit', ()
   const description = ref('')
 
   async function navigate(router: Router, internship: Internship) {
-    title.value = internship.title
+    oldTitle.value = internship.title
+    newTitle.value = internship.title
     categories.value = [...internship.categories]
 
     allowanceRange.value = {
@@ -59,7 +61,17 @@ export const useInternshipEditStore = defineStore('itp-post/internship-edit', ()
     await router.push('/emp/itp-post/internships/edit')
   }
 
-  return { title, categories, allowanceRange, location, vacancyCount, learningOutcomes, description, navigate }
+  return {
+    oldTitle,
+    newTitle,
+    categories,
+    allowanceRange,
+    location,
+    vacancyCount,
+    learningOutcomes,
+    description,
+    navigate,
+  }
 })
 
 export const useStore = defineStore('itp-post', () => {
@@ -70,6 +82,11 @@ export const useStore = defineStore('itp-post', () => {
   const applications = ref<OutgoingApplication[]>([])
   const loadingApplications = ref(false)
   const cancelingApplication = ref(false)
+  const postedInternships = ref<Internship[]>([])
+  const loadingPostedInternships = ref(false)
+  const postingInternship = ref(false)
+  const updatingInternship = ref(false)
+  const removingInternship = ref(false)
 
   async function listInternships() {
     if (internships.value.length !== 0) return
@@ -150,6 +167,55 @@ export const useStore = defineStore('itp-post', () => {
     cancelingApplication.value = false
   }
 
+  async function listPostedInternships(company_name: string) {
+    if (postedInternships.value.length !== 0) return
+    loadingPostedInternships.value = true
+    const resp = await api.get(`/itp-post/companies/${company_name}/internships`)
+    postedInternships.value = resp.data
+    loadingPostedInternships.value = false
+  }
+
+  async function postInternship(value: Internship) {
+    postingInternship.value = true
+
+    // Notify the server we want to apply for an internship and receive an S3 presigned post URL from it
+    const resp = await api.post('/itp-post/internships', value)
+
+    // Update the list of internships so that the employee does not need to refresh the page
+    postedInternships.value.splice(sortedIndexBy(postedInternships.value, resp.data, 'title'), 0, resp.data)
+
+    postingInternship.value = false
+  }
+
+  async function editInternship(oldTitle: string, value: Internship) {
+    updatingInternship.value = true
+    const resp = await api.put(`/itp-post/internships/${oldTitle}`, value)
+
+    // Update the existing internship so that the employee does not need to refresh the page
+    postedInternships.value[
+      sortedIndexBy(
+        postedInternships.value,
+        { ...resp.data, title: oldTitle },
+        value => `${value.title}#${value.company_name}`
+      )
+    ] = resp.data
+
+    updatingInternship.value = false
+  }
+
+  async function removeInternship(company_name: string, internship_title: string) {
+    removingInternship.value = false
+    const resp = await api.delete(`/itp-post/companies/${company_name}/internships/${internship_title}`)
+
+    // Update the list of internships so that the employee does not need to refresh the page
+    postedInternships.value.splice(
+      sortedIndexBy(postedInternships.value, resp.data, value => `${value.title}#${value.company_name}`),
+      1
+    )
+
+    removingInternship.value = true
+  }
+
   return {
     internships,
     companyPhotoUrl,
@@ -158,10 +224,19 @@ export const useStore = defineStore('itp-post', () => {
     applications,
     loadingApplications,
     cancelingApplication,
+    postedInternships,
+    loadingPostedInternships,
+    postingInternship,
+    updatingInternship,
+    removingInternship,
     listInternships,
     listCompanyPhotos,
     applyInternship,
     listApplications,
     cancelApplication,
+    listPostedInternships,
+    postInternship,
+    updateInternship: editInternship,
+    removeInternship,
   }
 })
