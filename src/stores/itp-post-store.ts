@@ -191,14 +191,12 @@ export const useStore = defineStore('itp-post', () => {
     updatingInternship.value = true
     const resp = await api.put(`/itp-post/internships/${oldTitle}`, value)
 
-    // Update the existing internship so that the employee does not need to refresh the page
-    postedInternships.value[
-      sortedIndexBy(
-        postedInternships.value,
-        { ...resp.data, title: oldTitle },
-        value => `${value.title}#${value.company_name}`
-      )
-    ] = resp.data
+    // Replace the existing internship so that the employee does not need to refresh the page
+    postedInternships.value.splice(
+      sortedIndexBy(postedInternships.value, { ...resp.data, title: oldTitle }, 'title'),
+      1
+    )
+    postedInternships.value.splice(sortedIndexBy(postedInternships.value, resp.data, 'title'), 0, resp.data)
 
     updatingInternship.value = false
   }
@@ -208,10 +206,7 @@ export const useStore = defineStore('itp-post', () => {
     const resp = await api.delete(`/itp-post/companies/${company_name}/internships/${internship_title}`)
 
     // Update the list of internships so that the employee does not need to refresh the page
-    postedInternships.value.splice(
-      sortedIndexBy(postedInternships.value, resp.data, value => `${value.title}#${value.company_name}`),
-      1
-    )
+    postedInternships.value.splice(sortedIndexBy(postedInternships.value, resp.data, 'title'), 1)
 
     removingInternship.value = true
   }
@@ -236,7 +231,7 @@ export const useStore = defineStore('itp-post', () => {
     cancelApplication,
     listPostedInternships,
     postInternship,
-    updateInternship: editInternship,
+    editInternship,
     removeInternship,
   }
 })

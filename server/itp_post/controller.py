@@ -2,6 +2,7 @@ import json
 
 import boto3
 import config
+import itp_post.itp_post_consts as itp_post_consts
 from common.db_connection import DbConnection
 from flask import Blueprint, request
 
@@ -300,8 +301,8 @@ def post_internship():
             (
                 title,
                 company_name,
-                min_allowance if min_allowance != 0 else None,
-                max_allowance if max_allowance != 2000 else None,
+                min_allowance if min_allowance != itp_post_consts.MIN_ALLOWANCE else None,
+                max_allowance if max_allowance != itp_post_consts.MAX_ALLOWANCE else None,
                 location,
                 description,
                 vacancy_count,
@@ -374,8 +375,8 @@ SET title = ?, min_allowance = ?, max_allowance = ?, location = ?, `description`
 WHERE title = ? AND company_name = ?""",
             (
                 new_title,
-                min_allowance if min_allowance != 0 else None,
-                max_allowance if max_allowance != 2000 else None,
+                min_allowance if min_allowance != itp_post_consts.MIN_ALLOWANCE else None,
+                max_allowance if max_allowance != itp_post_consts.MAX_ALLOWANCE else None,
                 location,
                 description,
                 vacancy_count,

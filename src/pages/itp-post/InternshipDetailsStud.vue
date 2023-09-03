@@ -67,7 +67,7 @@
     <div class="text-h5 q-mb-md">Job Description</div>
     <div class="q-mb-xl" v-html="sanitizeHtml(detailsStore.value.description)"></div>
     <div id="company-description" class="text-h5 q-mb-md">About {{ detailsStore.value.company_name }}</div>
-    <div class="q-mb-xl" v-html="sanitizeHtml(detailsStore.value.company_description)"></div>
+    <div class="q-mb-xl" v-html="sanitizeHtml(detailsStore.value.company_description ?? '')"></div>
     <div class="text-h5 q-mb-md">Company Photos</div>
 
     <q-carousel

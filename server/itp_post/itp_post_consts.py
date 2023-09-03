@@ -1,0 +1,3 @@
+# Allowance range
+MIN_ALLOWANCE = 0
+MAX_ALLOWANCE = 2000

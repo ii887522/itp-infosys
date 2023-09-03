@@ -185,7 +185,7 @@ DELETE FROM category WHERE itp_title = "Software Engineer" AND company_name = "C
 INSERT INTO category VALUES
 	("Backend", "Software Engineer", "CMY Enterprise"),
 	("Frontend", "Software Engineer", "CMY Enterprise"),
-	("Full Stack", "Software Engineer", "CMY Enterprise"),
+	("Full Stack", "Software Engineer", "CMY Enterprise");
 
 UPDATE learning_outcome SET `value` = "Lorem ipsum dolor sit amet, consectetur adipiscing elit." WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
 UPDATE learning_outcome SET `value` = "Lorem ipsum dolor sit amet, consectetur adipiscing elits." WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";

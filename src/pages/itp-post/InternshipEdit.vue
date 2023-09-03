@@ -228,7 +228,7 @@ async function edit() {
   if (descriptionError.value || learningOutcomesError.value) return
 
   // Update this internship
-  await store.updateInternship(editStore.oldTitle, {
+  await store.editInternship(editStore.oldTitle, {
     title: editStore.newTitle,
     company_name: 'CMY Enterprise',
     categories: editStore.categories,
