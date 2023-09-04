@@ -69,6 +69,11 @@ const { notify } = useQuasar()
 const resume = ref()
 const remarks = ref('')
 
+function reset() {
+  resume.value = null
+  remarks.value = ''
+}
+
 async function apply() {
   await store.applyInternship({
     company_name: props.companyName,
@@ -77,6 +82,9 @@ async function apply() {
     note_to_employer: remarks.value,
     resume: resume.value,
   })
+
+  // Reset the form so that the InternshipAlreadyApplied.vue overlay can fully cover this form
+  reset()
 
   notify({
     type: 'positive',

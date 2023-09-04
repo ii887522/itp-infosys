@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
         path: 'emp/itp-post/internships/edit',
         beforeEnter: () => {
           const store = useInternshipEditStore()
-          return store.title !== '' ? true : '/emp/itp-post/internships'
+          return store.newTitle !== '' ? true : '/emp/itp-post/internships'
         },
         component: () => import('pages/itp-post/InternshipEdit.vue'),
       },
@@ -55,15 +55,15 @@ const routes: RouteRecordRaw[] = [
       },
 
       // user module
-      { path: 'stud/login', component: () => import('pages/user/StudentLogin.vue'), },
-      { path: 'stud/signup', component: () => import('pages/user/StudentSignUp.vue'), },
-      { path: 'stud/profile', component: () => import('pages/user/StudentProfile.vue'), },
-      { path: 'stud/profile/edit', component: () => import('pages/user/StudEditProfile.vue'), },
+      { path: 'stud/login', component: () => import('pages/user/StudentLogin.vue') },
+      { path: 'stud/signup', component: () => import('pages/user/StudentSignUp.vue') },
+      { path: 'stud/profile', component: () => import('pages/user/StudentProfile.vue') },
+      { path: 'stud/profile/edit', component: () => import('pages/user/StudEditProfile.vue') },
 
-      { path: 'emp/login', component: () => import('pages/user/EmployeeLogin.vue'), },
-      { path: 'emp/signup', component: () => import('pages/user/EmployeeSignUp.vue'), },
-      { path: 'emp/profile', component: () => import('pages/user/EmployeeProfile.vue'), },
-      { path: 'emp/profile/edit', component: () => import('pages/user/EmpEditProfile.vue'), },
+      { path: 'emp/login', component: () => import('pages/user/EmployeeLogin.vue') },
+      { path: 'emp/signup', component: () => import('pages/user/EmployeeSignUp.vue') },
+      { path: 'emp/profile', component: () => import('pages/user/EmployeeProfile.vue') },
+      { path: 'emp/profile/edit', component: () => import('pages/user/EmpEditProfile.vue') },
     ],
   },
 

@@ -139,7 +139,7 @@
               dense
               bg-color="white"
               :error="learningOutcomesError"
-              error-message="At least 1 learning outcome is required"
+              :error-message="learningOutcomesErrorMsg"
               @update:model-value="value => onItemChange(index, value as string | null)"
               @blur="onLearningOutcomesChange(learningOutcomes)"
             />
@@ -189,7 +189,7 @@
           </div>
 
           <div class="col-12 text-center">
-            <q-btn type="submit" icon="add" label="Add" color="positive" />
+            <q-btn type="submit" icon="add" label="Add" color="positive" :loading="store.postingInternship" />
           </div>
         </q-form>
       </q-card-section>
@@ -199,13 +199,17 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
-import { useMeta, type QInput } from 'quasar'
+import { useMeta, type QInput, useQuasar } from 'quasar'
 import { isTextEmpty, isArrayEmpty } from 'src/common'
 import { allCategories, categoryColor, minAllowance, maxAllowance, allLocations } from 'src/consts/itp-post'
 import InputList from 'components/InputList.vue'
 import AutoNumeric from 'autonumeric'
+import { useStore } from 'stores/itp-post-store'
 
 useMeta({ title: 'Add Internship | MyITPHub' })
+
+const store = useStore()
+const { notify } = useQuasar()
 
 const vacancyCountInput = ref<QInput | null>(null)
 const title = ref('')
@@ -214,6 +218,7 @@ const allowanceRange = ref({ min: minAllowance, max: maxAllowance })
 const location = ref(allLocations[0])
 const learningOutcomes = ref([''])
 const learningOutcomesError = ref(false)
+const learningOutcomesErrorMsg = ref('')
 const description = ref('')
 const descriptionError = ref(false)
 const vacancyCount = ref('1')
@@ -239,10 +244,18 @@ function onDescriptionChange(value: string | null) {
 }
 
 function onLearningOutcomesChange(value: string[]) {
-  learningOutcomesError.value = value.length === 1 && isTextEmpty(value[0])
+  if (value.length === 1 && isTextEmpty(value[0])) {
+    learningOutcomesError.value = true
+    learningOutcomesErrorMsg.value = 'At least 1 learning outcome is required'
+  } else if (new Set(value.map(learningOutcome => learningOutcome.trim())).size !== value.length) {
+    learningOutcomesError.value = true
+    learningOutcomesErrorMsg.value = 'Duplicate learning outcomes are not allowed'
+  } else {
+    learningOutcomesError.value = false
+  }
 }
 
-function add() {
+async function add() {
   // Validate
   onDescriptionChange(description.value)
   onLearningOutcomesChange(learningOutcomes.value)
@@ -251,6 +264,22 @@ function add() {
   if (descriptionError.value || learningOutcomesError.value) return
 
   // Add this internship
-  console.log('ADDING INTERNSHIP...')
+  await store.postInternship({
+    title: title.value,
+    company_name: 'CMY Enterprise',
+    categories: categories.value,
+    min_allowance: allowanceRange.value.min,
+    max_allowance: allowanceRange.value.max,
+    location: location.value,
+    learning_outcomes: learningOutcomes.value.filter(learningOutcome => !isTextEmpty(learningOutcome)),
+    description: description.value,
+    vacancy_count: Number(vacancyCount.value),
+  })
+
+  notify({
+    type: 'positive',
+    message: `Successfully posted a new internship "${title.value}"`,
+    icon: 'done',
+  })
 }
 </script>

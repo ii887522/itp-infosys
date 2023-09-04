@@ -5,13 +5,15 @@
       :columns="columns"
       title-class="text-h4"
       title="Internships"
-      :rows="internships"
+      :rows="store.postedInternships"
       :row-key="getRowKey"
       :rows-per-page-options="rowsPerPageOptions"
       :pagination="{ rowsPerPage: defaultRowsPerPage }"
       :filter="searchStore"
       :filter-method="filter"
       wrap-cells
+      :loading="store.loadingPostedInternships"
+      color="primary"
     >
       <template #top-right>
         <q-btn icon="add" color="positive" label="Add Internship" to="/emp/itp-post/internships/add" />
@@ -22,6 +24,23 @@
           <q-icon class="q-mr-sm" :name="props.col.icon" size="xs" />
           <span class="vertical-middle">{{ props.col.label }}</span>
         </q-th>
+      </template>
+
+      <template #body-cell-title-with-vacancy-count="props">
+        <q-td :props="props">
+          <span>{{ props.row.title }}</span>
+
+          <span
+            class="text-bold"
+            :class="{
+              'text-negative': props.row.vacancy_count === 0,
+              'text-warning': props.row.vacancy_count === 1,
+              'text-positive': props.row.vacancy_count > 1,
+            }"
+          >
+            ({{ props.row.vacancy_count }})
+          </span>
+        </q-td>
       </template>
 
       <template #body-cell-categories="props">
@@ -48,7 +67,7 @@
       </template>
 
       <template #no-data>
-        <div class="text-negative">
+        <div v-show="!store.loadingPostedInternships" class="text-negative">
           <q-icon name="warning" left size="sm" />
           <span class="text-body1">No matching records found. Please broaden your searches.</span>
         </div>
@@ -58,7 +77,6 @@
 </template>
 
 <script setup lang="ts">
-import { internships } from 'src/consts/itp-post'
 import { type Internship } from 'src/models/itp-post'
 import { useInternshipSearchStore, useInternshipEditStore, useInternshipDetailsEmpStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
@@ -67,10 +85,12 @@ import { rowsPerPageOptions, defaultRowsPerPage } from 'src/consts'
 import { categoryColor } from 'src/consts/itp-post'
 import sanitizeHtml from 'sanitize-html'
 import { useRouter } from 'vue-router'
+import { useStore } from 'stores/itp-post-store'
 
 useMeta({ title: 'Manage Internships | MyITPHub' })
-const { dialog } = useQuasar()
+const { dialog, notify } = useQuasar()
 const router = useRouter()
+const store = useStore()
 const searchStore = useInternshipSearchStore()
 const editStore = useInternshipEditStore()
 const detailsStore = useInternshipDetailsEmpStore()
@@ -78,9 +98,9 @@ const detailsStore = useInternshipDetailsEmpStore()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
   {
-    name: 'title',
-    label: 'Title',
-    field: 'title',
+    name: 'title-with-vacancy-count',
+    label: 'Title (Vacancy Count)',
+    field: (row: Internship) => `${row.title} (${row.vacancy_count})`,
     align: 'left',
     sortable: true,
     icon: 'title',
@@ -128,7 +148,9 @@ const columns: any[] = [
   },
 ]
 
+// Init
 searchStore.reset()
+store.listPostedInternships('CMY Enterprise')
 
 function getRowKey(row: Internship) {
   return `${row.title}#${row.company_name}`
@@ -163,6 +185,31 @@ function openConfirmDelDialog(title: string) {
     ok: { icon: 'delete', label: 'Remove', color: 'negative' },
     cancel: { icon: 'close', label: 'Cancel', flat: true },
     html: true,
+  }).onOk(async () => {
+    // Tell the student the internship is removing
+    const notif = notify({
+      group: false,
+      timeout: 0,
+      type: 'ongoing',
+      spinner: true,
+      message: `Removing internship "${title}"`,
+      ignoreDefaults: true,
+      position: 'top',
+    })
+
+    // Remove the requested internship
+    await store.removeInternship('CMY Enterprise', title)
+
+    // Signal the employee that the internship is successfully removed
+    notif({
+      timeout: 5000,
+      type: 'positive',
+      spinner: false,
+      icon: 'done',
+      message: `Successfully removed the internship "${title}"`,
+      progress: true,
+      actions: [{ label: 'Close', color: 'white', flat: false, outline: true }],
+    })
   })
 }
 
