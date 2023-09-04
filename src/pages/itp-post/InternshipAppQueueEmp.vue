@@ -5,10 +5,12 @@
       :columns="columns"
       title-class="text-h4"
       title="Student Internship Applications"
-      :rows="incomingApplications"
+      :rows="store.incomingApplications"
       row-key="resume_url"
       :rows-per-page-options="rowsPerPageOptions"
       :pagination="{ rowsPerPage: defaultRowsPerPage }"
+      color="primary"
+      :loading="store.loadingIncomingApplications"
     >
       <template #header-cell="props">
         <q-th :props="props">
@@ -60,7 +62,7 @@
       </template>
 
       <template #no-data>
-        <div class="text-negative">
+        <div v-show="!store.loadingIncomingApplications" class="text-negative">
           <q-icon name="warning" left size="sm" />
           <span class="text-body1">No matching records found. Please broaden your searches.</span>
         </div>
@@ -70,15 +72,17 @@
 </template>
 
 <script setup lang="ts">
-import { incomingApplications } from 'src/consts/itp-post'
+import { onMounted, onUnmounted } from 'vue'
 import { useMeta, useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
 import { rowsPerPageOptions, statusIcon, statusColor, defaultRowsPerPage } from 'src/consts'
 import { type IncomingApplication } from 'src/models/itp-post'
 import InternshipAppEmpDialog from 'components/itp-post/InternshipAppEmpDialog.vue'
+import { useStore } from 'stores/itp-post-store'
 
 useMeta({ title: 'Student Internship Application | MyITPHub' })
-const { dialog } = useQuasar()
+const { dialog, notify } = useQuasar()
+const store = useStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
@@ -115,6 +119,20 @@ const columns: any[] = [
   },
 ]
 
+// Init
+store.listIncomingApplications('CMY Enterprise')
+let timer: NodeJS.Timer
+
+onMounted(() => {
+  timer = setInterval(() => {
+    store.listIncomingApplications('21WMR05319')
+  }, 3_540_000)
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
+
 function openDetailsDialog(row: IncomingApplication) {
   dialog({ component: InternshipAppEmpDialog, componentProps: { value: row } })
 }
@@ -128,6 +146,36 @@ function openConfirmAcceptDialog(title: string, studentName: string) {
     ok: { icon: 'thumb_up', label: 'Accept', color: 'positive' },
     cancel: { icon: 'close', label: 'Cancel', flat: true },
     html: true,
+  }).onOk(async () => {
+    // Tell the employee the internship application is being accepted
+    const notif = notify({
+      group: false,
+      timeout: 0,
+      type: 'ongoing',
+      spinner: true,
+      message: `Accepting internship "${title}" made by ${studentName}`,
+      ignoreDefaults: true,
+      position: 'top',
+    })
+
+    // Accept the requested internship application
+    await store.updateApplication({
+      internshipTitle: title,
+      companyName: 'CMY Enterprise',
+      studentId: '21WMR05319',
+      status: 'accepted',
+    })
+
+    // Signal the employee that the internship application is successfully accepted
+    notif({
+      timeout: 5000,
+      type: 'positive',
+      spinner: false,
+      icon: 'done',
+      message: `Successfully accepted the internship "${title}" made by ${studentName}`,
+      progress: true,
+      actions: [{ label: 'Close', color: 'white', flat: false, outline: true }],
+    })
   })
 }
 
@@ -140,6 +188,36 @@ function openConfirmRejectDialog(title: string, studentName: string) {
     ok: { icon: 'thumb_down', label: 'Reject', color: 'negative' },
     cancel: { icon: 'close', label: 'Cancel', flat: true },
     html: true,
+  }).onOk(async () => {
+    // Tell the employee the internship application is being rejected
+    const notif = notify({
+      group: false,
+      timeout: 0,
+      type: 'ongoing',
+      spinner: true,
+      message: `Rejecting internship "${title}" made by ${studentName}`,
+      ignoreDefaults: true,
+      position: 'top',
+    })
+
+    // Reject the requested internship application
+    await store.updateApplication({
+      internshipTitle: title,
+      companyName: 'CMY Enterprise',
+      studentId: '21WMR05319',
+      status: 'rejected',
+    })
+
+    // Signal the employee that the internship application is successfully rejected
+    notif({
+      timeout: 5000,
+      type: 'positive',
+      spinner: false,
+      icon: 'done',
+      message: `Successfully rejected the internship "${title}" made by ${studentName}`,
+      progress: true,
+      actions: [{ label: 'Close', color: 'white', flat: false, outline: true }],
+    })
   })
 }
 </script>

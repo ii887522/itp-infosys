@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, reactive } from 'vue'
-import { type Internship, makeInternship, type OutgoingApplication } from 'src/models/itp-post'
+import { type Internship, makeInternship, type OutgoingApplication, IncomingApplication } from 'src/models/itp-post'
 import { minAllowance, maxAllowance } from 'src/consts/itp-post'
 import { type Router } from 'vue-router'
 import { api } from 'boot/axios'
 import { sortedIndexBy } from 'lodash'
+import { type Status } from 'src/consts'
 
 export const useInternshipSearchStore = defineStore('itp-post/internship-search', () => {
   const category = ref('')
@@ -87,6 +88,9 @@ export const useStore = defineStore('itp-post', () => {
   const postingInternship = ref(false)
   const updatingInternship = ref(false)
   const removingInternship = ref(false)
+  const incomingApplications = ref<IncomingApplication[]>([])
+  const loadingIncomingApplications = ref(false)
+  const updatingApplication = ref(false)
 
   async function listInternships() {
     if (internships.value.length !== 0) return
@@ -211,6 +215,40 @@ export const useStore = defineStore('itp-post', () => {
     removingInternship.value = true
   }
 
+  async function listIncomingApplications(company_name: string) {
+    if (incomingApplications.value.length !== 0) return
+    loadingIncomingApplications.value = true
+    const resp = await api.get(`/itp-post/companies/${company_name}/applications`)
+    incomingApplications.value = resp.data
+    loadingIncomingApplications.value = false
+  }
+
+  async function updateApplication({
+    internshipTitle,
+    companyName,
+    studentId,
+    status,
+  }: {
+    internshipTitle: string
+    companyName: string
+    studentId: string
+    status: Status
+  }) {
+    updatingApplication.value = true
+
+    const resp = await api.put(
+      `/itp-post/companies/${companyName}/internships/${internshipTitle}/applications/${studentId}`,
+      { status }
+    )
+
+    // Update the list of internship applications so that the employee does not need to refresh the page
+    incomingApplications.value[
+      sortedIndexBy(incomingApplications.value, resp.data, value => `${value.title}#${value.student_id}`)
+    ].status = resp.data.status
+
+    updatingApplication.value = false
+  }
+
   return {
     internships,
     companyPhotoUrl,
@@ -224,6 +262,9 @@ export const useStore = defineStore('itp-post', () => {
     postingInternship,
     updatingInternship,
     removingInternship,
+    incomingApplications,
+    loadingIncomingApplications,
+    updatingApplication,
     listInternships,
     listCompanyPhotos,
     applyInternship,
@@ -233,5 +274,7 @@ export const useStore = defineStore('itp-post', () => {
     postInternship,
     editInternship,
     removeInternship,
+    listIncomingApplications,
+    updateApplication,
   }
 })

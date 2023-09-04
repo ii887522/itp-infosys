@@ -180,13 +180,26 @@ DELETE FROM internship WHERE title = "Software Engineer" AND company_name = "CMY
 UPDATE internship
 SET title = "Software Engineer", min_allowance = 500, max_allowance = 1200, location = "Cheras", `description` = "updated", vacancy_count = 3
 WHERE title = "Software Engineer" AND company_name = "CMY Enterprise";
-
 DELETE FROM category WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
 INSERT INTO category VALUES
 	("Backend", "Software Engineer", "CMY Enterprise"),
 	("Frontend", "Software Engineer", "CMY Enterprise"),
 	("Full Stack", "Software Engineer", "CMY Enterprise");
+DELETE FROM learning_outcome WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
+INSERT INTO learning_outcome VALUES
+	("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "Software Engineer", "CMY Enterprise"),
+	("Lorem ipsum dolor sit amet, consectetur adipiscing elits.", "Software Engineer", "CMY Enterprise"),
+	("Quisque fermentum metus sed nibh pharetra, ac semper arcu tincidunt.", "Software Engineer", "CMY Enterprise");
 
-UPDATE learning_outcome SET `value` = "Lorem ipsum dolor sit amet, consectetur adipiscing elit." WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
-UPDATE learning_outcome SET `value` = "Lorem ipsum dolor sit amet, consectetur adipiscing elits." WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
-UPDATE learning_outcome SET `value` = "Quisque fermentum metus sed nibh pharetra, ac semper arcu tincidunt." WHERE itp_title = "Software Engineer" AND company_name = "CMY Enterprise";
+-- Fetch a page of internships from the database to show to the employee
+SELECT title, application.student_id, student_name, `status`, note_to_employer
+FROM application INNER JOIN student ON application.student_id = student.student_id
+WHERE company_name = "CMY Enterprise" AND (title > "" OR title = "" AND application.student_id > "")
+ORDER BY title, application.student_id
+LIMIT 1000;
+
+-- Accept an existing internship application in the database
+UPDATE application SET `status` = "accepted" WHERE student_id = "21WMR05319" AND title = "Software Engineer" AND company_name = "CMY Enterprise";
+
+-- Reject an existing internship application in the database
+UPDATE application SET `status` = "rejected" WHERE student_id = "21WMR05319" AND title = "Software Engineer" AND company_name = "CMY Enterprise";
