@@ -151,7 +151,7 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
 
 
 @itp_post_controller.route("/students/<student_id>/applications", methods=["GET"])
-def list_student_applications(student_id: str):
+def list_outgoing_applications(student_id: str):
     # Input
     next = request.args.get("next", "").split("#")
     size = request.args.get("size", 1000, type=int)
@@ -408,6 +408,83 @@ WHERE title = ? AND company_name = ?""",
             "description": description,
             "vacancy_count": vacancy_count,
         }
+
+    finally:
+        cursor.close()
+
+
+@itp_post_controller.route("/companies/<company_name>/applications", methods=["GET"])
+def list_incoming_applications(company_name: str):
+    # Input
+    next = request.args.get("next", "").split("#")
+    size = request.args.get("size", 1000, type=int)
+    next_title = next[0]
+    next_student_id = next[1] if 1 < len(next) else None
+
+    cursor = db_conn.cursor()
+
+    try:
+        # Fetch a page of internship applications from the database
+        cursor.execute(
+            """
+SELECT title, application.student_id, student_name, `status`, note_to_employer
+FROM application INNER JOIN student ON application.student_id = student.student_id
+WHERE company_name = ? AND (title > ? OR title = ? AND application.student_id > ?)
+ORDER BY title, application.student_id
+LIMIT ?
+""",
+            (company_name, next_title, next_title, next_student_id, size),
+        )
+        db_conn.commit()
+        db_rows = cursor.fetchall()
+
+        # Output
+        return [
+            {
+                "title": row[0],
+                "student_name": row[2],
+                "status": row[3],
+                "note_to_employer": row[4],
+                "resume_url": s3.generate_presigned_url(
+                    "get_object",
+                    Params={
+                        "Bucket": config.custombucket,
+                        "Key": f"companies/{company_name}/internships/{row[0]}/applications/{row[1]}.pdf",
+                        # So that PDF file will be displayed in the browser instead of being downloaded
+                        "ResponseContentType": "application/pdf",
+                        "ResponseContentDisposition": f'inline; filename="{row[1]}.pdf"',
+                    },
+                ),
+            }
+            for row in db_rows
+        ]
+
+    finally:
+        cursor.close()
+
+
+@itp_post_controller.route(
+    "/companies/<company_name>/internships/<internship_title>/applications/<student_id>", methods=["PUT"]
+)
+def update_application(company_name: str, internship_title: str, student_id: str):
+    if not request.json:
+        return {"code": 4000}
+
+    # Input
+    status = request.json["status"]
+
+    cursor = db_conn.cursor()
+
+    try:
+        # Delete internship application record from the database
+        cursor.execute(
+            "UPDATE application SET `status` = ? WHERE student_id = ? AND title = ? AND company_name = ?",
+            (status, student_id, internship_title, company_name),
+        )
+        db_conn.commit()
+
+        # Output
+        return {"title": internship_title, "company_name": company_name, "student_id": student_id, "status": status}
 
     finally:
         cursor.close()
