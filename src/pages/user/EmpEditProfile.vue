@@ -38,6 +38,9 @@
                                 <p>Working Hours: {{ isCompanyFound.workingHours }}</p><br/>
                                 <p>Opens For: {{ isCompanyFound.opensFor }}</p>
                             </div>
+                            <div v-else>
+                                <p>Company not found</p> -- error message
+                            </div>
                         -->
                         <q-form @submit="updateCompany">
                             <q-expansion-item popup icon="business" label="Edit Company Details">
