@@ -235,3 +235,107 @@ export const useStore = defineStore('itp-post', () => {
     removeInternship,
   }
 })
+
+export const useStore = defineStore('itp-post', () => {
+  const internships = ref([])
+  const companyPhotoUrl = reactive<{ [companyName: string]: string[] }>({})
+  const loadingInternships = ref(false)
+  const applyingInternship = ref(false)
+  const applications = ref<OutgoingApplication[]>([])
+  const loadingApplications = ref(false)
+  const cancelingApplication = ref(false)
+
+  async function listInternships() {
+    if (internships.value.length !== 0) return
+    loadingInternships.value = true
+    const resp = await api.get('/itp-post/internships')
+    internships.value = resp.data
+    loadingInternships.value = false
+  }
+
+  async function listCompanyPhotos(companyName: string) {
+    if (companyPhotoUrl[companyName]) return
+    const resp = await api.get(`/itp-post/companies/${companyName}/photos`)
+    companyPhotoUrl[companyName] = resp.data
+  }
+
+  async function applyInternship({
+    company_name,
+    internship_title,
+    student_id,
+    note_to_employer = '',
+    resume,
+  }: {
+    company_name: string
+    internship_title: string
+    student_id: string
+    note_to_employer: string
+    resume: File
+  }) {
+    applyingInternship.value = true
+
+    // Notify the server we want to apply for an internship and receive an S3 presigned post URL from it
+    const resp = await api.post(
+      `/itp-post/companies/${company_name}/internships/${internship_title}/applications/${student_id}`,
+      { note_to_employer }
+    )
+
+    // Prepare S3 file upload request
+    const payload = new FormData()
+    Object.entries(resp.data.resume_upload_url.fields).forEach(([key, value]) => {
+      payload.append(key, value as string | Blob)
+    })
+    payload.append('file', resume)
+
+    // Upload the resume to S3 bucket
+    await api.post(resp.data.resume_upload_url.url, payload)
+
+    // Update the list of applications so that the student does not need to refresh the page
+    applications.value.splice(
+      sortedIndexBy(applications.value, resp.data.payload, value => `${value.title}#${value.company_name}`),
+      0,
+      resp.data.payload
+    )
+
+    applyingInternship.value = false
+  }
+
+  async function listApplications(studentId: string) {
+    if (applications.value.length !== 0) return
+    loadingApplications.value = true
+    const resp = await api.get(`/itp-post/students/${studentId}/applications`)
+    applications.value = resp.data
+    loadingApplications.value = false
+  }
+
+  async function cancelApplication(company_name: string, internship_title: string, student_id: string) {
+    cancelingApplication.value = true
+
+    const resp = await api.delete(
+      `/itp-post/companies/${company_name}/internships/${internship_title}/applications/${student_id}`
+    )
+
+    // Update the list of applications so that the student does not need to refresh the page
+    applications.value.splice(
+      sortedIndexBy(applications.value, resp.data, value => `${value.title}#${value.company_name}`),
+      1
+    )
+
+    cancelingApplication.value = false
+  }
+
+  return {
+    internships,
+    companyPhotoUrl,
+    loadingInternships,
+    applyingInternship,
+    applications,
+    loadingApplications,
+    cancelingApplication,
+    listInternships,
+    listCompanyPhotos,
+    applyInternship,
+    listApplications,
+    cancelApplication,
+  }
+})
