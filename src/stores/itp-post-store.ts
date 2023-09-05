@@ -75,6 +75,13 @@ export const useInternshipEditStore = defineStore('itp-post/internship-edit', ()
   }
 })
 
+export const useInternshipAppQueueStudStore = defineStore('itp-post/internship-app-queue-stud', () => {
+  const status = ref('All')
+  const q = ref('')
+
+  return { status, q }
+})
+
 export const useInternshipAppQueueEmpStore = defineStore('itp-post/internship-app-queue-emp', () => {
   const status = ref('All')
   const q = ref('')

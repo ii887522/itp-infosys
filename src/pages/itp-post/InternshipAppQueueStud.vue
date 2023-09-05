@@ -11,7 +11,37 @@
       :pagination="{ rowsPerPage: defaultRowsPerPage }"
       :loading="store.loadingApplications"
       color="primary"
+      :filter="internshipAppQueueStudStore"
+      :filter-method="filter"
     >
+      <template #top-right>
+        <q-select
+          class="q-mr-sm"
+          style="width: 192px"
+          name="status"
+          behavior="menu"
+          label="Status"
+          v-model="internshipAppQueueStudStore.status"
+          :options="statusOptions"
+          outlined
+        />
+
+        <q-input
+          style="width: 256px"
+          name="q"
+          type="search"
+          clearable
+          v-model="internshipAppQueueStudStore.q"
+          outlined
+          label-slot
+        >
+          <template #label>
+            <q-icon name="search" left size="sm" />
+            <span>Search</span>
+          </template>
+        </q-input>
+      </template>
+
       <template #header-cell="props">
         <q-th :props="props">
           <q-icon v-if="props.col.icon" class="q-mr-sm" :name="props.col.icon" size="xs" />
@@ -63,14 +93,16 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useMeta, useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
-import { rowsPerPageOptions, statusIcon, statusColor, defaultRowsPerPage } from 'src/consts'
+import { rowsPerPageOptions, statusIcon, statusColor, defaultRowsPerPage, statusOptions } from 'src/consts'
 import { type OutgoingApplication } from 'src/models/itp-post'
 import InternshipAppStudDialog from 'components/itp-post/InternshipAppStudDialog.vue'
-import { useStore } from 'stores/itp-post-store'
+import { useStore, useInternshipAppQueueStudStore } from 'stores/itp-post-store'
+import Fuse from 'fuse.js'
 
 useMeta({ title: 'My Internship Application | MyITPHub' })
 const { dialog, notify } = useQuasar()
 const store = useStore()
+const internshipAppQueueStudStore = useInternshipAppQueueStudStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
@@ -120,6 +152,25 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(timer)
 })
+
+function filter(
+  rows: readonly OutgoingApplication[],
+  terms: { status: string; q: string }
+): readonly OutgoingApplication[] {
+  let result = rows
+
+  if (terms.status !== 'All') {
+    result = result.filter(row => row.status === terms.status.toLowerCase())
+  }
+
+  if (terms.q?.trim()) {
+    result = new Fuse(result, { threshold: 0.5, ignoreLocation: true, keys: ['title', 'company_name'] })
+      .search(terms.q.trim())
+      .map(item => item.item)
+  }
+
+  return result
+}
 
 function openDetailsDialog(row: OutgoingApplication) {
   dialog({ component: InternshipAppStudDialog, componentProps: { value: row } })
