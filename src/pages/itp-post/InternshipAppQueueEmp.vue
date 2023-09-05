@@ -10,8 +10,38 @@
       :rows-per-page-options="rowsPerPageOptions"
       :pagination="{ rowsPerPage: defaultRowsPerPage }"
       color="primary"
+      :filter="internshipAppQueueEmpStore"
+      :filter-method="filter"
       :loading="store.loadingIncomingApplications"
     >
+      <template #top-right>
+        <q-select
+          class="q-mr-sm"
+          style="width: 192px"
+          name="status"
+          behavior="menu"
+          label="Status"
+          v-model="internshipAppQueueEmpStore.status"
+          :options="statusOptions"
+          outlined
+        />
+
+        <q-input
+          style="width: 256px"
+          name="q"
+          type="search"
+          clearable
+          v-model="internshipAppQueueEmpStore.q"
+          outlined
+          label-slot
+        >
+          <template #label>
+            <q-icon name="search" left size="sm" />
+            <span>Search</span>
+          </template>
+        </q-input>
+      </template>
+
       <template #header-cell="props">
         <q-th :props="props">
           <q-icon v-if="props.col.icon" class="q-mr-sm" :name="props.col.icon" size="xs" />
@@ -75,14 +105,16 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useMeta, useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
-import { rowsPerPageOptions, statusIcon, statusColor, defaultRowsPerPage } from 'src/consts'
+import { rowsPerPageOptions, statusIcon, statusColor, defaultRowsPerPage, statusOptions } from 'src/consts'
 import { type IncomingApplication } from 'src/models/itp-post'
 import InternshipAppEmpDialog from 'components/itp-post/InternshipAppEmpDialog.vue'
-import { useStore } from 'stores/itp-post-store'
+import { useStore, useInternshipAppQueueEmpStore } from 'stores/itp-post-store'
+import Fuse from 'fuse.js'
 
 useMeta({ title: 'Student Internship Application | MyITPHub' })
 const { dialog, notify } = useQuasar()
 const store = useStore()
+const internshipAppQueueEmpStore = useInternshipAppQueueEmpStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
@@ -132,6 +164,25 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(timer)
 })
+
+function filter(
+  rows: readonly IncomingApplication[],
+  terms: { status: string; q: string }
+): readonly IncomingApplication[] {
+  let result = rows
+
+  if (terms.status !== 'All') {
+    result = result.filter(row => row.status === terms.status.toLowerCase())
+  }
+
+  if (terms.q?.trim()) {
+    result = new Fuse(result, { threshold: 0.5, ignoreLocation: true, keys: ['title', 'student_name'] })
+      .search(terms.q.trim())
+      .map(item => item.item)
+  }
+
+  return result
+}
 
 function openDetailsDialog(row: IncomingApplication) {
   dialog({ component: InternshipAppEmpDialog, componentProps: { value: row } })
