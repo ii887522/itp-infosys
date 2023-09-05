@@ -13,3 +13,5 @@ export const statusColor: { [name: string]: string } = {
   accepted: 'positive',
   rejected: 'negative',
 }
+
+export const statusOptions = ['All', 'Pending', 'Accepted', 'Rejected']
