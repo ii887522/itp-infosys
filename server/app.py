@@ -4,10 +4,12 @@ from common.db_connection import DbConnection
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from itp_post.controller import itp_post_controller
+from user.controller import user_controller
 
 app = Flask(__name__, static_folder="../dist/spa", static_url_path="/")
 db_conn = DbConnection.get_instance()
 app.register_blueprint(itp_post_controller, url_prefix="/api/itp-post")
+app.register_blueprint(user_controller, url_prefix="/api/user")
 CORS(app)
 
 

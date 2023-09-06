@@ -25,21 +25,40 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useMeta, type QInput } from 'quasar'
+import { useMeta, useQuasar, type QInput } from 'quasar'
 import { useRouter } from 'vue-router'
+import { useStore } from 'stores/user-store'
 
 useMeta({ title: 'Student Login | MyITPHub' })
+
+const store = useStore();
+const { notify } = useQuasar();
 
 const studentId = ref('');
 const password = ref('');
 const router = useRouter(); // Import the router directly
 
-const login = () => {
+async function login() {
+  await store.logInStudent({
+    student_id: studentId.value,
+    student_name: '',
+    password: password.value,
+    ic_no: '',
+    gender: [],
+    programme: [],
+    student_email: '',
+    personal_email: '',
+  })
+
+  router.push('/');
+}
+
+/* const login = () => {
   // Perform authentication logic here
   // Example: Can make an API request to verify the credentials
   // If success, navigate to the student dashboard
   router.push('/dashboard');
-}
+} */
 </script>
 
 <style scoped>

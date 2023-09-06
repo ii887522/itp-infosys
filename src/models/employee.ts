@@ -1,21 +1,17 @@
-export interface Internship {
-    id: number
-    firstName: String
-    lastName: String
-    email: String
+export interface Employee {
+    emp_name: String
     password: String
-    company: String
-    position: String
+    company_name: String
+    emp_email: String
+    emp_phone: String
 }
 
-export function makeIntership(): Internship {
+export function makeEmployee(): Employee {
     return {
-        id: 0,
-        firstName: '',
-        lastName: '',
-        email: '',
+        emp_name: '',
         password: '',
-        company: '',
-        position: '',
+        company_name: '',
+        emp_email: '',
+        emp_phone: '',
     }
 }

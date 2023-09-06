@@ -6,7 +6,7 @@
                     <q-card>
                         <p class="signup-header text-h4 q-pt-md">Student Sign Up</p>
                         <q-card-section>
-                            <q-form @submit="registerStudent" class="q-gutter-md">
+                            <q-form @submit="register" class="q-gutter-md">
                                 <q-input filled v-model="studentName" label="Student Name" dense class="input-field" :rules="[requiredRule]"/>
                                 <q-input filled v-model="studentId" label="Student ID" dense class="input-field" placeholder="22WMR00111" :rules="[requiredRule, studentIdRule]"/>
                                 <q-input filled v-model="icNo" label="IC Number" dense class="input-field" placeholder="012345-67-8900" :rules="[requiredRule, icNumberRule]"/>
@@ -32,12 +32,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useMeta, type QInput } from 'quasar'
+import { useMeta, useQuasar, type QInput } from 'quasar'
 import { useRouter } from 'vue-router'
 import { isTextEmpty } from 'src/common';
 import { allGenders, allProgrammes } from 'src/consts/student'
+import { useStore } from 'stores/user-store'
 
 useMeta({ title: 'Student Sign Up | MyITPHub' })
+
+const store = useStore();
+const { notify } = useQuasar();
 
 const studentName = ref('');
 const studentId = ref('');
@@ -64,18 +68,27 @@ const nonStudentEmailRule = (value: string) => /^((?!\@student\.tarc\.edu\.my).)
 const passwordRule = (value: string) => value.length >= 8 || 'Password must be at least 8 characters';
 const confirmPasswordRule = (value: string) => value === password.value || 'Passwords do not match';
 
-const registerStudent = () => {
-  // Perform authentication logic here
-  // Example: Can make an API request to verify the credentials
+async function register() {
+  // add the student to database
+  await store.registerStudent({
+    student_id: studentId.value,
+    student_name: studentName.value,
+    password: password.value,
+    ic_no: icNo.value,
+    gender: gender.value,
+    programme: programme.value,
+    student_email: studentEmail.value,
+    personal_email: personalEmail.value,
+  })
 
-  // If success, navigate to the student dashboard
-  if (studentName.value && studentId.value && studentEmail.value && personalEmail.value && password.value && confirmPassword.value) {
-    alert('Registration successful!');
-    router.push('/dashboard');
-  }
-  else {
-    alert('Registration failed. Please fill in all required fields.');
-  }
+  notify({
+    progress: true,
+    type: 'positive',
+    message: 'Student successfully registered. You may now login with your credentials.',
+    icon: 'done',
+  })
+
+  resetForm();
 }
 
 const resetForm = () => {
