@@ -53,6 +53,17 @@ const routes: RouteRecordRaw[] = [
         path: 'admin/itp-prog',
         component: () => import('pages/itp-prog/IndexPage.vue'),
       },
+
+      // user module
+      { path: 'stud/login', component: () => import('pages/user/StudentLogin.vue') },
+      { path: 'stud/signup', component: () => import('pages/user/StudentSignUp.vue') },
+      { path: 'stud/profile', component: () => import('pages/user/StudentProfile.vue') },
+      { path: 'stud/profile/edit', component: () => import('pages/user/StudEditProfile.vue') },
+
+      { path: 'emp/login', component: () => import('pages/user/EmployeeLogin.vue') },
+      { path: 'emp/signup', component: () => import('pages/user/EmployeeSignUp.vue') },
+      { path: 'emp/profile', component: () => import('pages/user/EmployeeProfile.vue') },
+      { path: 'emp/profile/edit', component: () => import('pages/user/EmpEditProfile.vue') },
     ],
   },
 
