@@ -52,6 +52,7 @@ export function makeOutgoingApplication(): OutgoingApplication {
 
 export interface IncomingApplication {
   title: string
+  student_id: string
   student_name: string
   status: string
   note_to_employer: string
@@ -62,6 +63,7 @@ export interface IncomingApplication {
 export function makeIncomingApplication(): IncomingApplication {
   return {
     title: '',
+    student_id: '',
     student_name: '',
     status: '',
     note_to_employer: '',

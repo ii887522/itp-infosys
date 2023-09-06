@@ -255,7 +255,9 @@ export const useStore = defineStore('itp-post', () => {
 
     // Update the list of internship applications so that the employee does not need to refresh the page
     incomingApplications.value[
-      sortedIndexBy(incomingApplications.value, resp.data, value => `${value.title}#${value.student_id}`)
+      incomingApplications.value.findIndex(
+        value => value.title === resp.data.title && value.student_id === resp.data.student_id
+      )
     ].status = resp.data.status
 
     updatingApplication.value = false

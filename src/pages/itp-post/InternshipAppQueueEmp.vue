@@ -110,6 +110,7 @@ import { type IncomingApplication } from 'src/models/itp-post'
 import InternshipAppEmpDialog from 'components/itp-post/InternshipAppEmpDialog.vue'
 import { useStore, useInternshipAppQueueEmpStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
+import { formatTime } from 'src/common'
 
 useMeta({ title: 'Student Internship Application | MyITPHub' })
 const { dialog, notify } = useQuasar()
@@ -140,6 +141,15 @@ const columns: any[] = [
     field: 'status',
     align: 'center',
     sortable: true,
+  },
+  {
+    name: 'applied-at',
+    label: 'Applied at',
+    field: 'created_at',
+    align: 'center',
+    icon: 'schedule',
+    sortable: true,
+    format: (value: number) => formatTime(value),
   },
   {
     name: 'actions',
