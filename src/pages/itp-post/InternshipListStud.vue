@@ -37,10 +37,13 @@ import { useInternshipSearchStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
 import { useMeta } from 'quasar'
 import { useStore } from 'stores/itp-post-store'
+import shuffle from 'fast-shuffle'
+import { useStore as useIndexStore } from 'stores/store'
 
 useMeta({ title: 'Internships | MyITPHub' })
 const searchStore = useInternshipSearchStore()
 const store = useStore()
+const indexStore = useIndexStore()
 
 const columns = [
   {
@@ -105,6 +108,6 @@ function filter(
       .map(item => item.item)
   }
 
-  return result
+  return shuffle(indexStore.seed)(result)
 }
 </script>

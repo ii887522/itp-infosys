@@ -1,4 +1,5 @@
 import json
+import time
 
 import boto3
 import config
@@ -111,12 +112,13 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
     note_to_employer = request.json.get("note_to_employer", "") if request.json else ""
 
     cursor = db_conn.cursor()
+    now = int(time.time())
 
     try:
         # Create internship application record in the database
         cursor.execute(
-            "INSERT INTO application VALUES (?, ?, ?, ?, DEFAULT)",
-            (student_id, internship_title, company_name, note_to_employer),
+            "INSERT INTO application VALUES (?, ?, ?, ?, DEFAULT, ?)",
+            (student_id, internship_title, company_name, note_to_employer, now),
         )
         db_conn.commit()
 
@@ -127,6 +129,7 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
                 "company_name": company_name,
                 "status": "pending",
                 "note_to_employer": note_to_employer,
+                "created_at": now,
                 "resume_url": s3.generate_presigned_url(
                     "get_object",
                     Params={
@@ -164,10 +167,10 @@ def list_outgoing_applications(student_id: str):
         # Fetch a page of internship applications from the database
         cursor.execute(
             """
-SELECT title, company_name, `status`, note_to_employer
+SELECT title, company_name, `status`, note_to_employer, created_at
 FROM application
 WHERE student_id = ? AND (title > ? OR title = ? AND company_name > ?)
-ORDER BY title, company_name
+ORDER BY created_at
 LIMIT ?
 """,
             (student_id, next_title, next_title, next_company_name, size),
@@ -182,6 +185,7 @@ LIMIT ?
                 "company_name": row[1],
                 "status": row[2],
                 "note_to_employer": row[3],
+                "created_at": row[4],
                 "resume_url": s3.generate_presigned_url(
                     "get_object",
                     Params={
@@ -427,10 +431,10 @@ def list_incoming_applications(company_name: str):
         # Fetch a page of internship applications from the database
         cursor.execute(
             """
-SELECT title, application.student_id, student_name, `status`, note_to_employer
+SELECT title, application.student_id, student_name, `status`, note_to_employer, created_at
 FROM application INNER JOIN student ON application.student_id = student.student_id
 WHERE company_name = ? AND (title > ? OR title = ? AND application.student_id > ?)
-ORDER BY title, application.student_id
+ORDER BY created_at
 LIMIT ?
 """,
             (company_name, next_title, next_title, next_student_id, size),
@@ -445,6 +449,7 @@ LIMIT ?
                 "student_name": row[2],
                 "status": row[3],
                 "note_to_employer": row[4],
+                "created_at": row[5],
                 "resume_url": s3.generate_presigned_url(
                     "get_object",
                     Params={
@@ -476,7 +481,7 @@ def update_application(company_name: str, internship_title: str, student_id: str
     cursor = db_conn.cursor()
 
     try:
-        # Delete internship application record from the database
+        # Update the status of the internship application record in the database
         cursor.execute(
             "UPDATE application SET `status` = ? WHERE student_id = ? AND title = ? AND company_name = ?",
             (status, student_id, internship_title, company_name),

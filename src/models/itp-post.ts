@@ -36,6 +36,7 @@ export interface OutgoingApplication {
   status?: string
   note_to_employer?: string
   resume_url?: string
+  created_at: number
 }
 
 export function makeOutgoingApplication(): OutgoingApplication {
@@ -45,6 +46,7 @@ export function makeOutgoingApplication(): OutgoingApplication {
     status: '',
     note_to_employer: '',
     resume_url: '',
+    created_at: 0,
   }
 }
 
@@ -54,6 +56,7 @@ export interface IncomingApplication {
   status: string
   note_to_employer: string
   resume_url: string
+  created_at: number
 }
 
 export function makeIncomingApplication(): IncomingApplication {
@@ -63,5 +66,6 @@ export function makeIncomingApplication(): IncomingApplication {
     status: '',
     note_to_employer: '',
     resume_url: '',
+    created_at: 0,
   }
 }
