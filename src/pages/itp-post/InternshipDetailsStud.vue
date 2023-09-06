@@ -56,7 +56,10 @@
         <internship-already-applied
           v-show="
             store.loadingApplications ||
-            sortedFindBy(store.applications, detailsStore.value, value => `${value.title}#${value.company_name}`) !== -1
+            store.applications.findIndex(
+              value =>
+                value.title === detailsStore.value.title && value.company_name === detailsStore.value.company_name
+            ) !== -1
           "
           class="absolute full-width"
           :loading="store.loadingApplications"

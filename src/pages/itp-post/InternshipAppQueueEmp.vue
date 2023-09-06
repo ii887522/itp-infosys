@@ -16,7 +16,7 @@
     >
       <template #top-right>
         <q-select
-          class="q-mr-sm"
+          class="q-mr-md"
           style="width: 192px"
           name="status"
           behavior="menu"

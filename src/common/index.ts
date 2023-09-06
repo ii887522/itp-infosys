@@ -1,4 +1,5 @@
 import { sortedIndexBy, type NotVoid, type PropertyName } from 'lodash'
+import { date } from 'quasar'
 
 export function isTextEmpty(value?: string | null): boolean {
   return value == null || value.trim() === ''
@@ -23,4 +24,8 @@ export function sortedFindBy<T extends { [key: PropertyName]: unknown }>(
   } else {
     return array[index][iteratee] === value[iteratee] ? index : -1
   }
+}
+
+export function formatTime(timestamp: number, format = 'YYYY-MM-DD HH:mm:ss'): string {
+  return date.formatDate(timestamp * 1000, format)
 }

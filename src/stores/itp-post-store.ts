@@ -152,11 +152,9 @@ export const useStore = defineStore('itp-post', () => {
     await api.post(resp.data.resume_upload_url.url, payload)
 
     // Update the list of applications so that the student does not need to refresh the page
-    applications.value.splice(
-      sortedIndexBy(applications.value, resp.data.payload, value => `${value.title}#${value.company_name}`),
-      0,
-      resp.data.payload
-    )
+    // Can directly append to the end of the list of applications because applications act as a queue means the new
+    // application is always at the end
+    applications.value.push(resp.data.payload)
 
     applyingInternship.value = false
   }

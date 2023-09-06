@@ -16,7 +16,7 @@
     >
       <template #top-right>
         <q-select
-          class="q-mr-sm"
+          class="q-mr-md"
           style="width: 192px"
           name="status"
           behavior="menu"
@@ -70,10 +70,11 @@
 
           <q-btn
             icon="cancel"
-            color="negative"
             dense
             label="Cancel"
             outline
+            :color="props.row.status !== 'pending' ? 'grey-5' : 'negative'"
+            :disable="props.row.status !== 'pending'"
             @click="openConfirmDelDialog(props.row.title, props.row.company_name)"
           />
         </q-td>
@@ -98,6 +99,7 @@ import { type OutgoingApplication } from 'src/models/itp-post'
 import InternshipAppStudDialog from 'components/itp-post/InternshipAppStudDialog.vue'
 import { useStore, useInternshipAppQueueStudStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
+import { formatTime } from 'src/common'
 
 useMeta({ title: 'My Internship Application | MyITPHub' })
 const { dialog, notify } = useQuasar()
@@ -128,6 +130,15 @@ const columns: any[] = [
     field: 'status',
     align: 'center',
     sortable: true,
+  },
+  {
+    name: 'applied-at',
+    label: 'Applied at',
+    field: 'created_at',
+    align: 'center',
+    icon: 'schedule',
+    sortable: true,
+    format: (value: number) => formatTime(value),
   },
   {
     name: 'actions',
