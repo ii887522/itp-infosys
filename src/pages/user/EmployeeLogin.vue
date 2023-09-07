@@ -23,26 +23,42 @@
     </q-page>
   </template>
   
-  <script setup lang="ts">
-  import { ref } from 'vue'
-  import { useMeta, type QInput } from 'quasar'
-  import { useRouter } from 'vue-router'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useMeta, useQuasar, type QInput } from 'quasar'
+import { useRouter } from 'vue-router'
+import { useStore } from 'stores/user-store'
   
-  useMeta({ title: 'Employee Login | MyITPHub' })
+useMeta({ title: 'Employee Login | MyITPHub' })
+
+const store = useStore();
+const { notify } = useQuasar();
   
-  const email = ref('');
-  const password = ref('');
-  const router = useRouter(); // Import the router directly
+const email = ref('');
+const password = ref('');
+const router = useRouter(); // Import the router directly
+
+async function login() {
+  await store.logInEmployee({
+    emp_name: '',
+    password: password.value,
+    company_name: '',
+    emp_email: email.value,
+    emp_phone: '',
+  })
+
+  router.push('/');
+}
   
-  const login = () => {
+  /* const login = () => {
     // Perform authentication logic here
     // Example: Can make an API request to verify the credentials
     // If success, navigate to the employee dashboard
     router.push('/dashboard');
-  }
-  </script>
+  } */
+</script>
   
-  <style scoped>
+<style scoped>
   .login-header {
       font-weight: bold;
       text-align: center;
