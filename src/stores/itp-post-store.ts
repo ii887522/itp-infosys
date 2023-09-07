@@ -176,7 +176,9 @@ export const useStore = defineStore('itp-post', () => {
 
     // Update the list of applications so that the student does not need to refresh the page
     applications.value.splice(
-      sortedIndexBy(applications.value, resp.data, value => `${value.title}#${value.company_name}`),
+      applications.value.findIndex(
+        value => value.title === resp.data.title && value.company_name === resp.data.company_name
+      ),
       1
     )
 

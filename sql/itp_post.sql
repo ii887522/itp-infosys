@@ -203,3 +203,6 @@ UPDATE application SET `status` = "accepted" WHERE student_id = "21WMR05319" AND
 
 -- Reject an existing internship application in the database
 UPDATE application SET `status` = "rejected" WHERE student_id = "21WMR05319" AND title = "Software Engineer" AND company_name = "CMY Enterprise";
+
+-- Reset internship applications back to pending [FOR TESTING PURPOSES ONLY]
+UPDATE application SET `status` = "pending";

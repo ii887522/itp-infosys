@@ -155,7 +155,6 @@ import InternshipAppForm from 'components/itp-post/InternshipAppForm.vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'stores/itp-post-store'
 import InternshipAlreadyApplied from 'src/components/itp-post/InternshipAlreadyApplied.vue'
-import { sortedFindBy } from 'src/common'
 
 const router = useRouter()
 const detailsStore = useInternshipDetailsStudStore()
