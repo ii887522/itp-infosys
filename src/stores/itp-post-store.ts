@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, reactive } from 'vue'
-import { type Internship, makeInternship, type OutgoingApplication, IncomingApplication } from 'src/models/itp-post'
+import Internship, { makeInternship } from 'src/models/internship'
+import type OutgoingApplication from 'src/models/outgoing-application'
+import type IncomingApplication from 'src/models/incoming-application'
 import { minAllowance, maxAllowance } from 'src/consts/itp-post'
 import { type Router } from 'vue-router'
 import { api } from 'boot/axios'
@@ -176,7 +178,9 @@ export const useStore = defineStore('itp-post', () => {
 
     // Update the list of applications so that the student does not need to refresh the page
     applications.value.splice(
-      sortedIndexBy(applications.value, resp.data, value => `${value.title}#${value.company_name}`),
+      applications.value.findIndex(
+        value => value.title === resp.data.title && value.company_name === resp.data.company_name
+      ),
       1
     )
 
@@ -255,7 +259,9 @@ export const useStore = defineStore('itp-post', () => {
 
     // Update the list of internship applications so that the employee does not need to refresh the page
     incomingApplications.value[
-      sortedIndexBy(incomingApplications.value, resp.data, value => `${value.title}#${value.student_id}`)
+      incomingApplications.value.findIndex(
+        value => value.title === resp.data.title && value.student_id === resp.data.student_id
+      )
     ].status = resp.data.status
 
     updatingApplication.value = false

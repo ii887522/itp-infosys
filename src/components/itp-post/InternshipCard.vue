@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Internship } from 'src/models/itp-post'
+import type Internship from 'src/models/internship'
 import { categoryColor } from 'src/consts/itp-post'
 import { useRouter } from 'vue-router'
 import { useInternshipDetailsStudStore } from 'stores/itp-post-store'

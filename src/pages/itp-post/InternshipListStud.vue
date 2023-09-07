@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Internship } from 'src/models/itp-post'
+import type Internship from 'src/models/internship'
 import InternshipCard from 'components/itp-post/InternshipCard.vue'
 import { useInternshipSearchStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
