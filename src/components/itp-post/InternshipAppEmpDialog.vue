@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import { useDialogPluginComponent } from 'quasar'
-import { type IncomingApplication } from 'src/models/itp-post'
+import type IncomingApplication from 'src/models/incoming-application'
 import { statusColor, statusIcon } from 'src/consts'
 
 defineProps<{ value: IncomingApplication }>()

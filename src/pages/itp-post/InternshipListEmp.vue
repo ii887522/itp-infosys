@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Internship } from 'src/models/itp-post'
+import type Internship from 'src/models/internship'
 import { useInternshipSearchStore, useInternshipEditStore, useInternshipDetailsEmpStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
 import { useMeta, useQuasar } from 'quasar'
