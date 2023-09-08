@@ -9,6 +9,7 @@ export const useStore = defineStore('user', () => {
     const registeringEmployee = ref(false)
     const loggingInStudent = ref(false)
     const loggingInEmployee = ref(false)
+    const isAuthenticated = ref(false)
 
     async function registerStudent(value: Student) {
         registeringStudent.value = true
@@ -23,15 +24,21 @@ export const useStore = defineStore('user', () => {
     }
 
     async function logInStudent(value: Student) {
-        loggingInStudent.value = true
-        const resp = await api.post(`/user/login-stud`, value)
-        loggingInStudent.value = false
+        if (!isAuthenticated.value) {
+            loggingInStudent.value = true
+            const resp = await api.post(`/user/login-stud`, value)
+            loggingInStudent.value = false
+            isAuthenticated.value = true
+        }
     }
 
     async function logInEmployee(value: Employee) {
-        loggingInEmployee.value = true
-        const resp = await api.post(`/user/login-emp`, value)
-        loggingInEmployee.value = false
+        if (!isAuthenticated.value) {
+            loggingInEmployee.value = true
+            const resp = await api.post(`/user/login-emp`, value)
+            loggingInEmployee.value = false
+            isAuthenticated.value = true
+        }
     }
 
     return {
@@ -39,6 +46,7 @@ export const useStore = defineStore('user', () => {
         registeringEmployee,
         loggingInStudent,
         loggingInEmployee,
+        isAuthenticated,
         registerStudent,
         registerEmployee,
         logInStudent,

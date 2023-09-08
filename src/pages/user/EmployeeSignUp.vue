@@ -15,10 +15,10 @@
                                 <!-- <q-input filled v-model="companyName" label="Company Name" dense class="input-field" placeholder="Something Sdn. Bhd." :rules="[requiredRule]"/> -->
 
                                 <!-- Dropdown for selecting an existing company or adding a new one -->
-                                <q-select filled v-model="selectedCompany" :options="companyOptions" label="Company" dense class="input-field" @input="onCompanySelect"/>
+                                <q-select filled v-model="selectedCompany" :options="companyOptions" label="Company" dense class="input-field"/>
                                 <!-- Text box for adding a new company (displayed conditionally) -->
-                                <q-input v-if="showAddCompany" filled v-model="newCompany" label="New Company" dense class="input-field" :rules="[requiredRule]"/>
-                                <br/>
+                                <q-input v-if="selectedCompany === 'Add new...'" filled v-model="newCompany" label="New Company" dense class="input-field" :rules="[requiredRule]"/>
+                                
                                 <q-input filled v-model="employeeEmail" label="Employee Email" dense class="input-field" placeholder="someone@example.com" :rules="[requiredRule, companyEmailRule]"/>
                                 <q-input filled v-model="employeePhone" label="Employee Phone" dense class="input-field" placeholder="0123456789" :rules="[requiredRule, phoneRule]"/>
                                 <q-input filled v-model="password" label="Password" type="password" dense class="input-field" :rules="[requiredRule, passwordRule]"/>
@@ -59,7 +59,6 @@ const companyName = ref('');
 
 const companyOptions = ref([]);
 const selectedCompany = ref('');
-const showAddCompany = ref(false);
 const newCompany = ref('');
 
 const employeeEmail = ref('');
@@ -87,17 +86,6 @@ async function fetchCompanyNames() {
     companyOptions.value = companies;
   } catch (error) {
     console.error('Error fetching company names:', error);
-  }
-}
-
-// Show the new company text box
-function onCompanySelect() {
-  console.log('Selected Company:', selectedCompany.value);
-  if (selectedCompany.value === 'Add new...') {
-    showAddCompany.value = true;
-    newCompany.value = '';
-  } else {
-    showAddCompany.value = false;
   }
 }
 

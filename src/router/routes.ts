@@ -4,6 +4,7 @@ import {
   useInternshipEditStore,
   useInternshipDetailsEmpStore,
 } from 'stores/itp-post-store'
+import { requireAuth } from 'src/common/user/guards'; // Import the route guard
 
 const routes: RouteRecordRaw[] = [
   {
@@ -64,6 +65,13 @@ const routes: RouteRecordRaw[] = [
       { path: 'emp/signup', component: () => import('pages/user/EmployeeSignUp.vue') },
       { path: 'emp/profile', component: () => import('pages/user/EmployeeProfile.vue') },
       { path: 'emp/profile/edit', component: () => import('pages/user/EmpEditProfile.vue') },
+
+      // Protected route that requires authentication (testing purpose)
+      {
+        path: 'test',
+        beforeEnter: requireAuth, // Apply the route guard
+        component: () => import('pages/itp-post/InternshipDetailsStud.vue'),
+      }
     ],
   },
 
