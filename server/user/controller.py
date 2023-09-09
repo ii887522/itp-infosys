@@ -68,18 +68,18 @@ def register_employee():
     try:
         # Get the maximum emp_id from the employee table
         cursor.execute("SELECT MAX(emp_id) FROM employee")
-        max_emp_id = cursor.fetchone()[0]
+        max_emp_id = cursor.fetchone()
 
         if max_emp_id is not None:
             # If a maximum emp_id is found, add 1 to it
-            emp_id = max_emp_id + 1
+            emp_id = max_emp_id[0] + 1
         else:
             # If no emp_id is found (empty table), set emp_id to 1
             emp_id = 1
 
         # Check if the company name exists in the company table
         cursor.execute("SELECT COUNT(*) FROM company WHERE name = %s", (company_name,))
-        count = cursor.fetchone()[0]
+        count = cursor.fetchone()
 
         if count == 0:
             # If the company doesn't exist, add it to the "company" table

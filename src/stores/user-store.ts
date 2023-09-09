@@ -1,4 +1,4 @@
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { defineStore } from 'pinia'
 import { Student } from 'src/models/student'
@@ -27,6 +27,15 @@ export const useStore = defineStore('user', () => {
   function setAuthUserType(value: string) {
     authUserType.value = value;
     LocalStorage.set('authUserType', value);
+  }
+
+  // Function to get isAuthenticated value from local storage
+  function getIsAuthenticated() {
+    return LocalStorage.getItem('isAuthenticated');
+  }
+
+  function getAuthUserType() {
+    return LocalStorage.getItem('authUserType');
   }
 
   // Function to initialize isAuthenticated from local storage
@@ -71,8 +80,11 @@ export const useStore = defineStore('user', () => {
       // Check the response status code
       if (resp.status === 200) {
         // if login successful
-        isAuthenticated.value = true
+        //isAuthenticated.value = true
         loginError.value = false
+        //authUserType.value = 'stud'
+        setIsAuthenticated(true);
+        setAuthUserType('stud');
       }
       loggingInStudent.value = false
     } catch (error) {
@@ -80,7 +92,8 @@ export const useStore = defineStore('user', () => {
         //console.log('Login error:', errorMsg)
         loginError.value = true
         errorMessage.value = (errorMsg.response?.data as { message: string }).message
-        isAuthenticated.value = false
+        setIsAuthenticated(false)
+        setAuthUserType('none');
     }
   }
 
@@ -92,8 +105,10 @@ export const useStore = defineStore('user', () => {
       // Check the response status code
       if (resp.status === 200) {
         // if login successful
-        isAuthenticated.value = true
+        //isAuthenticated.value = true
         loginError.value = false
+        setIsAuthenticated(true);
+        setAuthUserType('emp');
       }
       loggingInEmployee.value = true
     } catch (error) {
@@ -101,6 +116,8 @@ export const useStore = defineStore('user', () => {
       loginError.value = true
       errorMessage.value = (errorMsg.response?.data as { message: string }).message // get the error message
       isAuthenticated.value = false
+      setIsAuthenticated(false);
+      setAuthUserType('none');
     }
   }
 
@@ -113,8 +130,10 @@ export const useStore = defineStore('user', () => {
     errorMessage,
     isAuthenticated,
     authUserType,
-    setAuthUserType,
     setIsAuthenticated,
+    setAuthUserType,
+    getIsAuthenticated,
+    getAuthUserType,
     registerStudent,
     registerEmployee,
     logInStudent,

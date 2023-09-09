@@ -4,7 +4,7 @@ import {
   useInternshipEditStore,
   useInternshipDetailsEmpStore,
 } from 'stores/itp-post-store'
-import { requireAuthStud, requireAuthEmp } from 'src/common/user/guards'; // Import the route guard
+import { requireAuthStud, requireAuthEmp, alreadyAuth } from 'src/common/user/guards'; // Import the route guard
 
 const routes: RouteRecordRaw[] = [
   {
@@ -63,8 +63,16 @@ const routes: RouteRecordRaw[] = [
       },
 
       // user module
-      { path: 'stud/login', component: () => import('pages/user/StudentLogin.vue') },
-      { path: 'stud/signup', component: () => import('pages/user/StudentSignUp.vue') },
+      {
+        path: 'stud/login',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/StudentLogin.vue')
+      },
+      {
+        path: 'stud/signup',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/StudentSignUp.vue')
+      },
       { 
         path: 'stud/profile',
         beforeEnter: requireAuthStud,
@@ -76,28 +84,33 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/StudEditProfile.vue')
       },
 
-      { path: 'emp/login', component: () => import('pages/user/EmployeeLogin.vue') },
-      { path: 'emp/signup', component: () => import('pages/user/EmployeeSignUp.vue') },
+      {
+        path: 'emp/login',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/EmployeeLogin.vue')
+      },
+      {
+        path: 'emp/signup',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/EmployeeSignUp.vue')
+      },
       { 
         path: 'emp/profile',
         beforeEnter: requireAuthEmp,
         component: () => import('pages/user/EmployeeProfile.vue')
       },
-      { 
+      {
         path: 'emp/profile/edit',
         beforeEnter: requireAuthEmp,
         component: () => import('pages/user/EmpEditProfile.vue')
       },
 
-      { path: 'login', component: () => import('pages/user/LoginPage.vue')},
+      { 
+        path: 'login',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/LoginPage.vue')
+      },
       // logout
-
-      // Protected route that requires authentication (testing purpose)
-      /* {
-        path: 'test',
-        beforeEnter: requireAuth, // Apply the route guard
-        component: () => import('pages/itp-post/InternshipDetailsStud.vue'),
-      } */
     ],
   },
 

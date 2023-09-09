@@ -1,16 +1,13 @@
 import { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 import { useStore } from 'stores/user-store';
 
-const store = useStore();
-
 export const requireAuthStud = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  //const store = useStore(); // when I call this function, it resets all the states inside store
-
-  console.log('Is Authenticated:', store.isAuthenticated); // Add this for debugging
+  const store = useStore();
+  console.log('Is Authenticated:', store.isAuthenticated);
   console.log('Authenticated Type:', store.authUserType);
   
   // Check if the user is authenticated and is student or not
-  if (store.isAuthenticated && store.authUserType === 'stud') {
+  if (store.getIsAuthenticated() && store.getAuthUserType() === 'stud') {
     next(); // User is authenticated, proceed to the route
   } else {
     next('/login'); // User is not authenticated, redirect to the login page
@@ -18,12 +15,24 @@ export const requireAuthStud = (to: RouteLocationNormalized, from: RouteLocation
 };
 
 export const requireAuthEmp = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+  const store = useStore();
   console.log('Is Authenticated:', store.isAuthenticated);
   console.log('Authenticated Type:', store.authUserType);
 
-  if (store.isAuthenticated && store.authUserType === 'emp') {
+  if (store.getIsAuthenticated() && store.getAuthUserType() === 'emp') {
     next();
   } else {
     next('/login');
+  }
+}
+
+// Function to check if the user is already logged in or not
+export const alreadyAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+  const store = useStore();
+
+  if (!store.getIsAuthenticated()) {
+    next(); // User is authenticated, proceed to the route
+  } else {
+    next('/'); // User is not authenticated, redirect to the login page
   }
 }
