@@ -47,10 +47,10 @@ FROM internship
     ON internship.title = learning_outcome.itp_title AND internship.company_name = learning_outcome.company_name
   INNER JOIN company
     ON internship.company_name = company.`name`
-WHERE internship.title > ? OR internship.title = ? AND internship.company_name > ?
+WHERE internship.title > %s OR internship.title = %s AND internship.company_name > %s
 GROUP BY internship.title, internship.company_name
 ORDER BY internship.title, internship.company_name
-LIMIT ?
+LIMIT %s
 """,
             (next_title, next_title, next_company_name, size),
         )
@@ -87,7 +87,7 @@ def list_company_photos(company_name: str):
 
     try:
         # Fetch a list of company photo S3 keys from the database
-        cursor.execute("SELECT url FROM photo WHERE company_name = ?", (company_name,))
+        cursor.execute("SELECT url FROM photo WHERE company_name = %s", (company_name,))
         db_conn.commit()
         db_rows = cursor.fetchall()
 
@@ -117,7 +117,7 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
     try:
         # Create internship application record in the database
         cursor.execute(
-            "INSERT INTO application VALUES (?, ?, ?, ?, DEFAULT, ?)",
+            "INSERT INTO application VALUES (%s, %s, %s, %s, DEFAULT, %s)",
             (student_id, internship_title, company_name, note_to_employer, now),
         )
         db_conn.commit()
@@ -169,9 +169,9 @@ def list_outgoing_applications(student_id: str):
             """
 SELECT title, company_name, `status`, note_to_employer, created_at
 FROM application
-WHERE student_id = ? AND (title > ? OR title = ? AND company_name > ?)
+WHERE student_id = %s AND (title > %s OR title = %s AND company_name > %s)
 ORDER BY created_at
-LIMIT ?
+LIMIT %s
 """,
             (student_id, next_title, next_title, next_company_name, size),
         )
@@ -213,7 +213,7 @@ def cancel_application(company_name: str, internship_title: str, student_id: str
     try:
         # Delete internship application record from the database
         cursor.execute(
-            "DELETE FROM application WHERE student_id = ? AND title = ? AND company_name = ?",
+            "DELETE FROM application WHERE student_id = %s AND title = %s AND company_name = %s",
             (student_id, internship_title, company_name),
         )
         db_conn.commit()
@@ -257,10 +257,10 @@ FROM internship
     ON internship.title = category.itp_title AND internship.company_name = category.company_name
   LEFT JOIN learning_outcome
     ON internship.title = learning_outcome.itp_title AND internship.company_name = learning_outcome.company_name
-WHERE internship.company_name = ? AND internship.title > ?
+WHERE internship.company_name = %s AND internship.title > %s
 GROUP BY internship.title
 ORDER BY internship.title
-LIMIT ?
+LIMIT %s
 """,
             (company_name, next, size),
         )
@@ -307,7 +307,7 @@ def post_internship():
     try:
         # Create internship record into the database
         cursor.execute(
-            "INSERT INTO internship VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO internship VALUES (%s, %s, %s, %s, %s, %s, %s)",
             (
                 title,
                 company_name,
@@ -319,10 +319,10 @@ def post_internship():
             ),
         )
         cursor.executemany(
-            "INSERT INTO category VALUES (?, ?, ?)", [(category, title, company_name) for category in categories]
+            "INSERT INTO category VALUES (%s, %s, %s)", [(category, title, company_name) for category in categories]
         )
         cursor.executemany(
-            "INSERT INTO learning_outcome VALUES (?, ?, ?)",
+            "INSERT INTO learning_outcome VALUES (%s, %s, %s)",
             [(learning_outcome, title, company_name) for learning_outcome in learning_outcomes],
         )
         db_conn.commit()
@@ -349,7 +349,9 @@ def remove_internship(company_name: str, internship_title: str):
 
     try:
         # Delete internship application record from the database
-        cursor.execute("DELETE FROM internship WHERE title = ? AND company_name = ?", (internship_title, company_name))
+        cursor.execute(
+            "DELETE FROM internship WHERE title = %s AND company_name = %s", (internship_title, company_name)
+        )
         db_conn.commit()
 
         # Output
@@ -381,8 +383,8 @@ def update_internship(old_title: str):
         # Update the existing internship record in the database
         cursor.execute(
             """UPDATE internship
-SET title = ?, min_allowance = ?, max_allowance = ?, location = ?, `description` = ?, vacancy_count = ?
-WHERE title = ? AND company_name = ?""",
+SET title = %s, min_allowance = %s, max_allowance = %s, location = %s, `description` = %s, vacancy_count = %s
+WHERE title = %s AND company_name = %s""",
             (
                 new_title,
                 min_allowance if min_allowance != itp_post_consts.MIN_ALLOWANCE else None,
@@ -394,15 +396,15 @@ WHERE title = ? AND company_name = ?""",
                 company_name,
             ),
         )
-        cursor.execute("DELETE FROM category WHERE itp_title = ? AND company_name = ?", (new_title, company_name))
+        cursor.execute("DELETE FROM category WHERE itp_title = %s AND company_name = %s", (new_title, company_name))
         cursor.executemany(
-            "INSERT INTO category VALUES (?, ?, ?)", [(category, new_title, company_name) for category in categories]
+            "INSERT INTO category VALUES (%s, %s, %s)", [(category, new_title, company_name) for category in categories]
         )
         cursor.execute(
-            "DELETE FROM learning_outcome WHERE itp_title = ? AND company_name = ?", (new_title, company_name)
+            "DELETE FROM learning_outcome WHERE itp_title = %s AND company_name = %s", (new_title, company_name)
         )
         cursor.executemany(
-            "INSERT INTO learning_outcome VALUES (?, ?, ?)",
+            "INSERT INTO learning_outcome VALUES (%s, %s, %s)",
             [(learning_outcome, new_title, company_name) for learning_outcome in learning_outcomes],
         )
         db_conn.commit()
@@ -439,9 +441,9 @@ def list_incoming_applications(company_name: str):
             """
 SELECT title, application.student_id, student_name, `status`, note_to_employer, created_at
 FROM application INNER JOIN student ON application.student_id = student.student_id
-WHERE company_name = ? AND (title > ? OR title = ? AND application.student_id > ?)
+WHERE company_name = %s AND (title > %s OR title = %s AND application.student_id > %s)
 ORDER BY created_at
-LIMIT ?
+LIMIT %s
 """,
             (company_name, next_title, next_title, next_student_id, size),
         )
@@ -490,7 +492,7 @@ def update_application(company_name: str, internship_title: str, student_id: str
     try:
         # Update the status of the internship application record in the database
         cursor.execute(
-            "UPDATE application SET `status` = ? WHERE student_id = ? AND title = ? AND company_name = ?",
+            "UPDATE application SET `status` = %s WHERE student_id = %s AND title = %s AND company_name = %s",
             (status, student_id, internship_title, company_name),
         )
         db_conn.commit()
