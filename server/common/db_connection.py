@@ -1,5 +1,5 @@
 import config
-from mariadb import Connection
+from pymysql import Connection
 
 
 class DbConnection:
