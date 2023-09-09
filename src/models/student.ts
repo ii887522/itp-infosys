@@ -1,23 +1,23 @@
 export interface Student {
-    student_id: String
-    student_name: String
-    password: String
-    ic_no: String
-    gender: String[]
-    programme: String[]
-    student_email: String
-    personal_email: String
+  student_id: string
+  student_name: string
+  password: string
+  ic_no: string
+  gender: string[]
+  programme: string[]
+  student_email: string
+  personal_email: string
 }
 
 export function makeStudent(): Student {
-    return {
-        student_id: '',
-        student_name: '',
-        password: '',
-        ic_no: '',
-        gender: [],
-        programme: [],
-        student_email: '',
-        personal_email: '',
-    }
+  return {
+    student_id: '',
+    student_name: '',
+    password: '',
+    ic_no: '',
+    gender: [],
+    programme: [],
+    student_email: '',
+    personal_email: '',
+  }
 }
