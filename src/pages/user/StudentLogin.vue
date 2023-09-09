@@ -7,8 +7,7 @@
                 <p class="login-header text-h4 q-pt-md">Student Login</p>
                 <q-card-section>
                   <q-form @submit="login" class="q-gutter-md">
-                    <!-- Error Message (conditional) -->
-                    <div v-if="displayErrorMessage" class="error-message">{{ errorMessage }}</div>
+                    <div v-if="displayErrorMessage" class="error-message">{{ store.errorMessage }}</div> <!-- Error Message (conditional) -->
 
                     <q-input filled v-model="studentId" label="Student ID" dense class="input-field" />
                     <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
@@ -27,31 +26,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useMeta, useQuasar, type QInput } from 'quasar'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useMeta, type QInput } from 'quasar'
 import { useStore } from 'stores/user-store'
 
 useMeta({ title: 'Student Login | MyITPHub' })
 
 const store = useStore();
-const { notify } = useQuasar();
-
 const studentId = ref('');
 const password = ref('');
-const router = useRouter(); // Import the router directly
-
-// Error handling
-const loginError = ref(false);
-const errorMessage = ref('');
 
 const displayErrorMessage = computed(() => {
-  return loginError.value && errorMessage.value !== '';
+  return store.loginError && store.errorMessage !== '';
 });
 
 async function login() {
-  loginError.value = false;
-  errorMessage.value = '';
+  store.loginError = false;
+  store.errorMessage = '';
 
   await store.logInStudent({
     student_id: studentId.value,
@@ -64,16 +55,6 @@ async function login() {
     personal_email: '',
   })
 }
-
-// Watch for changes in loginError and errorMessage
-watch([loginError, errorMessage], () => {
-  if (loginError.value && errorMessage.value !== '') {
-    notify({
-      type: 'negative',
-      message: errorMessage.value,
-    });
-  }
-});
 </script>
 
 <style scoped>

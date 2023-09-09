@@ -140,7 +140,7 @@ def login_student():
             return jsonify({"message": "Student login successful", "student_id": student_data[0]}), 200
         else:
             # Student login failed
-            return jsonify({"message": "Student login failed: Invalid student ID or password"}), 401
+            return jsonify({"message": "Invalid student ID or password"}), 401
 
     finally:
         cursor.close()
@@ -167,7 +167,7 @@ def login_employee():
             return {"message": "Employee login successful", "emp_id": employee_data[0]}, 200
         else:
             # Employee login failed
-            return {"message": "Employee login failed: Invalid email or password"}, 401
+            return {"message": "Invalid email or password"}, 401
 
     finally:
         cursor.close()
