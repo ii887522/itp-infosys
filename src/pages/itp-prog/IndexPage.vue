@@ -13,7 +13,9 @@
           <span>Supervisor</span>
         </li>
       </ul>
-      <button class="btn">Search for Supervisor <i class="fa-solid fa-arrow-right"></i></button>
+      <q-btn class="btn" to="/admin/itp-prog/students">
+        Search for Supervisor <i class="fa-solid fa-arrow-right"></i>
+      </q-btn>
     </div>
 
     <div class="swiper-container">

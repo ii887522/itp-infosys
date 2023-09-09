@@ -11,6 +11,7 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
+      // internship posting module
       {
         path: 'stud/itp-post/internships',
         component: () => import('pages/itp-post/InternshipListStud.vue'),
@@ -50,9 +51,15 @@ const routes: RouteRecordRaw[] = [
         path: 'emp/itp-post/internship-app-queue',
         component: () => import('pages/itp-post/InternshipAppQueueEmp.vue'),
       },
+
+      // internship program module
       {
         path: 'admin/itp-prog',
         component: () => import('pages/itp-prog/IndexPage.vue'),
+      },
+      {
+        path: 'admin/itp-prog/students',
+        component: () => import('pages/itp-prog/StudList.vue'),
       },
 
       // user module
