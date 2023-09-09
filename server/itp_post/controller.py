@@ -218,6 +218,12 @@ def cancel_application(company_name: str, internship_title: str, student_id: str
         )
         db_conn.commit()
 
+        # Remove the student's resume to cleanup storage
+        s3.delete_object(
+            Bucket=config.custombucket,
+            Key=f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+        )
+
         # Output
         return {"title": internship_title, "company_name": company_name}
 
