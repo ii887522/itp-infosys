@@ -29,12 +29,16 @@
 import { ref, computed } from 'vue'
 import { useMeta, type QInput } from 'quasar'
 import { useStore } from 'stores/user-store'
+import { useRouter } from 'vue-router';
 
 useMeta({ title: 'Student Login | MyITPHub' })
 
 const store = useStore();
 const studentId = ref('');
 const password = ref('');
+const router = useRouter();
+
+console.log('Is Authenticated:', store.isAuthenticated);
 
 const displayErrorMessage = computed(() => {
   return store.loginError && store.errorMessage !== '';
@@ -54,6 +58,11 @@ async function login() {
     student_email: '',
     personal_email: '',
   })
+
+  console.log('Is Authenticated:', store.isAuthenticated);
+  if (!store.loginError) {
+    router.push('/')
+  }
 }
 </script>
 

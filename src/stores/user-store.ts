@@ -1,21 +1,55 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { defineStore } from 'pinia'
 import { Student } from 'src/models/student'
 import { Employee } from 'src/models/employee'
 import { AxiosError } from 'axios'
-import { useRouter } from 'vue-router'
-
-const router = useRouter();
+import { LocalStorage } from 'quasar'
 
 export const useStore = defineStore('user', () => {
   const registeringStudent = ref(false)
   const registeringEmployee = ref(false)
   const loggingInStudent = ref(false)
   const loggingInEmployee = ref(false)
-  const isAuthenticated = ref(false)
   const loginError = ref(false)
   const errorMessage = ref('')
+
+  // authentication guard
+  const isAuthenticated = ref(false)
+  const authUserType = ref('')
+
+  // Function to set isAuthenticated in local storage
+  function setIsAuthenticated(value: boolean) {
+    isAuthenticated.value = value;
+    LocalStorage.set('isAuthenticated', value);
+  }
+
+  function setAuthUserType(value: string) {
+    authUserType.value = value;
+    LocalStorage.set('authUserType', value);
+  }
+
+  // Function to initialize isAuthenticated from local storage
+  function initIsAuthenticated() {
+    const storedValue = LocalStorage.getItem('isAuthenticated');
+    if (storedValue !== null) {
+      isAuthenticated.value = storedValue === 'true'; // Convert to boolean
+    }
+  }
+
+  // Function to initialize authUserType from local storage
+  function initAuthUserType() {
+    const storedValue = LocalStorage.getItem('authUserType') as string;
+    if (storedValue !== null) {
+      authUserType.value = storedValue; // No need to convert
+    }
+  }
+
+  // Call initIsAuthenticated when the app starts
+  onMounted(() => {
+    initIsAuthenticated();
+    initAuthUserType();
+  });
 
   async function registerStudent(value: Student) {
     registeringStudent.value = true
@@ -41,7 +75,6 @@ export const useStore = defineStore('user', () => {
         loginError.value = false
       }
       loggingInStudent.value = false
-      router.push('/')
     } catch (error) {
         const errorMsg = error as AxiosError
         //console.log('Login error:', errorMsg)
@@ -63,7 +96,6 @@ export const useStore = defineStore('user', () => {
         loginError.value = false
       }
       loggingInEmployee.value = true
-      router.push('/')
     } catch (error) {
       const errorMsg = error as AxiosError
       loginError.value = true
@@ -77,9 +109,12 @@ export const useStore = defineStore('user', () => {
     registeringEmployee,
     loggingInStudent,
     loggingInEmployee,
-    isAuthenticated,
     loginError,
     errorMessage,
+    isAuthenticated,
+    authUserType,
+    setAuthUserType,
+    setIsAuthenticated,
     registerStudent,
     registerEmployee,
     logInStudent,

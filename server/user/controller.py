@@ -31,7 +31,7 @@ def register_student():
     try:
         # Add student record to the database
         cursor.execute(
-            "INSERT INTO student VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO student VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
             (student_id, student_name, password, ic_no, gender, programme, student_email, personal_email),
         )
         db_conn.commit()
@@ -78,17 +78,17 @@ def register_employee():
             emp_id = 1
 
         # Check if the company name exists in the company table
-        cursor.execute("SELECT COUNT(*) FROM company WHERE name = ?", (company_name,))
+        cursor.execute("SELECT COUNT(*) FROM company WHERE name = %s", (company_name,))
         count = cursor.fetchone()[0]
 
         if count == 0:
             # If the company doesn't exist, add it to the "company" table
-            cursor.execute("INSERT INTO company (name) VALUES (?)", (company_name,))
+            cursor.execute("INSERT INTO company (name) VALUES (%s)", (company_name,))
             db_conn.commit()
 
         # Add employee record to the database
         cursor.execute(
-            "INSERT INTO employee VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO employee VALUES (%s, %s, %s, %s, %s, %s)",
             (emp_id, password, emp_name, company_name, emp_email, emp_phone),
         )
         db_conn.commit()
@@ -132,7 +132,7 @@ def login_student():
 
     try:
         # Query the database to verify student credentials
-        cursor.execute("SELECT * FROM student WHERE student_id = ? AND password = ?", (student_id, password))
+        cursor.execute("SELECT * FROM student WHERE student_id = %s AND password = %s", (student_id, password))
         student_data = cursor.fetchone()
 
         if student_data:
@@ -159,7 +159,7 @@ def login_employee():
 
     try:
         # Query the database to verify employee credentials
-        cursor.execute("SELECT * FROM employee WHERE emp_email = ? AND password = ?", (emp_email, password))
+        cursor.execute("SELECT * FROM employee WHERE emp_email = %s AND password = %s", (emp_email, password))
         employee_data = cursor.fetchone()
 
         if employee_data:

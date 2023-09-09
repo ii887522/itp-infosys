@@ -29,12 +29,14 @@
 import { ref, computed } from 'vue'
 import { useMeta, type QInput } from 'quasar'
 import { useStore } from 'stores/user-store'
+import { useRouter } from 'vue-router';
   
 useMeta({ title: 'Employee Login | MyITPHub' })
 
 const store = useStore();
 const email = ref('');
 const password = ref('');
+const router = useRouter();
 
 const displayErrorMessage = computed(() => {
   return store.loginError && store.errorMessage !== '';
@@ -48,6 +50,10 @@ async function login() {
     emp_email: email.value,
     emp_phone: '',
   })
+
+  if (!store.loginError) {
+    router.push('/')
+  }
 }
 </script>
   
