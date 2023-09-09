@@ -10,6 +10,8 @@ export const useStore = defineStore('user', () => {
     const loggingInStudent = ref(false)
     const loggingInEmployee = ref(false)
     const isAuthenticated = ref(false)
+    const loginError = ref(false)
+    const errorMessage = ref('')
 
     async function registerStudent(value: Student) {
         registeringStudent.value = true
@@ -24,11 +26,28 @@ export const useStore = defineStore('user', () => {
     }
 
     async function logInStudent(value: Student) {
-        if (!isAuthenticated.value) {
-            loggingInStudent.value = true
-            const resp = await api.post(`/user/login-stud`, value)
-            loggingInStudent.value = false
-            isAuthenticated.value = true
+        try {
+            loggingInStudent.value = true;
+            const resp = await api.post(`/user/login-stud`, value);
+
+            // Check the response status code
+            if (resp.status === 200) {
+                // if login successful
+                isAuthenticated.value = true;
+                loginError.value = false;
+            } else if (resp.status === 401) {
+                // if login failed, display error message
+                const responseData = await resp.data as { error: string };
+                loginError.value = true;
+                errorMessage.value = responseData.error;
+                isAuthenticated.value = false;
+            }
+            loggingInStudent.value = false;
+        } catch (error) {
+            console.error('Login error:', error);
+            loginError.value = true;
+            errorMessage.value = 'An error occurred during login.';
+            isAuthenticated.value = false;
         }
     }
 
@@ -47,6 +66,8 @@ export const useStore = defineStore('user', () => {
         loggingInStudent,
         loggingInEmployee,
         isAuthenticated,
+        loginError,
+        errorMessage,
         registerStudent,
         registerEmployee,
         logInStudent,

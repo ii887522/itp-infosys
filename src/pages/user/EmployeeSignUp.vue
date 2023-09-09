@@ -15,7 +15,9 @@
                                 <!-- <q-input filled v-model="companyName" label="Company Name" dense class="input-field" placeholder="Something Sdn. Bhd." :rules="[requiredRule]"/> -->
 
                                 <!-- Dropdown for selecting an existing company or adding a new one -->
+                                <!-- If too many company names, need to limit the dropdown size; and allow them to search company name -->
                                 <q-select filled v-model="selectedCompany" :options="companyOptions" label="Company" dense class="input-field"/>
+                                <br/>
                                 <!-- Text box for adding a new company (displayed conditionally) -->
                                 <q-input v-if="selectedCompany === 'Add new...'" filled v-model="newCompany" label="New Company" dense class="input-field" :rules="[requiredRule]"/>
                                 

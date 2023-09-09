@@ -1,5 +1,5 @@
 import { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
-import { useStore } from 'stores/user-store'; // Assuming you have a user store
+import { useStore } from 'stores/user-store';
 
 export const requireAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const store = useStore();

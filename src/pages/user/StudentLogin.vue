@@ -7,6 +7,9 @@
                 <p class="login-header text-h4 q-pt-md">Student Login</p>
                 <q-card-section>
                   <q-form @submit="login" class="q-gutter-md">
+                    <!-- Error Message (conditional) -->
+                    <div v-if="displayErrorMessage" class="error-message">{{ errorMessage }}</div>
+
                     <q-input filled v-model="studentId" label="Student ID" dense class="input-field" />
                     <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
 
@@ -24,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useMeta, useQuasar, type QInput } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useStore } from 'stores/user-store'
@@ -38,7 +41,18 @@ const studentId = ref('');
 const password = ref('');
 const router = useRouter(); // Import the router directly
 
+// Error handling
+const loginError = ref(false);
+const errorMessage = ref('');
+
+const displayErrorMessage = computed(() => {
+  return loginError.value && errorMessage.value !== '';
+});
+
 async function login() {
+  loginError.value = false;
+  errorMessage.value = '';
+
   await store.logInStudent({
     student_id: studentId.value,
     student_name: '',
@@ -49,16 +63,17 @@ async function login() {
     student_email: '',
     personal_email: '',
   })
-
-  router.push('/');
 }
 
-/* const login = () => {
-  // Perform authentication logic here
-  // Example: Can make an API request to verify the credentials
-  // If success, navigate to the student dashboard
-  router.push('/dashboard');
-} */
+// Watch for changes in loginError and errorMessage
+watch([loginError, errorMessage], () => {
+  if (loginError.value && errorMessage.value !== '') {
+    notify({
+      type: 'negative',
+      message: errorMessage.value,
+    });
+  }
+});
 </script>
 
 <style scoped>
@@ -70,6 +85,11 @@ async function login() {
 
 .input-field {
   min-width: 250px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 5px;
 }
 </style>
 

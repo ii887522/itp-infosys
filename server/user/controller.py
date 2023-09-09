@@ -3,7 +3,7 @@
 import boto3
 # import config
 from common.db_connection import DbConnection
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 
 user_controller = Blueprint("user_controller", __name__)
 db_conn = DbConnection.get_instance()
@@ -78,12 +78,12 @@ def register_employee():
             emp_id = 1
 
         # Check if the company name exists in the company table
-        cursor.execute("SELECT COUNT(*) FROM company WHERE name = ?", (company_name))
+        cursor.execute("SELECT COUNT(*) FROM company WHERE name = ?", (company_name,))
         count = cursor.fetchone()[0]
 
         if count == 0:
             # If the company doesn't exist, add it to the "company" table
-            cursor.execute("INSERT INTO company (name) VALUES (?)", (company_name))
+            cursor.execute("INSERT INTO company (name) VALUES (?)", (company_name,))
             db_conn.commit()
 
         # Add employee record to the database
@@ -137,10 +137,10 @@ def login_student():
 
         if student_data:
             # Student login successful
-            return {"message": "Student login successful", "student_id": student_data[0]}
+            return jsonify({"message": "Student login successful", "student_id": student_data[0]}), 200
         else:
             # Student login failed
-            return {"message": "Student login failed: Invalid student ID or password"}
+            return jsonify({"message": "Student login failed: Invalid student ID or password"}), 401
 
     finally:
         cursor.close()
@@ -164,10 +164,10 @@ def login_employee():
 
         if employee_data:
             # Employee login successful
-            return {"message": "Employee login successful", "emp_id": employee_data[0]}
+            return {"message": "Employee login successful", "emp_id": employee_data[0]}, 200
         else:
             # Employee login failed
-            return {"message": "Employee login failed: Invalid email or password"}
+            return {"message": "Employee login failed: Invalid email or password"}, 401
 
     finally:
         cursor.close()
