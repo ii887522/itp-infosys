@@ -33,6 +33,10 @@ def AddEmp():
     emp_image_file = request.files["emp_image_file"]
 
     insert_sql = "INSERT INTO employee VALUES (%s, %s, %s, %s, %s)"
+
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
     cursor = db_conn.cursor()
 
     if emp_image_file.filename == "":

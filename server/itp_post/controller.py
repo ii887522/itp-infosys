@@ -20,6 +20,9 @@ def list_internships():
     next_title = next[0]
     next_company_name = next[1] if 1 < len(next) else None
 
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
     cursor = db_conn.cursor()
 
     try:
@@ -83,6 +86,9 @@ LIMIT %s
 
 @itp_post_controller.route("/companies/<company_name>/photos", methods=["GET"])
 def list_company_photos(company_name: str):
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
     cursor = db_conn.cursor()
 
     try:
@@ -110,6 +116,9 @@ def list_company_photos(company_name: str):
 def apply_internship(company_name: str, internship_title: str, student_id: str):
     # Input
     note_to_employer = request.json.get("note_to_employer", "") if request.json else ""
+
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
 
     cursor = db_conn.cursor()
     now = int(time.time())
@@ -161,6 +170,9 @@ def list_outgoing_applications(student_id: str):
     next_title = next[0]
     next_company_name = next[1] if 1 < len(next) else None
 
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
     cursor = db_conn.cursor()
 
     try:
@@ -208,6 +220,9 @@ LIMIT %s
     "/companies/<company_name>/internships/<internship_title>/applications/<student_id>", methods=["DELETE"]
 )
 def cancel_application(company_name: str, internship_title: str, student_id: str):
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
     cursor = db_conn.cursor()
 
     try:
@@ -236,6 +251,9 @@ def list_posted_internships(company_name: str):
     # Input
     next = request.args.get("next", "")
     size = request.args.get("size", 1000, type=int)
+
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
 
     cursor = db_conn.cursor()
 
@@ -302,6 +320,9 @@ def post_internship():
     description = request.json.get("description", "")
     vacancy_count = request.json.get("vacancy_count", 1)
 
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
     cursor = db_conn.cursor()
 
     try:
@@ -345,6 +366,9 @@ def post_internship():
 
 @itp_post_controller.route("/companies/<company_name>/internships/<internship_title>", methods=["DELETE"])
 def remove_internship(company_name: str, internship_title: str):
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
     cursor = db_conn.cursor()
 
     try:
@@ -376,6 +400,9 @@ def update_internship(old_title: str):
     learning_outcomes = request.json.get("learning_outcomes", [])
     description = request.json.get("description", "")
     vacancy_count = request.json.get("vacancy_count", 1)
+
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
 
     cursor = db_conn.cursor()
 
@@ -433,6 +460,9 @@ def list_incoming_applications(company_name: str):
     next_title = next[0]
     next_student_id = next[1] if 1 < len(next) else None
 
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
     cursor = db_conn.cursor()
 
     try:
@@ -486,6 +516,9 @@ def update_application(company_name: str, internship_title: str, student_id: str
 
     # Input
     status = request.json["status"]
+
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
 
     cursor = db_conn.cursor()
 
