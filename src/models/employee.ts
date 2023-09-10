@@ -1,9 +1,9 @@
 export interface Employee {
-    emp_name: String
-    password: String
-    company_name: String
-    emp_email: String
-    emp_phone: String
+    emp_name: string
+    password: string
+    company_name: string
+    emp_email: string
+    emp_phone: string
 }
 
 export function makeEmployee(): Employee {

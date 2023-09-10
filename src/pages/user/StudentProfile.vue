@@ -9,6 +9,10 @@
             <q-avatar size="100px" color="primary">
               <img src="https://via.placeholder.com/100" alt="Profile Picture" />
             </q-avatar>
+            <div class="q-ml-md"> <!-- Add margin to the left for spacing -->
+              <!-- align right, view resume button -->
+              <q-btn label="View Resume" color="primary" @click="viewResume"/>
+            </div>
           </q-card-section>
           <!-- align right, view resume button -->
           <q-card-section>
@@ -37,21 +41,23 @@
   </template>
   
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { useMeta } from 'quasar';
+  import { useStore } from 'src/stores/user-store';
 
   useMeta({ title: 'Student Profile | MyITPHub' })
   
   // get profile from the database
   const studentName = ref('John Doe');
   const studentId = ref('22WMR00111');
-  const icNo = ref('012345-67-8901');
+  const icNo = ref('01111111111');
   const gender = ref('Male');
   const programme = ref('RSW');
   const studentEmail = ref('john.doe@student.tarc.edu.my');
   const personalEmail = ref('johndoe@gmail.com');
   const router = useRouter();
+  const store = useStore();
 
   const profileRows = ref([
     {
@@ -91,12 +97,26 @@
     }
   ])
 
-  // view resume button, get the associated resume file
-  /*
-  const viewResume = () => {
-    ...
+  async function getStudentProfile() {
+    const studentData = store.fetchStudentProfile();
+    console.log(studentData);
+    //studentName.value = studentData.studentName;
+    
+    studentName.value = (studentData as unknown as { student_name: string }).student_name;
+    //studentId.value = studentData.student_id;
+    //icNo.value = studentData.ic_no;
+
+    // errorMessage.value = (errorMsg.response?.data as { message: string }).message
   }
-  */
+
+  onMounted(() => {
+    getStudentProfile();
+  })
+
+  const viewResume = () => {
+    // get the resume, this router push is temporary
+    router.push('');
+  }
   
   const editProfile = () => {
     // Redirect to the edit profile page

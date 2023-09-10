@@ -26,6 +26,7 @@ def register_student():
     student_email = request.json.get("student_email", "")
     personal_email = request.json.get("personal_email", "")
 
+    db_conn.ping()
     cursor = db_conn.cursor()
 
     try:
@@ -63,6 +64,7 @@ def register_employee():
     emp_email = request.json.get("emp_email", "")
     emp_phone = request.json.get("emp_phone", "")
 
+    db_conn.ping()
     cursor = db_conn.cursor()
 
     try:
@@ -155,6 +157,7 @@ def login_employee():
     emp_email = request.json.get("emp_email", "")
     password = request.json.get("password", "")
 
+    db_conn.ping()
     cursor = db_conn.cursor()
 
     try:
@@ -169,5 +172,31 @@ def login_employee():
             # Employee login failed
             return {"message": "Invalid email or password"}, 401
 
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/get-student-profile/<student_id>", methods=['GET'])
+def get_student_profile(student_id: str):
+    db_conn.ping()
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM student WHERE student_id = %s", (student_id,))
+        student_data = cursor.fetchone()
+        if student_data:
+            # Construct and return the student profile
+            profile = {
+                "student_id": student_data[0],
+                "student_name": student_data[1],
+                "password": student_data[2],
+                "ic_no": student_data[3],
+                "gender": student_data[4],
+                "programme": student_data[5],
+                "student_email": student_data[6],
+                "personal_email": student_data[7],
+            }
+            return jsonify(profile)
+        else:
+            return jsonify({"message": "Student not found"}), 404
     finally:
         cursor.close()
