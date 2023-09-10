@@ -152,17 +152,7 @@ export const useStore = defineStore('user', () => {
 
   // Function to get the student profile from the database
   // got error
-  async function fetchStudentProfile() {
-    try {
-      const studentId = getUsername();
-      console.log('Student ID:', studentId);
-      const resp = await api.get(`/user/get-student-profile/${studentId}`);
-
-      return resp.data;
-    } catch (error) {
-      console.error('Error fetching student profile:', error);
-    }
-  }
+  
 
   return {
     registeringStudent,
@@ -184,6 +174,5 @@ export const useStore = defineStore('user', () => {
     registerEmployee,
     logInStudent,
     logInEmployee,
-    fetchStudentProfile,
   }
 })

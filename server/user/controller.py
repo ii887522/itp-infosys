@@ -185,7 +185,7 @@ def get_student_profile(student_id: str):
         student_data = cursor.fetchone()
         if student_data:
             # Construct and return the student profile
-            profile = {
+            return jsonify({
                 "student_id": student_data[0],
                 "student_name": student_data[1],
                 "password": student_data[2],
@@ -194,8 +194,7 @@ def get_student_profile(student_id: str):
                 "programme": student_data[5],
                 "student_email": student_data[6],
                 "personal_email": student_data[7],
-            }
-            return jsonify(profile)
+            }), 200
         else:
             return jsonify({"message": "Student not found"}), 404
     finally:

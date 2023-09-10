@@ -10,6 +10,7 @@
               <img src="https://via.placeholder.com/100" alt="Profile Picture" />
             </q-avatar>
             <div class="q-ml-md"> <!-- Add margin to the left for spacing -->
+              <!-- align center, student name and student ID -->
               <!-- align right, view resume button -->
               <q-btn label="View Resume" color="primary" @click="viewResume"/>
             </div>
@@ -41,87 +42,97 @@
   </template>
   
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
-  import { useRouter } from 'vue-router';
-  import { useMeta } from 'quasar';
-  import { useStore } from 'src/stores/user-store';
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useMeta } from 'quasar';
+import { useStore } from 'src/stores/user-store';
+import { api } from 'src/boot/axios';
 
-  useMeta({ title: 'Student Profile | MyITPHub' })
-  
-  // get profile from the database
-  const studentName = ref('John Doe');
-  const studentId = ref('22WMR00111');
-  const icNo = ref('01111111111');
-  const gender = ref('Male');
-  const programme = ref('RSW');
-  const studentEmail = ref('john.doe@student.tarc.edu.my');
-  const personalEmail = ref('johndoe@gmail.com');
-  const router = useRouter();
-  const store = useStore();
+useMeta({ title: 'Student Profile | MyITPHub' })
 
-  const profileRows = ref([
-    {
-      icon: 'person',
-      label: 'Student Name',
-      value: studentName,
-    },
-    {
-      icon: 'fingerprint',
-      label: 'Student ID',
-      value: studentId,
-    },
-    {
-      icon: 'perm_identity',
-      label: 'IC No',
-      value: icNo,
-    },
-    {
-      icon: 'email',
-      label: 'Student Email',
-      value: studentEmail,
-    },
-    {
-      icon: 'email',
-      label: 'Personal Email',
-      value: personalEmail,
-    },
-    {
-      icon: 'school',
-      label: 'Programme',
-      value: programme,
-    },
-    {
-      icon: 'wc',
-      label: 'Gender',
-      value: gender,
-    }
-  ])
+// get profile from the database
+const studentName = ref('');
+const student_id = ref('');
+const icNo = ref('');
+const gender = ref('');
+const programme = ref('');
+const studentEmail = ref('');
+const personalEmail = ref('');
+const router = useRouter();
+const store = useStore();
 
-  async function getStudentProfile() {
-    const studentData = store.fetchStudentProfile();
-    console.log(studentData);
-    //studentName.value = studentData.studentName;
-    
-    studentName.value = (studentData as unknown as { student_name: string }).student_name;
-    //studentId.value = studentData.student_id;
-    //icNo.value = studentData.ic_no;
-
-    // errorMessage.value = (errorMsg.response?.data as { message: string }).message
+const profileRows = computed(() => [
+  {
+    icon: 'person',
+    label: 'Student Name',
+    value: studentName.value,
+  },
+  {
+    icon: 'fingerprint',
+    label: 'Student ID',
+    value: student_id.value,
+  },
+  {
+    icon: 'perm_identity',
+    label: 'IC No',
+    value: icNo.value,
+  },
+  {
+    icon: 'email',
+    label: 'Student Email',
+    value: studentEmail.value,
+  },
+  {
+    icon: 'email',
+    label: 'Personal Email',
+    value: personalEmail.value,
+  },
+  {
+    icon: 'school',
+    label: 'Programme',
+    value: programme.value,
+  },
+  {
+    icon: 'wc',
+    label: 'Gender',
+    value: gender.value,
   }
+]) 
 
-  onMounted(() => {
-    getStudentProfile();
-  })
-
-  const viewResume = () => {
-    // get the resume, this router push is temporary
-    router.push('');
-  }
+async function fetchStudentProfile() {
+  try {
+    const studentId = store.getUsername();
+    const resp = await api.get(`/user/get-student-profile/${studentId}`);
+    console.log('API Response:', resp); // Log the response
   
-  const editProfile = () => {
-    // Redirect to the edit profile page
-    router.push('/stud/profile/edit');
-  };
+    // Check the structure of resp.data
+    studentName.value = resp.data.student_name;
+    student_id.value = resp.data.student_id;
+    icNo.value = resp.data.ic_no;
+    studentEmail.value = resp.data.student_email;
+    personalEmail.value = resp.data.personal_email;
+    programme.value = resp.data.programme;
+    gender.value = resp.data.gender;
+    console.log(studentName.value);
+  } catch (error) {
+    console.error('Error fetching student profile:', error);
+  }
+}
 
-  // view resume
+onMounted(() => {
+  fetchStudentProfile();
+  //profileRows.values() = initProfileRows();
+})
+
+const viewResume = () => {
+  // get the resume, this router push is temporary
+  router.push('');
+}
+  
+const editProfile = () => {
+  // Redirect to the edit profile page
+  router.push('/stud/profile/edit');
+};
+
+// view resume
 </script>

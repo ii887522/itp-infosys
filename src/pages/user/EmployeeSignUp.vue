@@ -1,7 +1,3 @@
-<!--ISSUE
-
-  When select the dropdown, it doesn't call the onCompanySelect function, suspect q-select problem
--->
 <template>
     <q-page padding>
         <q-layout view="lHh Lpr lFf">
