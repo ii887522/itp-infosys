@@ -206,3 +206,6 @@ UPDATE application SET `status` = "rejected" WHERE student_id = "21WMR05319" AND
 
 -- Reset internship applications back to pending [FOR TESTING PURPOSES ONLY]
 UPDATE application SET `status` = "pending";
+
+-- Clear internship applications [FOR TESTING PURPOSES ONLY]
+DELETE FROM application;
