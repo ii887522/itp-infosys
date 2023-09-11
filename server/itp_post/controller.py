@@ -131,6 +131,7 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
             "INSERT INTO application VALUES (%s, %s, %s, %s, DEFAULT, %s)",
             (student_id, internship_title, company_name, note_to_employer, now),
         )
+        db_conn.commit()
 
         # Send email confirmation to student after applied
         itp_applied_topic.publish(
