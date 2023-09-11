@@ -2,9 +2,7 @@
   <q-card>
     <q-card-section class="q-pa-none relative-position">
       <div class="row q-pa-sm bg-grey-2">
-        <div class="col" style="padding-top: 2px">
-          <a href="#">{{ value.student_name }}</a>
-        </div>
+        <div class="col" style="padding-top: 2px">{{ value.student_name }}</div>
 
         <q-btn
           class="col-auto"
@@ -22,17 +20,13 @@
 
       <div class="row q-pa-sm bg-grey-2">
         <div class="col-6 q-px-sm text-right" style="border-right: 2px solid rgb(224, 224, 224)">
-          <a href="#">
-            <q-icon class="q-mr-xs" style="margin-bottom: 2px" name="calendar_month" size="xs" />
-            <span>{{ formatTime(value.supervisor_assigned_at, 'D/M/YYYY') }}</span>
-          </a>
+          <q-icon class="q-mr-xs" style="margin-bottom: 2px" name="calendar_month" size="xs" />
+          <span>{{ formatTime(value.supervisor_assigned_at, 'D/M/YYYY') }}</span>
         </div>
 
         <div class="col-6 q-px-sm">
-          <a href="#">
-            <q-icon class="q-mr-xs" style="margin-bottom: 2px" name="schedule" size="xs" />
-            <span>{{ formatTime(value.supervisor_assigned_at, 'h:mm A') }}</span>
-          </a>
+          <q-icon class="q-mr-xs" style="margin-bottom: 2px" name="schedule" size="xs" />
+          <span>{{ formatTime(value.supervisor_assigned_at, 'h:mm A') }}</span>
         </div>
       </div>
 
@@ -72,11 +66,7 @@
               <a href="#">{{ formatTime(value.itp_end_at, 'D/M/YYYY') }}</a>
             </div>
 
-            <div class="row text-bold text-caption">
-              <div class="col">STUDENT ID</div>
-              <q-btn class="col-auto" icon="add" size="sm" flat padding="none" rounded color="primary" />
-            </div>
-
+            <div class="row text-bold text-caption">STUDENT ID</div>
             <q-separator />
 
             <div>
