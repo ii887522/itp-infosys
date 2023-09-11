@@ -55,6 +55,7 @@ const studentName = ref('');
 const student_id = ref('');
 const icNo = ref('');
 const gender = ref('');
+const faculty = ref('');
 const programme = ref('');
 const studentEmail = ref('');
 const personalEmail = ref('');
@@ -99,6 +100,8 @@ const profileRows = computed(() => [
   }
 ]) 
 
+// add faculty
+
 async function fetchStudentProfile() {
   try {
     const studentId = store.getUsername();
@@ -111,6 +114,7 @@ async function fetchStudentProfile() {
     icNo.value = resp.data.ic_no;
     studentEmail.value = resp.data.student_email;
     personalEmail.value = resp.data.personal_email;
+    faculty.value = resp.data.faculty;
     programme.value = resp.data.programme;
     gender.value = resp.data.gender;
     console.log(studentName.value);

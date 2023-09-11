@@ -7,6 +7,7 @@ export interface Student {
   programme: string[]
   student_email: string
   personal_email: string
+  faculty: string[]
 }
 
 export function makeStudent(): Student {
@@ -19,5 +20,6 @@ export function makeStudent(): Student {
     programme: [],
     student_email: '',
     personal_email: '',
+    faculty: [],
   }
 }

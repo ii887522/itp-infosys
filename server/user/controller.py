@@ -37,6 +37,9 @@ def register_student():
         )
         db_conn.commit()
 
+        # boto3 subscribe student email
+        # confirm email
+
         # Output
         return {
             "student_id": student_id,
