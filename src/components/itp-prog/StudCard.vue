@@ -43,35 +43,15 @@
             <div class="text-bold text-caption">SUPERVISOR</div>
             <q-separator />
             <div class="q-mb-md">{{ value.supervisor_name }}</div>
-
-            <div class="row text-bold text-caption">
-              <div class="col">INTERNSHIP DATE START</div>
-              <q-btn class="col-auto" icon="calendar_month" size="sm" flat padding="none" rounded color="primary" />
-            </div>
-
+            <div class="row text-bold text-caption">INTERNSHIP DATE START</div>
             <q-separator />
-
-            <div class="q-mb-md">
-              <a href="#">{{ formatTime(value.itp_start_at, 'D/M/YYYY') }}</a>
-            </div>
-
-            <div class="row text-bold text-caption">
-              <div class="col">INTERNSHIP DATE END</div>
-              <q-btn class="col-auto" icon="calendar_month" size="sm" flat padding="none" rounded color="primary" />
-            </div>
-
+            <div class="q-mb-md">{{ formatTime(value.itp_start_at, 'D/M/YYYY') }}</div>
+            <div class="row text-bold text-caption">INTERNSHIP DATE END</div>
             <q-separator />
-
-            <div class="q-mb-md">
-              <a href="#">{{ formatTime(value.itp_end_at, 'D/M/YYYY') }}</a>
-            </div>
-
+            <div class="q-mb-md">{{ formatTime(value.itp_end_at, 'D/M/YYYY') }}</div>
             <div class="row text-bold text-caption">STUDENT ID</div>
             <q-separator />
-
-            <div>
-              <a href="#">{{ value.student_id }}</a>
-            </div>
+            <div>{{ value.student_id }}</div>
           </div>
         </div>
       </q-expansion-item>
@@ -95,11 +75,8 @@
         <div>{{ value.company_name }}</div>
       </div>
 
-      <div class="q-px-md q-py-sm bg-grey-2" style="border-top: 2px solid rgb(224, 224, 224)">
-        <a href="#">
-          <q-icon name="edit" size="xs" left />
-          <span>EDIT</span>
-        </a>
+      <div class="bg-grey-2" style="border-top: 2px solid rgb(224, 224, 224)">
+        <q-btn icon="edit" label="EDIT" flat color="primary" @click="openEditDialog" />
       </div>
     </q-card-section>
   </q-card>
@@ -110,6 +87,7 @@ import type Student from 'src/models/itp-prog/student'
 import { formatTime } from 'src/common'
 import { useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
+import StudEditDialog from 'components/itp-prog/StudEditDialog.vue'
 
 const props = defineProps<{ value: Student }>()
 const { dialog } = useQuasar()
@@ -124,5 +102,9 @@ function openConfirmDelDialog() {
     cancel: { icon: 'close', label: 'Cancel', flat: true },
     html: true,
   })
+}
+
+function openEditDialog() {
+  dialog({ component: StudEditDialog, componentProps: { value: props.value } })
 }
 </script>
