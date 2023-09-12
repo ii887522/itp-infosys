@@ -1,5 +1,7 @@
 import type Student from 'src/models/itp-prog/student'
 
+export const faculties = ['FAFB', 'FOAS', 'FOCS', 'FOET', 'FCCI', 'FSSH']
+
 export const students: Student[] = [
   {
     student_id: '22WMD05700',
