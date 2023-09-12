@@ -87,7 +87,7 @@ export const useStore = defineStore('user', () => {
     initIsAuthenticated();
     initAuthUserType();
     initUsername();
-    setUsername('21WMR05319');
+    //setUsername('21WMR05319');
   });
 
   async function registerStudent(value: Student) {
@@ -150,10 +150,20 @@ export const useStore = defineStore('user', () => {
     }
   }
 
-  // Function to get the student profile from the database
-  // got error
-  
+  function logOut() {
+    // Clear user-related data and reset to initial values
+    setIsAuthenticated(false);
+    setAuthUserType('none');
+    setUsername('none');
 
+    // Clear data from LocalStorage
+    LocalStorage.remove('isAuthenticated');
+    LocalStorage.remove('authUserType');
+    LocalStorage.remove('username');
+
+    // Redirect to home page
+  }
+  
   return {
     registeringStudent,
     registeringEmployee,
@@ -174,5 +184,6 @@ export const useStore = defineStore('user', () => {
     registerEmployee,
     logInStudent,
     logInEmployee,
+    logOut,
   }
 })

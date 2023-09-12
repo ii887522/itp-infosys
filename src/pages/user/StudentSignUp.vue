@@ -106,6 +106,8 @@ const resetForm = () => {
     password.value = '';
     confirmPassword.value = '';
 }
+
+// need to confirm email before successfully registered
 </script>
 
 <style scoped>

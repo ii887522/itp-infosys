@@ -181,12 +181,17 @@ def login_employee():
 
 @user_controller.route("/get-student-profile/<student_id>", methods=['GET'])
 def get_student_profile(student_id: str):
-    db_conn.ping()
+    # db_conn.ping()
     cursor = db_conn.cursor()
     try:
         cursor.execute("SELECT * FROM student WHERE student_id = %s", (student_id,))
+        # db_conn.ping()
         student_data = cursor.fetchone()
-        if student_data:
+
+        cursor.execute("SELECT * FROM student_intern WHERE student_id = %s", (student_id,))
+        intern_data = cursor.fetchone()
+
+        if student_data and intern_data:
             # Construct and return the student profile
             return jsonify({
                 "student_id": student_data[0],
@@ -197,7 +202,25 @@ def get_student_profile(student_id: str):
                 "programme": student_data[5],
                 "student_email": student_data[6],
                 "personal_email": student_data[7],
+                "faculty": student_data[8],
+                "supervisor_assigned_at": intern_data[1],
+                "company_name": intern_data[2],
+                "supervisor_name": intern_data[3],
+                "itp_start_at": intern_data[4],
+                "itp_end_at": intern_data[5],
             }), 200
+        elif student_data:
+            return jsonify({
+                "student_id": student_data[0],
+                "student_name": student_data[1],
+                "password": student_data[2],
+                "ic_no": student_data[3],
+                "gender": student_data[4],
+                "programme": student_data[5],
+                "student_email": student_data[6],
+                "personal_email": student_data[7],
+                "faculty": student_data[8],
+            })
         else:
             return jsonify({"message": "Student not found"}), 404
     finally:
