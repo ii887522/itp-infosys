@@ -11,6 +11,7 @@
                                 <q-input filled v-model="studentId" label="Student ID" dense class="input-field" placeholder="22WMR00111" :rules="[requiredRule, studentIdRule]"/>
                                 <q-input filled v-model="icNo" label="IC Number" dense class="input-field" placeholder="012345-67-8900" :rules="[requiredRule, icNumberRule]"/>
                                 <q-select filled v-model="gender" :options="genders" label="Gender" dense class="input-field" :rules="[requiredRule]" />
+                                <q-select filled v-model="faculty" :options="faculties" label="Faculty" dense class="input-field" :rules="[requiredRule]" />
                                 <q-select filled v-model="programme" :options="programmes" label="Programme" dense class="input-field" :rules="[requiredRule]" />
                                 <q-input filled v-model="studentEmail" label="Student Email" dense class="input-field" placeholder="someone-wm19@student.tarc.edu.my" :rules="[requiredRule, studentEmailRule]"/>
                                 <q-input filled v-model="personalEmail" label="Personal Email" dense class="input-field" placeholder="someone@example.com" :rules="[requiredRule, personalEmailRule, nonStudentEmailRule]"/>
@@ -33,9 +34,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useMeta, useQuasar, type QInput } from 'quasar'
-import { useRouter } from 'vue-router'
+//import { useRouter } from 'vue-router'
 import { isTextEmpty } from 'src/common';
-import { allGenders, allProgrammes } from 'src/consts/student'
+import { allFaculty, allGenders, allProgrammes } from 'src/consts/student'
 import { useStore } from 'stores/user-store'
 
 useMeta({ title: 'Student Sign Up | MyITPHub' })
@@ -47,16 +48,18 @@ const studentName = ref('');
 const studentId = ref('');
 const icNo = ref('');
 const gender = ref([]);
+const faculty = ref([]);
 const programme = ref([]);
 const studentEmail = ref('');
 const personalEmail = ref('');
 const password = ref('');
 const confirmPassword = ref('');
-const router = useRouter();
+//const router = useRouter();
 
-const model = ref<string | null>(null);
+//const model = ref<string | null>(null);
 const programmes = allProgrammes;
 const genders = allGenders;
+const faculties = allFaculty;
 
 // validation rules
 const requiredRule = (value: string) => !isTextEmpty(value) || 'This field is required';
@@ -79,6 +82,7 @@ async function register() {
     programme: programme.value,
     student_email: studentEmail.value,
     personal_email: personalEmail.value,
+    faculty: faculty.value,
   })
 
   notify({
@@ -94,11 +98,16 @@ async function register() {
 const resetForm = () => {
     studentName.value = '';
     studentId.value = '';
+    programme.value = [];
+    gender.value = [];
+    faculty.value = [];
     studentEmail.value = '';
     personalEmail.value = '';
     password.value = '';
     confirmPassword.value = '';
 }
+
+// need to confirm email before successfully registered
 </script>
 
 <style scoped>
