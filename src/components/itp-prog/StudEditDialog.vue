@@ -38,19 +38,10 @@
             outlined
           />
 
-          <q-input
-            class="col-6"
-            name="supervisor_name"
-            clearable
-            label-slot
-            v-model="supervisorName"
-            outlined
-            :rules="[value => !isTextEmpty(value) || 'Supervisor name is required']"
-          >
+          <q-input class="col-6" name="supervisor_name" clearable label-slot v-model="supervisorName" outlined>
             <template #label>
               <q-icon name="person" left size="xs" />
               <span>Supervisor name</span>
-              <span class="text-negative"> *</span>
             </template>
           </q-input>
 
@@ -111,7 +102,7 @@
       <!-- buttons example -->
       <q-card-actions align="right">
         <q-btn color="primary" label="Cancel" icon="close" flat @click="onDialogCancel" />
-        <q-btn color="primary" label="Edit" icon="edit" @click="onDialogCancel" />
+        <q-btn color="primary" label="Edit" icon="edit" :loading="store.updatingStudent" @click="edit" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -119,12 +110,15 @@
 
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue'
-import { useDialogPluginComponent } from 'quasar'
+import { useDialogPluginComponent, date, useQuasar } from 'quasar'
 import type Student from 'src/models/itp-prog/student'
 import { isTextEmpty, formatTime } from 'src/common'
 import { faculties } from 'src/consts/itp-prog'
+import { useStore } from 'stores/itp-prog-store'
 
 const props = defineProps<{ value: Student }>()
+const store = useStore()
+const { notify } = useQuasar()
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -132,7 +126,7 @@ defineEmits([
   ...useDialogPluginComponent.emits,
 ])
 
-const { dialogRef, onDialogHide, /*onDialogOK,*/ onDialogCancel } = useDialogPluginComponent()
+const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 // dialogRef      - Vue ref to be applied to QDialog
 // onDialogHide   - Function to be used as handler for @hide on QDialog
 // onDialogOK     - Function to call to settle dialog with "ok" outcome
@@ -168,7 +162,26 @@ onBeforeMount(() => {
   itpEndAt.value = props.value.itp_end_at ? formatTime(props.value.itp_end_at, 'D/M/YYYY') : ''
 })
 
-function edit() {
-  console.log('Editing student...')
+async function edit() {
+  await store.updateStudent({
+    student_id: studentId.value.trim(),
+    student_name: studentName.value.trim(),
+    faculty: faculty.value.trim(),
+    supervisor_name: supervisorName.value.trim(),
+    itp_start_at: Math.floor(date.extractDate(itpStartAt.value, 'D/M/YYYY').getTime() / 1000),
+    itp_end_at: Math.floor(date.extractDate(itpEndAt.value, 'D/M/YYYY').getTime() / 1000),
+  })
+
+  notify({
+    type: 'positive',
+    message: `Successfully edited the student "${studentName.value}" with the ID "${studentId.value}"`,
+    icon: 'done',
+  })
+
+  try {
+    onDialogOK()
+  } catch {
+    // Error thrown due to admin closes the dialog before the student is finished updating. This error is acceptable
+  }
 }
 </script>

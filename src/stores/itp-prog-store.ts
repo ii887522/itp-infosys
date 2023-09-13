@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { type DateRange } from 'src/consts'
 import { api } from 'boot/axios'
 import { sortedIndexBy } from 'lodash'
+import type Student from 'src/models/itp-prog/student'
 
 export const useStudListStore = defineStore('itp-prog/stud-list', () => {
   const faculty = ref('ALL')
@@ -19,8 +20,9 @@ export const useStudListStore = defineStore('itp-prog/stud-list', () => {
 })
 
 export const useStore = defineStore('itp-prog', () => {
-  const students = ref([])
+  const students = ref<Student[]>([])
   const loadingStudents = ref(false)
+  const updatingStudent = ref(false)
   const removingStudent = ref(false)
 
   async function listStudents() {
@@ -29,6 +31,16 @@ export const useStore = defineStore('itp-prog', () => {
     const resp = await api.get('/itp-prog/students')
     students.value = resp.data
     loadingStudents.value = false
+  }
+
+  async function updateStudent(student: Student) {
+    updatingStudent.value = true
+    const resp = await api.put(`/itp-prog/students/${student.student_id}`, student)
+
+    // Update the list of students so that the admin does not need to refresh the page
+    students.value[sortedIndexBy(students.value, resp.data, 'student_id')] = resp.data
+
+    updatingStudent.value = false
   }
 
   async function removeStudent(studentId: string) {
@@ -41,5 +53,5 @@ export const useStore = defineStore('itp-prog', () => {
     removingStudent.value = false
   }
 
-  return { students, loadingStudents, listStudents, removeStudent }
+  return { students, loadingStudents, updatingStudent, removingStudent, listStudents, updateStudent, removeStudent }
 })

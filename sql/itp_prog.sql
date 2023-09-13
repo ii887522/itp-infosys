@@ -42,3 +42,25 @@ LIMIT 1000;
 
 -- Delete student record from the database
 DELETE FROM student WHERE student_id = "21WMR05319";
+
+-- Update the existing student record in the database
+UPDATE student
+SET
+	student_name = "Yong Chi Min",
+	faculty = "FOCS - Faculty of Computing and Information Technology"
+WHERE student_id = "21WMR05319";
+UPDATE student_intern
+SET
+	supervisor_assigned_at = 1612345678,
+	supervisor_name = "testing imida",
+	itp_start_at = 1612345678,
+	itp_end_at = 1613345678
+WHERE student_id = "21WMR05319";
+
+-- Fetch the current supervisor name assigned to this student
+SELECT supervisor_assigned_at, supervisor_name FROM student_intern WHERE student_id = "21WMR05319";
+
+-- Fetch some company info that have accepted this student
+SELECT `name`, address
+FROM company INNER JOIN student_intern ON company.`name` = student_intern.company_name
+WHERE student_id = "21WMR05319";
