@@ -185,7 +185,7 @@ async function fetchStudentProfile() {
     const resp = await api.get(`/user/get-student-profile/${studentId}`);
     console.log('API Response:', resp); // Log the response
   
-    // Check the structure of resp.data
+    // Fetch the basic profile details from student table
     studentName.value = resp.data.student_name;
     student_id.value = resp.data.student_id;
     icNo.value = resp.data.ic_no;
@@ -195,7 +195,7 @@ async function fetchStudentProfile() {
     programme.value = resp.data.programme;
     gender.value = resp.data.gender;
 
-    // Optional: assign if found data in student intern
+    // Optional: assign if found data in student intern table
     supervisor_assigned_at.value = resp.data?.supervisor_assigned_at;
     company_name.value = resp.data?.company_name;
     supervisor_name.value = resp.data?.supervisor_name;

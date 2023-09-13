@@ -83,11 +83,9 @@ export const useStore = defineStore('user', () => {
 
   // Call all the initialize functions when the app starts
   onMounted(() => {
-    //LocalStorage.clear();
     initIsAuthenticated();
     initAuthUserType();
     initUsername();
-    //setUsername('21WMR05319');
   });
 
   async function registerStudent(value: Student) {
@@ -150,18 +148,22 @@ export const useStore = defineStore('user', () => {
     }
   }
 
-  function logOut() {
+  async function logOut() {
+    console.log('Logout function called');
     // Clear user-related data and reset to initial values
-    setIsAuthenticated(false);
+    setIsAuthenticated(false); // Set the authentication status to unauthenticated
     setAuthUserType('none');
     setUsername('none');
 
-    // Clear data from LocalStorage
     LocalStorage.remove('isAuthenticated');
     LocalStorage.remove('authUserType');
     LocalStorage.remove('username');
+    console.log(getIsAuthenticated());
+    console.log(getAuthUserType());
+    console.log(getUsername());
 
     // Redirect to home page
+    //useRouter().push('/');
   }
   
   return {

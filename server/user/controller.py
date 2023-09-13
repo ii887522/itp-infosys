@@ -181,11 +181,10 @@ def login_employee():
 
 @user_controller.route("/get-student-profile/<student_id>", methods=['GET'])
 def get_student_profile(student_id: str):
-    # db_conn.ping()
+    db_conn.ping()
     cursor = db_conn.cursor()
     try:
         cursor.execute("SELECT * FROM student WHERE student_id = %s", (student_id,))
-        # db_conn.ping()
         student_data = cursor.fetchone()
 
         cursor.execute("SELECT * FROM student_intern WHERE student_id = %s", (student_id,))
