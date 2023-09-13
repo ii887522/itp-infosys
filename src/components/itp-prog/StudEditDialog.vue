@@ -96,14 +96,21 @@
               </q-icon>
             </template>
           </q-input>
+
+          <div class="row full-width justify-end q-mt-md">
+            <q-btn class="col-auto" color="primary" label="Cancel" icon="close" flat @click="onDialogCancel" />
+
+            <q-btn
+              class="col-auto"
+              color="primary"
+              label="Edit"
+              icon="edit"
+              type="submit"
+              :loading="store.updatingStudent"
+            />
+          </div>
         </q-form>
       </q-card-section>
-
-      <!-- buttons example -->
-      <q-card-actions align="right">
-        <q-btn color="primary" label="Cancel" icon="close" flat @click="onDialogCancel" />
-        <q-btn color="primary" label="Edit" icon="edit" :loading="store.updatingStudent" @click="edit" />
-      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
