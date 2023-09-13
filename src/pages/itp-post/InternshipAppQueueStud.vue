@@ -102,7 +102,7 @@ import Fuse from 'fuse.js'
 import { formatTime } from 'src/common'
 
 useMeta({ title: 'My Internship Application | MyITPHub' })
-const { dialog, notify } = useQuasar()
+const { dialog, notify, localStorage } = useQuasar()
 const store = useStore()
 const internshipAppQueueStudStore = useInternshipAppQueueStudStore()
 
@@ -151,12 +151,12 @@ const columns: any[] = [
 ]
 
 // Init
-store.listApplications('21WMR05319')
+store.listApplications(localStorage.getItem('username') ?? '')
 let timer: NodeJS.Timer
 
 onMounted(() => {
   timer = setInterval(() => {
-    store.listApplications('21WMR05319')
+    store.listApplications(localStorage.getItem('username') ?? '')
   }, 3_540_000)
 })
 
@@ -209,7 +209,7 @@ function openConfirmDelDialog(title: string, companyName: string) {
     })
 
     // Cancel the requested internship application
-    await store.cancelApplication(companyName, title, '21WMR05319')
+    await store.cancelApplication(companyName, title, localStorage.getItem('username') ?? '')
 
     // Signal the student that the internship applicaton is successfully canceled
     notif({

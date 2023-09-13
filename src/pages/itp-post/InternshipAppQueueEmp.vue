@@ -113,7 +113,7 @@ import Fuse from 'fuse.js'
 import { formatTime } from 'src/common'
 
 useMeta({ title: 'Student Internship Application | MyITPHub' })
-const { dialog, notify } = useQuasar()
+const { dialog, notify, localStorage } = useQuasar()
 const store = useStore()
 const internshipAppQueueEmpStore = useInternshipAppQueueEmpStore()
 
@@ -167,7 +167,7 @@ let timer: NodeJS.Timer
 
 onMounted(() => {
   timer = setInterval(() => {
-    store.listIncomingApplications('21WMR05319')
+    store.listIncomingApplications(localStorage.getItem('username') ?? '')
   }, 3_540_000)
 })
 
@@ -223,7 +223,7 @@ function openConfirmAcceptDialog(title: string, studentName: string) {
     await store.updateApplication({
       internshipTitle: title,
       companyName: 'CMY Enterprise',
-      studentId: '21WMR05319',
+      studentId: localStorage.getItem('username') ?? '',
       status: 'accepted',
     })
 
@@ -265,7 +265,7 @@ function openConfirmRejectDialog(title: string, studentName: string) {
     await store.updateApplication({
       internshipTitle: title,
       companyName: 'CMY Enterprise',
-      studentId: '21WMR05319',
+      studentId: localStorage.getItem('username') ?? '',
       status: 'rejected',
     })
 

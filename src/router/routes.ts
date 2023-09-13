@@ -4,7 +4,7 @@ import {
   useInternshipEditStore,
   useInternshipDetailsEmpStore,
 } from 'stores/itp-post-store'
-import { requireAuthStud, requireAuthEmp, alreadyAuth } from 'src/common/user/guards'; // Import the route guard
+import { requireAuthStud, requireAuthEmp, alreadyAuth } from 'src/common/user/guards' // Import the route guard
 
 const routes: RouteRecordRaw[] = [
   {
@@ -15,40 +15,60 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'stud/itp-post/internships',
         component: () => import('pages/itp-post/InternshipListStud.vue'),
+        beforeEnter: requireAuthStud,
         alias: '',
       },
       {
         path: 'stud/itp-post/internship-details',
-        beforeEnter: () => {
-          const store = useInternshipDetailsStudStore()
-          return store.value.title !== '' ? true : '/stud/itp-post/internships'
-        },
+        beforeEnter: [
+          requireAuthStud,
+          () => {
+            const store = useInternshipDetailsStudStore()
+            return store.value.title !== '' ? true : '/stud/itp-post/internships'
+          },
+        ],
         component: () => import('pages/itp-post/InternshipDetailsStud.vue'),
       },
       {
         path: 'stud/itp-post/internship-app-queue',
         component: () => import('pages/itp-post/InternshipAppQueueStud.vue'),
+        beforeEnter: requireAuthStud,
       },
-      { path: 'emp/itp-post/internships', component: () => import('pages/itp-post/InternshipListEmp.vue') },
+      {
+        path: 'emp/itp-post/internships',
+        beforeEnter: requireAuthEmp,
+        component: () => import('pages/itp-post/InternshipListEmp.vue'),
+      },
       {
         path: 'emp/itp-post/internship-details',
-        beforeEnter: () => {
-          const store = useInternshipDetailsEmpStore()
-          return store.value.title !== '' ? true : '/emp/itp-post/internships'
-        },
+        beforeEnter: [
+          requireAuthEmp,
+          () => {
+            const store = useInternshipDetailsEmpStore()
+            return store.value.title !== '' ? true : '/emp/itp-post/internships'
+          },
+        ],
         component: () => import('pages/itp-post/InternshipDetailsEmp.vue'),
       },
-      { path: 'emp/itp-post/internships/add', component: () => import('pages/itp-post/InternshipAdd.vue') },
+      {
+        path: 'emp/itp-post/internships/add',
+        beforeEnter: requireAuthEmp,
+        component: () => import('pages/itp-post/InternshipAdd.vue'),
+      },
       {
         path: 'emp/itp-post/internships/edit',
-        beforeEnter: () => {
-          const store = useInternshipEditStore()
-          return store.newTitle !== '' ? true : '/emp/itp-post/internships'
-        },
+        beforeEnter: [
+          requireAuthEmp,
+          () => {
+            const store = useInternshipEditStore()
+            return store.newTitle !== '' ? true : '/emp/itp-post/internships'
+          },
+        ],
         component: () => import('pages/itp-post/InternshipEdit.vue'),
       },
       {
         path: 'emp/itp-post/internship-app-queue',
+        beforeEnter: requireAuthEmp,
         component: () => import('pages/itp-post/InternshipAppQueueEmp.vue'),
       },
 
@@ -66,49 +86,49 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'stud/login',
         beforeEnter: alreadyAuth,
-        component: () => import('pages/user/StudentLogin.vue')
+        component: () => import('pages/user/StudentLogin.vue'),
       },
       {
         path: 'stud/signup',
         beforeEnter: alreadyAuth,
-        component: () => import('pages/user/StudentSignUp.vue')
+        component: () => import('pages/user/StudentSignUp.vue'),
       },
-      { 
+      {
         path: 'stud/profile',
         beforeEnter: requireAuthStud,
-        component: () => import('pages/user/StudentProfile.vue') 
+        component: () => import('pages/user/StudentProfile.vue'),
       },
       {
         path: 'stud/profile/edit',
         beforeEnter: requireAuthStud,
-        component: () => import('pages/user/StudEditProfile.vue')
+        component: () => import('pages/user/StudEditProfile.vue'),
       },
 
       {
         path: 'emp/login',
         beforeEnter: alreadyAuth,
-        component: () => import('pages/user/EmployeeLogin.vue')
+        component: () => import('pages/user/EmployeeLogin.vue'),
       },
       {
         path: 'emp/signup',
         beforeEnter: alreadyAuth,
-        component: () => import('pages/user/EmployeeSignUp.vue')
+        component: () => import('pages/user/EmployeeSignUp.vue'),
       },
-      { 
+      {
         path: 'emp/profile',
         beforeEnter: requireAuthEmp,
-        component: () => import('pages/user/EmployeeProfile.vue')
+        component: () => import('pages/user/EmployeeProfile.vue'),
       },
       {
         path: 'emp/profile/edit',
         beforeEnter: requireAuthEmp,
-        component: () => import('pages/user/EmpEditProfile.vue')
+        component: () => import('pages/user/EmpEditProfile.vue'),
       },
 
-      { 
+      {
         path: 'login',
         beforeEnter: alreadyAuth,
-        component: () => import('pages/user/LoginPage.vue')
+        component: () => import('pages/user/LoginPage.vue'),
       },
       // logout
     ],

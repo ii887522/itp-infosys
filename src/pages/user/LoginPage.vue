@@ -1,56 +1,46 @@
 <template>
-    <q-page padding>
-        <q-layout view="lHh Lpr lFf">
-            <q-page-container>
-                <div class="q-pa-xl flex flex-center shadow-8">
-                    <q-card>
-                        <p class="login-header text-h4 q-pt-md">Main Login Page</p>
-                        <q-card-section>
-                            <div class="q-gutter-md">
-                                <q-btn
-                                    color="primary"
-                                    label="Login as Student"
-                                    class="q-mb-md"
-                                    @click="studentLogin"
-                                />
-                                <q-btn
-                                    color="primary"
-                                    label="Login as Employee"
-                                    class="q-mb-md"
-                                    @click="employeeLogin"
-                                />
-                            </div>
-                        </q-card-section>
-                    </q-card>
-                </div>
-            </q-page-container>
-        </q-layout>
-    </q-page>
+  <q-page padding>
+    <q-layout view="lHh Lpr lFf">
+      <q-page-container>
+        <div class="q-pa-xl flex flex-center shadow-8">
+          <q-card>
+            <p class="login-header text-h4 q-pt-md">Main Login Page</p>
+            <q-card-section>
+              <div class="q-gutter-md">
+                <q-btn color="primary" label="Login as Student" class="q-mb-md" @click="studentLogin" />
+                <q-btn color="primary" label="Login as Employee" class="q-mb-md" @click="employeeLogin" />
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </q-page-container>
+    </q-layout>
+  </q-page>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
 function studentLogin() {
-    router.push('/stud/login');
+  router.push('/stud/login')
 }
 
 function employeeLogin() {
-    router.push('/stud/employee');
+  router.push('/emp/login')
 }
 </script>
 
 <style scoped>
 .login-header {
-    font-weight: bold;
-    text-align: center;
-    color: green;
+  font-weight: bold;
+  text-align: center;
+  color: green;
 }
 
 .q-btn {
-    min-width: 200px;
-    font-size: 18px;
+  min-width: 200px;
+  font-size: 18px;
 }
 </style>

@@ -7,6 +7,7 @@
 
         <div class="text-overflow-ellipsis">
           <span>YONG CHI MIN</span>
+          <!-- TODO: get name from user type and username -->
           <q-tooltip>YONG CHI MIN</q-tooltip>
         </div>
       </div>
@@ -27,13 +28,13 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
-import { useStore } from 'src/stores/user-store';
-import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar'
+import { useStore } from 'src/stores/user-store'
+import { useRouter } from 'vue-router'
 
-const store = useStore();
-const router = useRouter();
-const { dialog } = useQuasar();
+const store = useStore()
+const router = useRouter()
+const { dialog } = useQuasar()
 
 const confirmLogOut = () => {
   dialog({
@@ -41,8 +42,8 @@ const confirmLogOut = () => {
     message: 'Are you sure you want to logout?',
     cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
     ok: { icon: 'logout', label: 'Logout', color: 'primary' },
-  }).onOk(async() => {
-    executeLogOut();
+  }).onOk(() => {
+    executeLogOut()
   })
   /* Dialog.create({
     title: 'Confirm Logout',
@@ -63,8 +64,8 @@ const confirmLogOut = () => {
   }) */
 }
 
-const executeLogOut = async () => {
-  store.logOut();
-  router.push('/'); // Cannot router push
+const executeLogOut = () => {
+  store.logOut()
+  router.push('/login')
 }
 </script>
