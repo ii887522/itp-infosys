@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { type DateRange } from 'src/consts'
+import { api } from 'boot/axios'
+import { sortedIndexBy } from 'lodash'
 
 export const useStudListStore = defineStore('itp-prog/stud-list', () => {
   const faculty = ref('ALL')
@@ -14,4 +16,30 @@ export const useStudListStore = defineStore('itp-prog/stud-list', () => {
   })
 
   return { faculty, internshipDateRange, internshipDateRangeText, q }
+})
+
+export const useStore = defineStore('itp-prog', () => {
+  const students = ref([])
+  const loadingStudents = ref(false)
+  const removingStudent = ref(false)
+
+  async function listStudents() {
+    if (students.value.length !== 0) return
+    loadingStudents.value = true
+    const resp = await api.get('/itp-prog/students')
+    students.value = resp.data
+    loadingStudents.value = false
+  }
+
+  async function removeStudent(studentId: string) {
+    removingStudent.value = true
+    const resp = await api.delete(`/itp-prog/students/${studentId}`)
+
+    // Update the list of students so that the admin does not need to refresh the page
+    students.value.splice(sortedIndexBy(students.value, resp.data, 'student_id'), 1)
+
+    removingStudent.value = false
+  }
+
+  return { students, loadingStudents, listStudents, removeStudent }
 })

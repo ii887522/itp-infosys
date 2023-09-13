@@ -161,11 +161,11 @@ onBeforeMount(() => {
   studentId.value = props.value.student_id
   studentName.value = props.value.student_name
   faculty.value = props.value.faculty
-  location.value = props.value.location
-  companyName.value = props.value.company_name
-  supervisorName.value = props.value.supervisor_name
-  itpStartAt.value = formatTime(props.value.itp_start_at, 'D/M/YYYY')
-  itpEndAt.value = formatTime(props.value.itp_end_at, 'D/M/YYYY')
+  location.value = props.value.location ?? ''
+  companyName.value = props.value.company_name ?? ''
+  supervisorName.value = props.value.supervisor_name ?? ''
+  itpStartAt.value = props.value.itp_start_at ? formatTime(props.value.itp_start_at, 'D/M/YYYY') : ''
+  itpEndAt.value = props.value.itp_end_at ? formatTime(props.value.itp_end_at, 'D/M/YYYY') : ''
 })
 
 function edit() {
