@@ -165,3 +165,43 @@ WHERE student_id = %s
 
     finally:
         cursor.close()
+
+
+@itp_prog_controller.route("/students/count", methods=["GET"])
+def count_students():
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
+    cursor = db_conn.cursor()
+
+    try:
+        # Count the number of students in the database
+        cursor.execute("SELECT COUNT(*) FROM student")
+        db_conn.commit()
+        db_row = cursor.fetchone()
+
+        # Output
+        return {"result": db_row[0] if db_row else 0}
+
+    finally:
+        cursor.close()
+
+
+@itp_prog_controller.route("/supervisors/count", methods=["GET"])
+def count_supervisors():
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
+    cursor = db_conn.cursor()
+
+    try:
+        # Count the number of students in the database
+        cursor.execute("SELECT COUNT(DISTINCT supervisor_name) FROM student_intern")
+        db_conn.commit()
+        db_row = cursor.fetchone()
+
+        # Output
+        return {"result": db_row[0] if db_row else 0}
+
+    finally:
+        cursor.close()

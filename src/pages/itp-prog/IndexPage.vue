@@ -5,11 +5,17 @@
       <p>This is the platform to assign supervisor to student and view the supervisor</p>
       <ul class="counter">
         <li>
-          <h3><i class="fa-solid fa-user"></i>68+k</h3>
+          <h3>
+            <i class="fa-solid fa-user"></i>
+            {{ studCount }}
+          </h3>
           <span>Student</span>
         </li>
         <li>
-          <h3><i class="fa-solid fa-user"></i>25,634</h3>
+          <h3>
+            <i class="fa-solid fa-user"></i>
+            {{ supervisorCount }}
+          </h3>
           <span>Supervisor</span>
         </li>
       </ul>
@@ -61,11 +67,21 @@
 import { ref, onMounted } from 'vue'
 import Swiper from 'swiper'
 import { useMeta } from 'quasar'
+import { api } from 'boot/axios'
 
 useMeta({ title: 'Internship Program | MyITPHub' })
 
 const swiper = ref<HTMLDivElement | null>(null)
 const swiperPagination = ref<HTMLDivElement | null>(null)
+const studCount = ref('?')
+const supervisorCount = ref('?')
+
+;(async () => {
+  const studCountResp = await api.get('/itp-prog/students/count')
+  const supervisorCountResp = await api.get('/itp-prog/supervisors/count')
+  studCount.value = `${studCountResp.data.result}`
+  supervisorCount.value = `${supervisorCountResp.data.result}`
+})()
 
 onMounted(() => {
   new Swiper(swiper.value ?? '', {

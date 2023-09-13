@@ -64,3 +64,9 @@ SELECT supervisor_assigned_at, supervisor_name FROM student_intern WHERE student
 SELECT `name`, address
 FROM company INNER JOIN student_intern ON company.`name` = student_intern.company_name
 WHERE student_id = "21WMR05319";
+
+-- Count the number of students in the database
+SELECT COUNT(*) FROM student;
+
+-- Count the number of supervisors in the database
+SELECT COUNT(DISTINCT supervisor_name) FROM student_intern;
