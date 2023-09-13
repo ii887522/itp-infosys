@@ -18,7 +18,7 @@
 
       <q-separator />
 
-      <div class="row q-pa-sm bg-grey-2">
+      <div v-if="value.supervisor_assigned_at" class="row q-pa-sm bg-grey-2">
         <div class="col-6 q-px-sm text-right" style="border-right: 2px solid rgb(224, 224, 224)">
           <q-icon class="q-mr-xs" style="margin-bottom: 2px" name="calendar_month" size="xs" />
           <span>{{ formatTime(value.supervisor_assigned_at, 'D/M/YYYY') }}</span>
@@ -45,11 +45,11 @@
             <div class="q-mb-md">{{ value.supervisor_name }}</div>
             <div class="row text-bold text-caption">INTERNSHIP DATE START</div>
             <q-separator />
-            <div class="q-mb-md">{{ formatTime(value.itp_start_at, 'D/M/YYYY') }}</div>
-            <div class="row text-bold text-caption">INTERNSHIP DATE END</div>
+            <div v-if="value.itp_start_at">{{ formatTime(value.itp_start_at, 'D/M/YYYY') }}</div>
+            <div class="row text-bold text-caption q-mt-md">INTERNSHIP DATE END</div>
             <q-separator />
-            <div class="q-mb-md">{{ formatTime(value.itp_end_at, 'D/M/YYYY') }}</div>
-            <div class="row text-bold text-caption">STUDENT ID</div>
+            <div v-if="value.itp_end_at">{{ formatTime(value.itp_end_at, 'D/M/YYYY') }}</div>
+            <div class="row text-bold text-caption q-mt-md">STUDENT ID</div>
             <q-separator />
             <div>{{ value.student_id }}</div>
           </div>
@@ -88,9 +88,11 @@ import { formatTime } from 'src/common'
 import { useQuasar } from 'quasar'
 import sanitizeHtml from 'sanitize-html'
 import StudEditDialog from 'components/itp-prog/StudEditDialog.vue'
+import { useStore } from 'stores/itp-prog-store'
 
 const props = defineProps<{ value: Student }>()
-const { dialog } = useQuasar()
+const { dialog, notify } = useQuasar()
+const store = useStore()
 
 function openConfirmDelDialog() {
   dialog({
@@ -101,6 +103,31 @@ function openConfirmDelDialog() {
     ok: { icon: 'delete', label: 'Remove', color: 'negative' },
     cancel: { icon: 'close', label: 'Cancel', flat: true },
     html: true,
+  }).onOk(async () => {
+    // Tell the admin the student is being removed
+    const notif = notify({
+      group: false,
+      timeout: 0,
+      type: 'ongoing',
+      spinner: true,
+      message: `Removing student "${props.value.student_name}"`,
+      ignoreDefaults: true,
+      position: 'top',
+    })
+
+    // Remove the student
+    await store.removeStudent(props.value.student_id)
+
+    // Signal the admin that the student is successfully removed
+    notif({
+      timeout: 5000,
+      type: 'positive',
+      spinner: false,
+      icon: 'done',
+      message: `Successfully removed the student "${props.value.student_name}"`,
+      progress: true,
+      actions: [{ label: 'Close', color: 'white', flat: false, outline: true }],
+    })
   })
 }
 

@@ -52,7 +52,7 @@ FROM internship
     ON internship.title = learning_outcome.itp_title AND internship.company_name = learning_outcome.company_name
   INNER JOIN company
     ON internship.company_name = company.`name`
-WHERE internship.title > %s OR internship.title = %s AND internship.company_name > %s
+WHERE internship.title > %s OR internship.title = %s AND internship.company_name > %s AND vacancy_count > 0
 GROUP BY internship.title, internship.company_name
 ORDER BY internship.title, internship.company_name
 LIMIT %s
