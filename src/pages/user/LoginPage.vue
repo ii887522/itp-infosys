@@ -22,12 +22,12 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
 function studentLogin() {
-    router.push('/stud/login');
+  router.push('/stud/login')
 }
 
 function employeeLogin() {
@@ -45,13 +45,13 @@ function adminLogin() {
 
 <style scoped>
 .login-header {
-    font-weight: bold;
-    text-align: center;
-    color: green;
+  font-weight: bold;
+  text-align: center;
+  color: green;
 }
 
 .q-btn {
-    min-width: 200px;
-    font-size: 18px;
+  min-width: 200px;
+  font-size: 18px;
 }
 </style>

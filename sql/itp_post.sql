@@ -132,7 +132,7 @@ FROM internship
     ON internship.title = learning_outcome.itp_title AND internship.company_name = learning_outcome.company_name
   INNER JOIN company
     ON internship.company_name = company.`name`
-WHERE internship.title > "" OR internship.title = "" AND internship.company_name > ""
+WHERE internship.title > "" OR internship.title = "" AND internship.company_name > "" AND vacancy_count > 0
 GROUP BY internship.title, internship.company_name
 ORDER BY internship.title, internship.company_name
 LIMIT 1000;
@@ -206,3 +206,6 @@ UPDATE application SET `status` = "rejected" WHERE student_id = "21WMR05319" AND
 
 -- Reset internship applications back to pending [FOR TESTING PURPOSES ONLY]
 UPDATE application SET `status` = "pending";
+
+-- Clear internship applications [FOR TESTING PURPOSES ONLY]
+DELETE FROM application;

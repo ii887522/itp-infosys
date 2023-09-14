@@ -6,7 +6,7 @@
         <itp-nav :items="nav" />
       </q-toolbar>
 
-      <user-card class="col-auto" />
+      <user-card v-if="showUserCard" class="col-auto" />
     </div>
 
     <transition name="slide">
@@ -16,11 +16,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import ItpNav from './ItpNav.vue'
 import UserCard from './UserCard.vue'
 import InternshipSearch from './itp-post/InternshipSearch.vue'
 import { type RouteLocationNormalized, onBeforeRouteUpdate } from 'vue-router'
+import { useStore } from 'stores/user-store'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const store = useStore()
 
 const nav = [
   {
@@ -30,16 +35,37 @@ const nav = [
       showSearch.value = !showSearch.value
     },
     show: (to: RouteLocationNormalized) =>
-      to.fullPath === '/' ||
-      to.fullPath === '/stud/itp-post/internships' ||
-      to.fullPath === '/emp/itp-post/internships',
+      store.getIsAuthenticated() === true &&
+      store.getAuthUserType() === 'stud' &&
+      (to.fullPath === '/' ||
+        to.fullPath === '/stud/itp-post/internships' ||
+        to.fullPath === '/emp/itp-post/internships'),
   },
-  { to: '/stud/itp-post/internship-app-queue', icon: 'list', label: 'My Application' },
-  { to: '/admin/itp-prog', icon: 'construction', label: 'Program' },
-  { to: '/emp/itp-post/internship-app-queue', icon: 'list', label: 'Student Applications' },
+  {
+    to: '/stud/itp-post/internship-app-queue',
+    icon: 'list',
+    label: 'My Application',
+    show: () => store.getIsAuthenticated() === true && store.getAuthUserType() === 'stud',
+  },
+  {
+    to: '/admin/itp-prog',
+    icon: 'construction',
+    label: 'Program',
+  },
+  {
+    to: '/emp/itp-post/internship-app-queue',
+    icon: 'list',
+    label: 'Student Applications',
+    show: () => store.getIsAuthenticated() === true && store.getAuthUserType() === 'emp',
+  },
 ]
 
 const showSearch = ref(false)
+const showUserCard = ref(store.getIsAuthenticated() === true)
+
+watch(router.currentRoute, () => {
+  showUserCard.value = store.getIsAuthenticated() === true
+})
 
 onBeforeRouteUpdate(() => {
   showSearch.value = false

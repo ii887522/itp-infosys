@@ -17,3 +17,4 @@ export const statusColor: { [name: string]: string } = {
 }
 
 export const statusOptions = ['All', 'Pending', 'Accepted', 'Rejected']
+export type DateRange = { from: string; to: string } | string | null
