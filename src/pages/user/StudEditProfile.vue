@@ -55,16 +55,16 @@ TODO:
                                             <strong>Warning:</strong> Uploading a new resume will overwrite your current one. You can view your existing resume in your profile.
                                         </q-banner>
                                         <br/>
-                                        <q-file filled bottom-slots v-model="model" label="Upload New Resume" counter accept=".pdf,.docx">
+                                        <q-file filled bottom-slots v-model="resumeInput" label="Upload New Resume" counter accept=".pdf">
                                             <template v-slot:prepend>
                                                 <q-icon name="cloud_upload" @click.stop.prevent />
                                             </template>
                                             <template v-slot:append>
-                                                <q-icon name="close" @click.stop.prevent="model = null" class="cursor-pointer"/>
+                                                <q-icon name="close" @click.stop.prevent="resumeInput = null" class="cursor-pointer"/>
                                             </template>
 
                                             <template v-slot:hint>
-                                                must be in pdf or word
+                                                must be in pdf
                                             </template>
                                         </q-file>
                                         <br/>
@@ -127,6 +127,9 @@ const programmes = allProgrammes;
 const genders = allGenders;
 const faculties = allFaculty;
 
+// Change Resume Section
+const resumeInput = ref(null);
+
 // Change Password Section
 const currentPassword = ref('');
 const newPassword = ref('');
@@ -145,7 +148,6 @@ const confirmPasswordRule = (value: string) => value === newPassword.value || 'P
 
 // utilties
 const loading = ref(true);
-const model = ref(null);
 const router = useRouter();
 const store = useStore();
 const { dialog } = useQuasar();
@@ -176,6 +178,7 @@ const changesMade = computed(() => {
 
     return JSON.stringify(formData) !== JSON.stringify(initialFormData.value);
 })
+const updatingResume = ref(false);
 
 async function fetchStudentProfile() {
     try {
@@ -268,27 +271,29 @@ const updateResume = () => {
 };
 
 const executeUpdateResume = async() => {
-    // Implement logic here
-    // Overwrite the resume to S3
-    /*
-    python:
-    "resume_url": s3.generate_presigned_url(
-                    "get_object",
-                    Params={
-                        "Bucket": config.custombucket,
-                        "Key": f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
-                        # So that PDF file will be displayed in the browser instead of being downloaded
-                        "ResponseContentType": "application/pdf",
-                        "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
-                    },
-                ),
+    try {
+        const fileInput = resumeInput!.value; // Access the file input using the ref
+        if (!fileInput) {
+            // No file selected
+            console.error('No file selected.');
+            return;
+        }
 
-                return
+        const resumeFile = fileInput[0]; // Get the selected file
+        updatingResume.value = true;
+        await store.updateResume(resumeFile);
+        updatingResume.value = false;
 
-    - get object
-    - call url
-    */
-    router.push('/profile');
+        Notify.create('Profile updated successfully');
+    } catch (error) {
+        console.error('Error updating resume:', error);
+
+        Notify.create({
+            message: 'Failed to update resume',
+            color: 'negative',
+        });
+    }
+    //router.push('/profile');
 }
 
 const updatePassword = () => {

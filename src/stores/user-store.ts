@@ -27,6 +27,8 @@ export const useStore = defineStore('user', () => {
   const loginError = ref(false)
   const errorMessage = ref('')
   const updatingStudentProfile = ref(false)
+  const updatingStudentPassword = ref(false)
+  const updatingResume = ref(false)
 
   // authentication guard
   const isAuthenticated = ref(false)
@@ -104,25 +106,25 @@ export const useStore = defineStore('user', () => {
 
   async function registerStudent(value: Student) {
     registeringStudent.value = true
-    const resp = await api.post('/user/register-stud', value)
+    await api.post('/user/register-stud', value)
     registeringStudent.value = false
   }
 
   async function registerEmployee(value: Employee) {
     registeringEmployee.value = true
-    const resp = await api.post('/user/register-emp', value)
+    await api.post('/user/register-emp', value)
     registeringEmployee.value = false
   }
 
   async function registerSupervisor(value: Supervisor) {
     registeringSupervisor.value = true
-    const resp = await api.post('/user/register-sup', value)
+    await api.post('/user/register-sup', value)
     registeringSupervisor.value = false
   }
 
   async function registerAdmin(value: Admin) {
     registeringAdmin.value = true
-    const resp = await api.post('/user/register-admin', value)
+    await api.post('/user/register-admin', value)
     registeringAdmin.value = false
   }
 
@@ -241,8 +243,21 @@ export const useStore = defineStore('user', () => {
 
   async function updateStudProfile(value: Student) {
     updatingStudentProfile.value = true;
-    const resp = await api.post('/user/update-stud-profile', value)
+    await api.post('/user/update-stud-profile', value)
     updatingStudentProfile.value = false;
+  }
+
+  async function updateStudPassword(value: Student) {
+    updatingStudentPassword.value = true;
+    await api.post('/user/update-stud-password', value)
+    updatingStudentPassword.value = false;
+  }
+
+  // not sure yet
+  async function updateResume(resume: File) {
+    updatingResume.value = true;
+    await api.post('/update-resume', getUsername())
+    updatingResume.value = false;
   }
   
   return {
@@ -257,6 +272,8 @@ export const useStore = defineStore('user', () => {
     loginError,
     errorMessage,
     updatingStudentProfile,
+    updatingStudentPassword,
+    updatingResume,
     isAuthenticated,
     authUserType,
     username,
@@ -276,5 +293,7 @@ export const useStore = defineStore('user', () => {
     logInAdmin,
     logOut,
     updateStudProfile,
+    updateStudPassword,
+    updateResume,
   }
 })
