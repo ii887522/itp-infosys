@@ -4,7 +4,7 @@
         <q-page-container>
           <div class="q-pa-xl flex flex-center shadow-8">
               <q-card>
-                  <p class="login-header text-h4 q-pt-md">Student Login</p>
+                  <p class="login-header text-h4 q-pt-md">Supervisor Login</p>
                   <q-card-section>
                     <q-form @submit="login" class="q-gutter-md">
                       <div v-if="displayErrorMessage" class="error-message">{{ store.errorMessage }}</div> <!-- Error Message (conditional) -->
@@ -13,7 +13,7 @@
                       <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
   
                       <div>
-                        <q-btn flat color="primary" label="Sign Up" class="q-mt-md" /> <!--link to student sign up page-->
+                        <q-btn flat color="primary" label="Sign Up" class="q-mt-md" />
                         <q-btn type="submit" label="Login" color="primary" class="q-mt-md" />
                       </div>
                     </q-form>

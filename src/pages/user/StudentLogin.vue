@@ -13,7 +13,7 @@
                     <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
 
                     <div>
-                      <q-btn flat color="primary" label="Sign Up" class="q-mt-md" /> <!--link to student sign up page-->
+                      <q-btn flat color="primary" label="Sign Up" class="q-mt-md" @click="studSignUp" /> <!--link to student sign up page-->
                       <q-btn type="submit" label="Login" color="primary" class="q-mt-md" />
                     </div>
                   </q-form>
@@ -44,6 +44,10 @@ const displayErrorMessage = computed(() => {
   return store.loginError && store.errorMessage !== '';
 });
 
+function studSignUp() {
+  router.push('stud/signup');
+}
+
 async function login() {
   store.loginError = false;
   store.errorMessage = '';
@@ -57,6 +61,7 @@ async function login() {
     programme: [],
     student_email: '',
     personal_email: '',
+    faculty: [],
   })
 
   console.log('Is Authenticated:', store.isAuthenticated);

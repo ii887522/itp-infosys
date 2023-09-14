@@ -126,11 +126,21 @@ const routes: RouteRecordRaw[] = [
       },
 
       {
+        path: 'sup/login',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/SupervisorLogin.vue'),
+      },
+      {
+        path: 'sup/signup',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/SupervisorSignUp.vue'),
+      },
+
+      {
         path: 'login',
         beforeEnter: alreadyAuth,
         component: () => import('pages/user/LoginPage.vue'),
       },
-      // logout
     ],
   },
 

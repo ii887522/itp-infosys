@@ -8,10 +8,18 @@ import { LocalStorage } from 'quasar'
 import { Admin } from 'src/models/admin'
 import { Supervisor } from 'src/models/supervisor'
 
+/*
+LocalStorage:
+- isAuthenticateed: false, true
+- authUserType: stud, emp, sup, admin
+- username: student_id, emp_email, supervisor_id, admin?
+*/
+
 export const useStore = defineStore('user', () => {
   const registeringStudent = ref(false)
   const registeringEmployee = ref(false)
   const registeringSupervisor = ref(false)
+  const registeringAdmin = ref(false)
   const loggingInStudent = ref(false)
   const loggingInEmployee = ref(false)
   const loggingInSupervisor = ref(false)
@@ -106,7 +114,15 @@ export const useStore = defineStore('user', () => {
   }
 
   async function registerSupervisor(value: Supervisor) {
+    registeringSupervisor.value = true
+    const resp = await api.post('/user/register-sup', value)
+    registeringSupervisor.value = false
+  }
 
+  async function registerAdmin(value: Admin) {
+    registeringAdmin.value = true
+    const resp = await api.post('/user/register-admin', value)
+    registeringAdmin.value = false
   }
 
   async function logInStudent(value: Student) {
@@ -161,9 +177,15 @@ export const useStore = defineStore('user', () => {
   async function logInSupervisor(value: Supervisor) {
     try {
       loggingInSupervisor.value = true;
-      // const resp = await api.post('/user/login-supervisor/', value)
-    
-      loggingInSupervisor.value = false;
+      const resp = await api.post('/user/login-supervisor/', value)
+
+      if (resp.status === 200) {
+        loginError.value = false;
+        setIsAuthenticated(true);
+        setAuthUserType('sup');
+        setUsername(value.supervisor_id);
+        loggingInSupervisor.value = false;
+      }
     } catch (error) {
       const errorMsg = error as AxiosError
       loginError.value = true
@@ -178,8 +200,14 @@ export const useStore = defineStore('user', () => {
   async function logInAdmin(value: Admin) {
     try {
       loggingInAdmin.value = true;
-      // const resp = await api.post('/user/login-admin/', value)
+      const resp = await api.post('/user/login-admin/', value)
 
+      if (resp.status === 200) {
+        loginError.value = false;
+        setIsAuthenticated(true);
+        setAuthUserType('admin');
+        //setUsername();
+      }
       loggingInAdmin.value = false;
     } catch (error) {
       const errorMsg = error as AxiosError
@@ -214,6 +242,7 @@ export const useStore = defineStore('user', () => {
     registeringStudent,
     registeringEmployee,
     registeringSupervisor,
+    registeringAdmin,
     loggingInStudent,
     loggingInEmployee,
     loggingInSupervisor,
@@ -231,6 +260,8 @@ export const useStore = defineStore('user', () => {
     getUsername,
     registerStudent,
     registerEmployee,
+    registerSupervisor,
+    registerAdmin,
     logInStudent,
     logInEmployee,
     logInSupervisor,

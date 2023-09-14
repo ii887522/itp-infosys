@@ -13,7 +13,7 @@
                       <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
   
                       <div>
-                        <q-btn flat color="primary" label="Sign Up" class="q-mt-md" />
+                        <q-btn flat color="primary" label="Sign Up" class="q-mt-md" @click="empSignUp" />
                         <q-btn type="submit" label="Login" color="primary" class="q-mt-md" />
                       </div>
                     </q-form>
@@ -41,6 +41,10 @@ const router = useRouter();
 const displayErrorMessage = computed(() => {
   return store.loginError && store.errorMessage !== '';
 });
+
+function empSignUp() {
+  router.push('/emp/signup')
+}
 
 async function login() {
   await store.logInEmployee({

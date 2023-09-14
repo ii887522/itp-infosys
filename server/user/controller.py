@@ -94,7 +94,7 @@ def register_employee():
         # Add employee record to the database
         cursor.execute(
             "INSERT INTO employee VALUES (%s, %s, %s, %s, %s, %s)",
-            (emp_id, password, emp_name, company_name, emp_email, emp_phone),
+            (emp_id, emp_name, password, company_name, emp_email, emp_phone),
         )
         db_conn.commit()
 
@@ -106,6 +106,41 @@ def register_employee():
             "company_name": company_name,
             "emp_email": emp_email,
             "emp_phone": emp_phone,
+        }
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/register-sup", methods=['POST'])
+def register_supervisor():
+    if not request.json:
+        return {"code": 4000}
+
+    supervisor_id = request.json.get("supervisor_id", "")
+    supervisor_name = request.json.get("supervisor_name", "")
+    password = request.json.get("password", "")
+    gender = request.json.get("gender", "")
+    faculty = request.json.get("faculty", "")
+    supervisor_email = request.json.get("supervisor_email", "")
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO supervisor VALUES (%s, %s, %s, %s, %s, %s)",
+            (supervisor_id, supervisor_name, password, gender, faculty, supervisor_email),
+        )
+        db_conn.commit()
+
+        return {
+            "supervisor_id": supervisor_id,
+            "supervisor_name": supervisor_name,
+            "password": password,
+            "gender": gender,
+            "faculty": faculty,
+            "supervisor_email": supervisor_email,
         }
 
     finally:
