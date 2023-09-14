@@ -5,12 +5,17 @@ import { Student } from 'src/models/student'
 import { Employee } from 'src/models/employee'
 import { AxiosError } from 'axios'
 import { LocalStorage } from 'quasar'
+import { Admin } from 'src/models/admin'
+import { Supervisor } from 'src/models/supervisor'
 
 export const useStore = defineStore('user', () => {
   const registeringStudent = ref(false)
   const registeringEmployee = ref(false)
+  const registeringSupervisor = ref(false)
   const loggingInStudent = ref(false)
   const loggingInEmployee = ref(false)
+  const loggingInSupervisor = ref(false)
+  const loggingInAdmin = ref(false)
   const loginError = ref(false)
   const errorMessage = ref('')
 
@@ -100,6 +105,10 @@ export const useStore = defineStore('user', () => {
     registeringEmployee.value = false
   }
 
+  async function registerSupervisor(value: Supervisor) {
+
+  }
+
   async function logInStudent(value: Student) {
     try {
       loggingInStudent.value = true
@@ -145,6 +154,41 @@ export const useStore = defineStore('user', () => {
       isAuthenticated.value = false
       setIsAuthenticated(false);
       setAuthUserType('none');
+      setUsername('none');
+    }
+  }
+
+  async function logInSupervisor(value: Supervisor) {
+    try {
+      loggingInSupervisor.value = true;
+      // const resp = await api.post('/user/login-supervisor/', value)
+    
+      loggingInSupervisor.value = false;
+    } catch (error) {
+      const errorMsg = error as AxiosError
+      loginError.value = true
+      errorMessage.value = (errorMsg.response?.data as { message: string }).message
+      isAuthenticated.value = false
+      setIsAuthenticated(false);
+      setAuthUserType('none');
+      setUsername('none');
+    }
+  }
+
+  async function logInAdmin(value: Admin) {
+    try {
+      loggingInAdmin.value = true;
+      // const resp = await api.post('/user/login-admin/', value)
+
+      loggingInAdmin.value = false;
+    } catch (error) {
+      const errorMsg = error as AxiosError
+      loginError.value = true
+      errorMessage.value = (errorMsg.response?.data as { message: string }).message
+      isAuthenticated.value = false
+      setIsAuthenticated(false);
+      setAuthUserType('none');
+      setUsername('none');
     }
   }
 
@@ -169,8 +213,11 @@ export const useStore = defineStore('user', () => {
   return {
     registeringStudent,
     registeringEmployee,
+    registeringSupervisor,
     loggingInStudent,
     loggingInEmployee,
+    loggingInSupervisor,
+    loggingInAdmin,
     loginError,
     errorMessage,
     isAuthenticated,
@@ -186,6 +233,8 @@ export const useStore = defineStore('user', () => {
     registerEmployee,
     logInStudent,
     logInEmployee,
+    logInSupervisor,
+    logInAdmin,
     logOut,
   }
 })

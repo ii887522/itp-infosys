@@ -17,10 +17,22 @@ export const requireAuthStud = (to: RouteLocationNormalized, from: RouteLocation
 
 export const requireAuthEmp = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const store = useStore();
+  //console.log('Is Authenticated:', store.getIsAuthenticated());
+  //console.log('Authenticated Type:', store.getAuthUserType());
+
+  if (store.getIsAuthenticated() && store.getAuthUserType() === 'emp') {
+    next();
+  } else {
+    next('/login');
+  }
+}
+
+export const requireAuthAdmin = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+  const store = useStore();
   console.log('Is Authenticated:', store.getIsAuthenticated());
   console.log('Authenticated Type:', store.getAuthUserType());
 
-  if (store.getIsAuthenticated() && store.getAuthUserType() === 'emp') {
+  if (store.getIsAuthenticated() && store.getAuthUserType() === 'admin') {
     next();
   } else {
     next('/login');
