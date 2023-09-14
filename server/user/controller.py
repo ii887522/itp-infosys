@@ -1,9 +1,10 @@
 # import json
 
 import boto3
+
 # import config
 from common.db_connection import DbConnection
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
 user_controller = Blueprint("user_controller", __name__)
 db_conn = DbConnection.get_instance()
@@ -11,7 +12,7 @@ s3 = boto3.client("s3")
 
 
 # Function to handle student registration
-@user_controller.route("/register-stud", methods=['POST'])
+@user_controller.route("/register-stud", methods=["POST"])
 def register_student():
     if not request.json:
         return {"code": 4000}
@@ -55,7 +56,7 @@ def register_student():
         cursor.close()
 
 
-@user_controller.route("/register-emp", methods=['POST'])
+@user_controller.route("/register-emp", methods=["POST"])
 def register_employee():
     if not request.json:
         return {"code": 4000}
@@ -112,7 +113,7 @@ def register_employee():
         cursor.close()
 
 
-@user_controller.route("/get-companies", methods=['GET'])
+@user_controller.route("/get-companies", methods=["GET"])
 def get_companies():
     cursor = db_conn.cursor()
     try:
@@ -124,7 +125,7 @@ def get_companies():
         cursor.close()
 
 
-@user_controller.route("/login-stud", methods=['POST'])
+@user_controller.route("/login-stud", methods=["POST"])
 def login_student():
     if not request.json:
         return {"code": 4000}
@@ -151,7 +152,7 @@ def login_student():
         cursor.close()
 
 
-@user_controller.route("/login-emp", methods=['POST'])
+@user_controller.route("/login-emp", methods=["POST"])
 def login_employee():
     if not request.json:
         return {"code": 4000}
@@ -179,7 +180,7 @@ def login_employee():
         cursor.close()
 
 
-@user_controller.route("/get-student-profile/<student_id>", methods=['GET'])
+@user_controller.route("/get-student-profile/<student_id>", methods=["GET"])
 def get_student_profile(student_id: str):
     db_conn.ping()
     cursor = db_conn.cursor()
@@ -192,35 +193,80 @@ def get_student_profile(student_id: str):
 
         if student_data and intern_data:
             # Construct and return the student profile
-            return jsonify({
-                "student_id": student_data[0],
-                "student_name": student_data[1],
-                "password": student_data[2],
-                "ic_no": student_data[3],
-                "gender": student_data[4],
-                "programme": student_data[5],
-                "student_email": student_data[6],
-                "personal_email": student_data[7],
-                "faculty": student_data[8],
-                "supervisor_assigned_at": intern_data[1],
-                "company_name": intern_data[2],
-                "supervisor_name": intern_data[3],
-                "itp_start_at": intern_data[4],
-                "itp_end_at": intern_data[5],
-            }), 200
+            return (
+                jsonify(
+                    {
+                        "student_id": student_data[0],
+                        "student_name": student_data[1],
+                        "password": student_data[2],
+                        "ic_no": student_data[3],
+                        "gender": student_data[4],
+                        "programme": student_data[5],
+                        "student_email": student_data[6],
+                        "personal_email": student_data[7],
+                        "faculty": student_data[8],
+                        "supervisor_assigned_at": intern_data[1],
+                        "company_name": intern_data[2],
+                        "supervisor_name": intern_data[3],
+                        "itp_start_at": intern_data[4],
+                        "itp_end_at": intern_data[5],
+                    }
+                ),
+                200,
+            )
         elif student_data:
-            return jsonify({
-                "student_id": student_data[0],
-                "student_name": student_data[1],
-                "password": student_data[2],
-                "ic_no": student_data[3],
-                "gender": student_data[4],
-                "programme": student_data[5],
-                "student_email": student_data[6],
-                "personal_email": student_data[7],
-                "faculty": student_data[8],
-            })
+            return jsonify(
+                {
+                    "student_id": student_data[0],
+                    "student_name": student_data[1],
+                    "password": student_data[2],
+                    "ic_no": student_data[3],
+                    "gender": student_data[4],
+                    "programme": student_data[5],
+                    "student_email": student_data[6],
+                    "personal_email": student_data[7],
+                    "faculty": student_data[8],
+                }
+            )
         else:
             return jsonify({"message": "Student not found"}), 404
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/users/<user_type>/<user_id>", methods=["GET"])
+def get_user_name(user_type: str, user_id: str):
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
+    cursor = db_conn.cursor()
+
+    try:
+        match user_type:
+            case "stud":
+                # Fetch student name by student id from the database
+                cursor.execute("SELECT student_name FROM student WHERE student_id = %s", (user_id,))
+
+            case "emp":
+                # Fetch employee name by employee id from the database
+                cursor.execute("SELECT emp_name FROM employee WHERE emp_id = %s", (user_id,))
+
+            case "admin":
+                # TODO: Fetch admin name by admin id from the database
+                pass
+
+            case "sup":
+                # TODO: Fetch supervisor name by supervisor id from the database
+                pass
+
+            case _:
+                raise Exception('User type must be one of the following values: "stud", "emp", "admin", "sup"')
+
+        db_conn.commit()
+        db_row = cursor.fetchone()
+
+        # Output
+        return {"result": db_row[0] if db_row else ""}
+
     finally:
         cursor.close()
