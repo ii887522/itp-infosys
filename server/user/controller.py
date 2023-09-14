@@ -1,7 +1,4 @@
-# import json
-
 import boto3
-# import config
 from common.db_connection import DbConnection
 from flask import Blueprint, request, jsonify
 
@@ -147,6 +144,35 @@ def register_supervisor():
         cursor.close()
 
 
+@user_controller.route("/register-admin", methods=['POST'])
+def register_admin():
+    if not request.json:
+        return {"code": 4000}
+
+    admin_username = request.json.get("username", "")
+    admin_email = request.json.get("email", "")
+    password = request.json.get("password", "")
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO admin VALUES (%s, %s, %s)",
+            (admin_username, admin_email, password)
+        )
+        db_conn.commit()
+
+        return {
+            "username": admin_username,
+            "email": admin_email,
+            "password": password,
+        }
+
+    finally:
+        cursor.close()
+
+
 @user_controller.route("/get-companies", methods=['GET'])
 def get_companies():
     cursor = db_conn.cursor()
@@ -209,6 +235,57 @@ def login_employee():
         else:
             # Employee login failed
             return {"message": "Invalid email or password"}, 401
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/login-sup", methods=['POST'])
+def login_supervisor():
+    if not request.json:
+        return {"code": 4000}
+
+    supervisor_id = request.json.get("supervisor_id", "")
+    password = request.json.get("password", "")
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT * FROM supervisor WHERE supervisor_id = %s AND password = %s",
+            (supervisor_id, password)
+        )
+        supervisor_data = cursor.fetchone()
+
+        if supervisor_data:
+            return {"message": "Supervisor login successful", "supervisor_id": supervisor_data[0]}, 200
+        else:
+            return {"message": "Invalid supervisor ID or password"}, 401
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/login-admin", methods=['POST'])
+def login_admin():
+    if not request.json:
+        return {"code": 4000}
+    
+    username = request.json.get("username", "")
+    password = request.json.get("password", "")
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM admin WHERE username = %s AND password = %s", (username, password))
+        admin_data = cursor.fetchone()
+
+        if admin_data:
+            return {"message": "Supervisor login successful", "username": admin_data[0]}, 200
+        else:
+            return {"message": "Invalid username or password"}, 401
 
     finally:
         cursor.close()
