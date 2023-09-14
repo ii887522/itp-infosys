@@ -26,7 +26,7 @@ TODO:
                                 <q-card class="bg-blue-1">
                                     <q-card-section>
                                         <q-input v-model="student_name" label="Student Name" :rules="[requiredRule]"/>
-                                        <q-input v-model="student_id" label="Student ID" :rules="[requiredRule, studentIdRule]"/>
+                                        <q-input v-model="student_id" label="Student ID" :rules="[requiredRule, studentIdRule]" disable/>
                                         <q-input v-model="icNo" label="IC Number" :rules="[requiredRule, icNumberRule]"/>
                                         <q-select v-model="gender" :options="genders" label="Gender" :rules="[requiredRule]" />
                                         <q-select v-model="programme" :options="programmes" label="Programme" :rules="[requiredRule]"/>
@@ -226,30 +226,35 @@ const updateProfile = () => {
         cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
         ok: { icon: 'update', label: 'Save Changes', color: 'primary' },
     }).onOk(async() => {
-        // Call the function to save changes
-        executeUpdateProfile();
+        try {
+            await store.updateStudProfile({
+                student_id: student_id.value,
+                student_name: student_name.value,
+                password: '',
+                ic_no: icNo.value,
+                gender: gender.value,
+                programme: programme.value,
+                student_email: studentEmail.value,
+                personal_email: personalEmail.value,
+                faculty: faculty.value,
+            })
+
+            // set profileUpdated to true after a successful update
+            profileUpdated.value = true;
+
+            // Show a successful message
+            Notify.create('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+
+            // Show an error message here
+            Notify.create({
+                message: 'Failed to update profile',
+                color: 'negative',
+            });
+        }
     })
 };
-
-const executeUpdateProfile = async () => {
-    try {
-        // Implement update profile data logic here
-
-        // set profileUpdated to true after a successful update
-        profileUpdated.value = true;
-
-        // Show a successful message
-        Notify.create('Profile updated successfully');
-    } catch (error) {
-        console.error('Error updating profile:', error);
-
-        // Show an error message here
-        Notify.create({
-            message: 'Failed to update profile',
-            color: 'negative',
-        });
-    }
-}
 
 const updateResume = () => {
     dialog({
@@ -264,6 +269,25 @@ const updateResume = () => {
 
 const executeUpdateResume = async() => {
     // Implement logic here
+    // Overwrite the resume to S3
+    /*
+    python:
+    "resume_url": s3.generate_presigned_url(
+                    "get_object",
+                    Params={
+                        "Bucket": config.custombucket,
+                        "Key": f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+                        # So that PDF file will be displayed in the browser instead of being downloaded
+                        "ResponseContentType": "application/pdf",
+                        "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
+                    },
+                ),
+
+                return
+
+    - get object
+    - call url
+    */
     router.push('/profile');
 }
 

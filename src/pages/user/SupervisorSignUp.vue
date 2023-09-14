@@ -29,12 +29,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useMeta, useQuasar, type QInput } from 'quasar'
-import { useRouter } from 'vue-router'
 import { isTextEmpty } from 'src/common';
 import { useStore } from 'stores/user-store'
-import { api } from 'src/boot/axios';
 import { allFaculty, allGenders } from 'src/consts/student';
 
 useMeta({ title: 'Supervisor Sign Up | MyITPHub' })

@@ -22,6 +22,7 @@ def register_student():
     programme = request.json.get("programme", [])
     student_email = request.json.get("student_email", "")
     personal_email = request.json.get("personal_email", "")
+    faculty = request.json.get("faculty", [])
 
     db_conn.ping()
     cursor = db_conn.cursor()
@@ -29,8 +30,8 @@ def register_student():
     try:
         # Add student record to the database
         cursor.execute(
-            "INSERT INTO student VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (student_id, student_name, password, ic_no, gender, programme, student_email, personal_email),
+            "INSERT INTO student VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (student_id, student_name, password, ic_no, gender, programme, student_email, personal_email, faculty),
         )
         db_conn.commit()
 
@@ -271,7 +272,7 @@ def login_supervisor():
 def login_admin():
     if not request.json:
         return {"code": 4000}
-    
+
     username = request.json.get("username", "")
     password = request.json.get("password", "")
 
@@ -334,5 +335,42 @@ def get_student_profile(student_id: str):
             })
         else:
             return jsonify({"message": "Student not found"}), 404
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/update-stud-profile", methods=['POST'])
+def update_stud_profile():
+    if not request.json:
+        return {"code": 4000}
+
+    # Parse the JSON data sent in the request
+    student_id = request.json.get("student_id", "")
+    student_name = request.json.get("student_name", "")
+    ic_no = request.json.get("ic_no", "")
+    gender = request.json.get("gender", [])
+    programme = request.json.get("programme", [])
+    student_email = request.json.get("student_email", "")
+    personal_email = request.json.get("personal_email", "")
+    faculty = request.json.get("faculty", [])
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "UPDATE student SET student_name = %s, ic_no = %s, gender = %s, programme = %s, student_email = %s," +
+            " personal_email = %s, faculty = %s WHERE student_id = %s",
+            (student_name, ic_no, gender, programme, student_email, personal_email, faculty, student_id),
+        )
+        db_conn.commit()
+
+        return {"message": "Student profile updated successfully"}, 200
+
+    except Exception as e:
+        # Handle any exceptions, log errors, and return an appropriate response
+        print("Error updating student profile:", str(e))
+        return {"message": "Failed to update student profile"}, 500
+
     finally:
         cursor.close()

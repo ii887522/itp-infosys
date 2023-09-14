@@ -4,7 +4,7 @@
             <q-page container>
                 <div class="q-pa-xl flex flex-center shadow-8">
                     <q-card>
-                        <p class="signup-header text-h4 q-pt-md">Supervisor Sign Up</p>
+                        <p class="signup-header text-h4 q-pt-md">Admin Sign Up</p>
                         <q-card-section>
                             <q-form @submit="register" class="q-gutter-md">
                                 <q-input filled v-model="adminUsername" label="Username" dense class="input-field" :rules="[requiredRule]"/>
@@ -26,13 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useMeta, useQuasar, type QInput } from 'quasar'
-import { useRouter } from 'vue-router'
 import { isTextEmpty } from 'src/common';
 import { useStore } from 'stores/user-store'
-import { api } from 'src/boot/axios';
-import { allFaculty, allGenders } from 'src/consts/student';
 
 useMeta({ title: 'Admin Sign Up | MyITPHub' })
 

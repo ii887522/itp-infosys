@@ -45,7 +45,7 @@
   });
   
   function studSignUp() {
-    router.push('stud/signup');
+    router.push('/admin/signup');
   }
   
   async function login() {

@@ -137,6 +137,17 @@ const routes: RouteRecordRaw[] = [
       },
 
       {
+        path: 'admin/login',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/AdminLogin.vue'),
+      },
+      {
+        path: 'admin/signup',
+        beforeEnter: alreadyAuth,
+        component: () => import('pages/user/AdminSignUp.vue'),
+      },
+
+      {
         path: 'login',
         beforeEnter: alreadyAuth,
         component: () => import('pages/user/LoginPage.vue'),

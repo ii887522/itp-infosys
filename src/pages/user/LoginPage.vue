@@ -6,7 +6,7 @@
                     <q-card>
                         <p class="login-header text-h4 q-pt-md">Main Login Page</p>
                         <q-card-section>
-                            <div class="q-gutter-md">
+                            <div class="q-gutter-md" style="text-align:center;">
                                 <q-btn color="primary" label="Login as Student" class="q-mb-md" @click="studentLogin"/>
                                 <q-btn color="primary" label="Login as Employee" class="q-mb-md" @click="employeeLogin"/>
                                 <br/>

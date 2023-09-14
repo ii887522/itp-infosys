@@ -45,7 +45,7 @@ const displayErrorMessage = computed(() => {
 });
 
 function studSignUp() {
-  router.push('stud/signup');
+  router.push('/stud/signup');
 }
 
 async function login() {

@@ -26,6 +26,7 @@ export const useStore = defineStore('user', () => {
   const loggingInAdmin = ref(false)
   const loginError = ref(false)
   const errorMessage = ref('')
+  const updatingStudentProfile = ref(false)
 
   // authentication guard
   const isAuthenticated = ref(false)
@@ -237,6 +238,12 @@ export const useStore = defineStore('user', () => {
     // Redirect to home page
     //useRouter().push('/');
   }
+
+  async function updateStudProfile(value: Student) {
+    updatingStudentProfile.value = true;
+    const resp = await api.post('/user/update-stud-profile', value)
+    updatingStudentProfile.value = false;
+  }
   
   return {
     registeringStudent,
@@ -249,6 +256,7 @@ export const useStore = defineStore('user', () => {
     loggingInAdmin,
     loginError,
     errorMessage,
+    updatingStudentProfile,
     isAuthenticated,
     authUserType,
     username,
@@ -267,5 +275,6 @@ export const useStore = defineStore('user', () => {
     logInSupervisor,
     logInAdmin,
     logOut,
+    updateStudProfile,
   }
 })
