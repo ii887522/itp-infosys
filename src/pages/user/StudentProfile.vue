@@ -220,9 +220,15 @@ const viewResume = async () => {
     const studentId = store.getUsername();
     const response = await api.get(`/user/get-resume-url/${studentId}`);
 
+    if (response.data && response.data.resumeUrl) {
+      // Open the resume in a new browser window or tab
+      window.open(response.data.resumeUrl, '_blank');
+    } else {
+      console.error('Resume URL not found in the response.');
+    }
+  } catch (error) {
+    console.error('Error fetching resume URL:', error);
   }
-  // get the resume, this router push is temporary
-  router.push('');
 }
   
 const editProfile = () => {

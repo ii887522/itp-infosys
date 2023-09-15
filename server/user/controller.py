@@ -2,6 +2,7 @@ import boto3
 import config
 from common.db_connection import DbConnection
 from flask import Blueprint, request, jsonify
+from botocore.exceptions import NoCredentialsError
 
 user_controller = Blueprint("user_controller", __name__)
 db_conn = DbConnection.get_instance()
@@ -415,7 +416,7 @@ def update_stud_password():
         cursor.close()
 
 
-@user_controller.route("/update-resume", methods=['PUT'])
+@user_controller.route("/update-resume", methods=['POST'])
 def update_resume(student_id: str):
     # Input: Assuming you receive the updated resume file in the request
     """ next = request.args.get("next", "").split("#")
@@ -449,3 +450,26 @@ def update_resume(student_id: str):
         # Handle any exceptions that may occur during the S3 upload
         print("Error updating resume on S3:", str(e))
         return {"message": "Failed to update resume"}, 500
+
+
+@user_controller.route("/get-resume-url/<student_id>", methods=['GET'])
+def get_resume_url(student_id: str):
+    try:
+        s3_key = f"resume/{student_id}.pdf"
+
+        # Generate a pre-signed URL for the resume file
+        resume_url = s3.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': config.custombucket,
+                'Key': s3_key,
+            },
+            ExpiresIn=3600  # URL expiration time in seconds
+        )
+
+        # Return the pre-signed URL in the response
+        return {"resumeUrl": resume_url}
+
+    except NoCredentialsError:
+        print("No AWS credentials found.")
+        return {"message": "Failed to generate pre-signed URL"}, 500
