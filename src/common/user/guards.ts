@@ -1,9 +1,8 @@
 import { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
-import { useStore } from 'stores/user-store';
-import { LocalStorage } from 'quasar';
+import { useLocalStorageStore } from 'stores/localstorage-store';
 
 export const requireAuthStud = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = useStore();
+  const store = useLocalStorageStore();
   console.log('Is Authenticated:', store.getIsAuthenticated());
   console.log('Authenticated Type:', store.getAuthUserType());
   
@@ -16,7 +15,7 @@ export const requireAuthStud = (to: RouteLocationNormalized, from: RouteLocation
 };
 
 export const requireAuthEmp = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = useStore();
+  const store = useLocalStorageStore();
   //console.log('Is Authenticated:', store.getIsAuthenticated());
   //console.log('Authenticated Type:', store.getAuthUserType());
 
@@ -28,7 +27,7 @@ export const requireAuthEmp = (to: RouteLocationNormalized, from: RouteLocationN
 }
 
 export const requireAuthAdmin = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = useStore();
+  const store = useLocalStorageStore();
   console.log('Is Authenticated:', store.getIsAuthenticated());
   console.log('Authenticated Type:', store.getAuthUserType());
 
@@ -41,7 +40,7 @@ export const requireAuthAdmin = (to: RouteLocationNormalized, from: RouteLocatio
 
 // Function to check if the user is already logged in or not
 export const alreadyAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = useStore();
+  const store = useLocalStorageStore();
 
   if (!store.getIsAuthenticated()) {
     next(); // User is authenticated, proceed to the route

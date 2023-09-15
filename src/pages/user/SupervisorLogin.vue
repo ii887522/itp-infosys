@@ -25,20 +25,22 @@
     </q-page>
   </template>
   
-  <script setup lang="ts">
+<script setup lang="ts">
   import { ref, computed } from 'vue'
   import { useMeta, type QInput } from 'quasar'
   import { useStore } from 'stores/user-store'
   import { useRouter } from 'vue-router';
+  import { useLocalStorageStore } from 'src/stores/localstorage-store';
   
   useMeta({ title: 'Student Login | MyITPHub' })
   
   const store = useStore();
+  const lsStore = useLocalStorageStore();
   const supervisorId = ref('');
   const password = ref('');
   const router = useRouter();
   
-  console.log('Is Authenticated:', store.isAuthenticated);
+  console.log('Is Authenticated:', lsStore.isAuthenticated);
   
   const displayErrorMessage = computed(() => {
     return store.loginError && store.errorMessage !== '';
@@ -61,7 +63,7 @@
       supervisor_email: '',
     })
   
-    console.log('Is Authenticated:', store.isAuthenticated);
+    console.log('Is Authenticated:', lsStore.isAuthenticated);
     if (!store.loginError) {
       router.push('/')
     }
@@ -84,11 +86,3 @@
     margin-top: 5px;
   }
   </style>
-  
-  <!--
-  upload form [student]
-  upload progress report [student]
-  login [student]
-  logout [student]
-  update profile [student]
-  -->

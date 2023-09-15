@@ -30,10 +30,12 @@ import { ref, computed } from 'vue'
 import { useMeta, type QInput } from 'quasar'
 import { useStore } from 'stores/user-store'
 import { useRouter } from 'vue-router';
+import { useLocalStorageStore } from 'src/stores/localstorage-store';
   
 useMeta({ title: 'Employee Login | MyITPHub' })
 
 const store = useStore();
+const lsStore = useLocalStorageStore();
 const email = ref('');
 const password = ref('');
 const router = useRouter();
@@ -58,7 +60,7 @@ async function login() {
     emp_phone: '',
   })
 
-  console.log('Is Authenticated:', store.isAuthenticated);
+  console.log('Is Authenticated:', lsStore.isAuthenticated);
   if (!store.loginError) {
     router.push('/')
   }

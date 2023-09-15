@@ -108,6 +108,7 @@ import { useMeta, Notify, useQuasar } from 'quasar';
 import { useStore } from 'src/stores/user-store';
 import { api } from 'src/boot/axios';
 import { isTextEmpty } from 'src/common';
+import { useLocalStorageStore } from 'src/stores/localstorage-store';
 
 useMeta({ title: 'Editing Student Profile | MyITPHub' })
 
@@ -148,6 +149,7 @@ const confirmPasswordRule = (value: string) => value === newPassword.value || 'P
 const loading = ref(true);
 const router = useRouter();
 const store = useStore();
+const lsStore = useLocalStorageStore();
 const { dialog } = useQuasar();
 
 // trackers
@@ -180,7 +182,7 @@ const updatingResume = ref(false);
 
 async function fetchStudentProfile() {
     try {
-        const studentId = store.getUsername();
+        const studentId = lsStore.getUsername();
         const resp = await api.get(`/user/get-student-profile/${studentId}`);
         console.log('API Response:', resp); // Log the response
 
