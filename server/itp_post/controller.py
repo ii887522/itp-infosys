@@ -10,6 +10,8 @@ from flask import Blueprint, request
 itp_post_controller = Blueprint("itp_post_controller", __name__)
 db_conn = DbConnection.get_instance()
 s3 = boto3.client("s3")
+sns = boto3.resource("sns", itp_post_consts.AWS_REGION)
+itp_applied_topic = sns.Topic(itp_post_consts.ITP_APPLIED_TOPIC_ARN)
 
 
 @itp_post_controller.route("/internships", methods=["GET"])
@@ -50,7 +52,7 @@ FROM internship
     ON internship.title = learning_outcome.itp_title AND internship.company_name = learning_outcome.company_name
   INNER JOIN company
     ON internship.company_name = company.`name`
-WHERE internship.title > %s OR internship.title = %s AND internship.company_name > %s
+WHERE internship.title > %s OR internship.title = %s AND internship.company_name > %s AND vacancy_count > 0
 GROUP BY internship.title, internship.company_name
 ORDER BY internship.title, internship.company_name
 LIMIT %s
@@ -130,6 +132,14 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
             (student_id, internship_title, company_name, note_to_employer, now),
         )
         db_conn.commit()
+
+        # Send email confirmation to student after applied
+        itp_applied_topic.publish(
+            Message=f"Thank you for applying {internship_title} from {company_name}. Your application has been sent to "
+            f"{company_name}",
+            Subject="Internship Application Sent",
+            MessageAttributes={"student_id": {"DataType": "String", "StringValue": student_id}},
+        )
 
         # Output
         return {

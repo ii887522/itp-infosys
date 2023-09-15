@@ -50,7 +50,7 @@
           class="absolute full-width"
           :company-name="detailsStore.value.company_name"
           :internship-title="detailsStore.value.title"
-          student-id="21WMR05319"
+          :student-id="localStorage.getItem('username') ?? ''"
         />
 
         <internship-already-applied
@@ -148,7 +148,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useInternshipDetailsStudStore } from 'stores/itp-post-store'
-import { useMeta } from 'quasar'
+import { useMeta, useQuasar } from 'quasar'
 import { categoryColor } from 'src/consts/itp-post'
 import sanitizeHtml from 'sanitize-html'
 import InternshipAppForm from 'components/itp-post/InternshipAppForm.vue'
@@ -156,6 +156,7 @@ import { useRouter } from 'vue-router'
 import { useStore } from 'stores/itp-post-store'
 import InternshipAlreadyApplied from 'src/components/itp-post/InternshipAlreadyApplied.vue'
 
+const { localStorage } = useQuasar()
 const router = useRouter()
 const detailsStore = useInternshipDetailsStudStore()
 const store = useStore()
@@ -168,7 +169,7 @@ let timer: NodeJS.Timeout
   // Init
 ;(async () => {
   // Running the below 2 statements at the same time can cause the Flask server to crash, so await is needed
-  await store.listApplications('21WMR05319')
+  await store.listApplications(localStorage.getItem('username') ?? '')
   store.listCompanyPhotos(detailsStore.value.company_name)
 })()
 

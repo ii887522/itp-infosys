@@ -7,6 +7,8 @@
                   <p class="login-header text-h4 q-pt-md">Employee Login</p>
                   <q-card-section>
                     <q-form @submit="login" class="q-gutter-md">
+                      <div v-if="displayErrorMessage" class="error-message">{{ store.errorMessage }}</div>
+
                       <q-input filled v-model="email" label="Email" dense class="input-field" />
                       <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
   
@@ -24,19 +26,21 @@
   </template>
   
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useMeta, useQuasar, type QInput } from 'quasar'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useMeta, type QInput } from 'quasar'
 import { useStore } from 'stores/user-store'
+import { useRouter } from 'vue-router';
   
 useMeta({ title: 'Employee Login | MyITPHub' })
 
 const store = useStore();
-const { notify } = useQuasar();
-  
 const email = ref('');
 const password = ref('');
-const router = useRouter(); // Import the router directly
+const router = useRouter();
+
+const displayErrorMessage = computed(() => {
+  return store.loginError && store.errorMessage !== '';
+});
 
 async function login() {
   await store.logInEmployee({
@@ -47,15 +51,10 @@ async function login() {
     emp_phone: '',
   })
 
-  router.push('/');
+  if (!store.loginError) {
+    router.push('/')
+  }
 }
-  
-  /* const login = () => {
-    // Perform authentication logic here
-    // Example: Can make an API request to verify the credentials
-    // If success, navigate to the employee dashboard
-    router.push('/dashboard');
-  } */
 </script>
   
 <style scoped>
@@ -68,4 +67,9 @@ async function login() {
   .input-field {
     min-width: 250px;
   }
-  </style>
+
+  .error-message {
+    color: red;
+    margin-top: 5px;
+  }
+</style>
