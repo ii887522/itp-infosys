@@ -101,8 +101,6 @@ TODO:
 </template>
 
 <script setup lang="ts">
-// TODO: Dialog for confirm to save changes
-
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { allGenders, allProgrammes, allFaculty } from 'src/consts/student'
@@ -259,6 +257,30 @@ const updateProfile = () => {
     })
 };
 
+const updatePassword = () => {
+    dialog({
+        title: 'Confirm Password Update',
+        message: 'Are you sure you want to change password?',
+        cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
+        ok: { icon: 'update', label: 'Change Password', color: 'primary' },
+    }).onOk(async() => {
+        try {
+            await store.updateStudPassword({
+                student_id: student_id.value,
+                current_password: newPassword.value,
+                new_password: newPassword.value,
+            })
+        } catch (error) {
+            console.error('Error updating password:', error);
+
+            Notify.create({
+                message: 'Failed to update password',
+                color: 'negative',
+            })
+        }
+    })
+};
+
 const updateResume = () => {
     dialog({
         title: 'Confirm Resume Update',
@@ -266,12 +288,6 @@ const updateResume = () => {
         cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
         ok: { icon: 'update', label: 'Update Resume', color: 'primary' },
     }).onOk(async() => {
-        executeUpdateResume();
-    })
-};
-
-const executeUpdateResume = async() => {
-    try {
         const fileInput = resumeInput!.value; // Access the file input using the ref
         if (!fileInput) {
             // No file selected
@@ -280,31 +296,22 @@ const executeUpdateResume = async() => {
         }
 
         const resumeFile = fileInput[0]; // Get the selected file
-        updatingResume.value = true;
-        await store.updateResume(resumeFile);
-        updatingResume.value = false;
+        
+        try {
+            // Call the updateResume store function and pass the file
+            await store.updateResume(resumeFile);
 
-        Notify.create('Profile updated successfully');
-    } catch (error) {
-        console.error('Error updating resume:', error);
+            Notify.create('Resume updated successfully');
+        } catch (error) {
+            console.error('Error uploading resume:', error);
 
-        Notify.create({
-            message: 'Failed to update resume',
-            color: 'negative',
-        });
-    }
-    //router.push('/profile');
-}
-
-const updatePassword = () => {
-    dialog({
-        title: 'Confirm Password Update',
-        message: 'Are you sure you want to change password?',
-        cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
-        ok: { icon: 'update', label: 'Change Password', color: 'primary' },
-    }).onOk(async() => {
-        executeUpdatePassword();
-    })
+            // Show an error message here
+            Notify.create({
+                message: 'Failed to upload resume',
+                color: 'negative',
+            });
+        }
+    });
 };
 
 const executeUpdatePassword = async () => {

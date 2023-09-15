@@ -1,4 +1,3 @@
-<!-- TODO: Adjust the details according to comments provided -->
 <template>
     <q-page>
       <div class="q-pa-md">
@@ -216,7 +215,12 @@ onMounted(() => {
   }, 1000);
 })
 
-const viewResume = () => {
+const viewResume = async () => {
+  try {
+    const studentId = store.getUsername();
+    const response = await api.get(`/user/get-resume-url/${studentId}`);
+
+  }
   // get the resume, this router push is temporary
   router.push('');
 }

@@ -1,7 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { api } from 'boot/axios'
 import { defineStore } from 'pinia'
-import { Student } from 'src/models/student'
+import { StudChangePassword, Student } from 'src/models/student'
 import { Employee } from 'src/models/employee'
 import { AxiosError } from 'axios'
 import { LocalStorage } from 'quasar'
@@ -247,16 +247,23 @@ export const useStore = defineStore('user', () => {
     updatingStudentProfile.value = false;
   }
 
-  async function updateStudPassword(value: Student) {
+  async function updateStudPassword(value: StudChangePassword) {
     updatingStudentPassword.value = true;
     await api.post('/user/update-stud-password', value)
     updatingStudentPassword.value = false;
   }
 
-  // not sure yet
+  // not sure
   async function updateResume(resume: File) {
     updatingResume.value = true;
-    await api.post('/update-resume', getUsername())
+
+    // Create a FormData object and append the resume file
+    const formData = new FormData();
+    formData.append('resume', resume);
+
+    // Make a POST request to the server with the FormData containing the resume file
+    await api.post('/update-resume', formData);
+
     updatingResume.value = false;
   }
   

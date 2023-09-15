@@ -383,13 +383,25 @@ def update_stud_password():
         return {"code": 4000}
 
     student_id = request.json.get("student_id", "")
-    password = request.json.get("password", "")
+    current_password = request.json.get("current_password", "")  # Current password
+    new_password = request.json.get("new_password", "")  # New password
 
     db_conn.ping()
     cursor = db_conn.cursor()
 
     try:
-        cursor.execute("UPDATE student SET password = %s WHERE student_id = %s", (password, student_id),)
+        # Check if the current password matches the one in the database
+        cursor.execute("SELECT password FROM student WHERE student_id = %s", (student_id,))
+        stored_password = cursor.fetchone()
+
+        if not stored_password:
+            return {"message": "Student not found"}, 404
+
+        if current_password != stored_password[0]:
+            return {"message": "Current password does not match"}, 400
+
+        # Update the password to the new one
+        cursor.execute("UPDATE student SET password = %s WHERE student_id = %s", (new_password, student_id))
         db_conn.commit()
 
         return {"message": "Password updated successfully"}, 200
@@ -403,47 +415,32 @@ def update_stud_password():
         cursor.close()
 
 
-@user_controller.route("/update-resume", methods=['POST'])
+@user_controller.route("/update-resume", methods=['PUT'])
 def update_resume(student_id: str):
     # Input: Assuming you receive the updated resume file in the request
-    next = request.args.get("next", "").split("#")
+    """ next = request.args.get("next", "").split("#")
     size = request.args.get("size", 1000, type=int)
     next_title = next[0]
-    next_company_name = next[1] if 1 < len(next) else None
+    next_company_name = next[1] if 1 < len(next) else None """
+
     updated_resume_file = request.files.get("resume")
 
     if not updated_resume_file:
         return {"message": "Updated resume file not found"}, 400
 
-    db_conn.ping()
-    cursor = db_conn.cursor()
+    s3_key = f"resume/{student_id}.pdf"
 
     # Upload the updated resume file to S3 and overwrite the existing file
     try:
-        # Fetch a page of internship applications from the database
-        cursor.execute(
-            """
-SELECT title, company_name, `status`, note_to_employer, created_at
-FROM application
-WHERE student_id = %s AND (title > %s OR title = %s AND company_name > %s)
-ORDER BY created_at
-LIMIT %s
-""",
-            (student_id, next_title, next_title, next_company_name, size),
+        s3.upload_fileobj(
+            updated_resume_file,
+            config.custombucket,
+            s3_key,
+            ExtraArgs={
+                "ContentType": "application/pdf",
+                "ContentDisposition": f'inline; filename="{student_id}.pdf"',
+            }
         )
-        db_conn.commit()
-        db_rows = cursor.fetchall()
-
-        for row in db_rows:
-            s3.upload_fileobj(
-                updated_resume_file,
-                config.custombucket,
-                f"companies/{row[1]}/internships/{row[0]}/applications/{student_id}.pdf",
-                ExtraArgs={
-                    "ContentType": "application/pdf",
-                    "ContentDisposition": f'inline; filename="{student_id}.pdf"',
-                }
-            )
 
         # Output: Provide a success message or any other necessary response
         return {"message": "Resume updated successfully"}, 200
@@ -452,6 +449,3 @@ LIMIT %s
         # Handle any exceptions that may occur during the S3 upload
         print("Error updating resume on S3:", str(e))
         return {"message": "Failed to update resume"}, 500
-
-    finally:
-        cursor.close()

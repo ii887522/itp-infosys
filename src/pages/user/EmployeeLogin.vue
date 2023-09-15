@@ -47,6 +47,9 @@ function empSignUp() {
 }
 
 async function login() {
+  store.loginError = false;
+  store.errorMessage = '';
+
   await store.logInEmployee({
     emp_name: '',
     password: password.value,
@@ -55,6 +58,7 @@ async function login() {
     emp_phone: '',
   })
 
+  console.log('Is Authenticated:', store.isAuthenticated);
   if (!store.loginError) {
     router.push('/')
   }
