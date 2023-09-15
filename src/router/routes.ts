@@ -60,6 +60,11 @@ const routes: RouteRecordRaw[] = [
         path: 'admin/itp-prog/students',
         component: () => import('pages/itp-prog/StudList.vue'),
       },
+      
+      {
+        path: 'stud/UserUpload/submit-report-file',
+        component: () => import('pages/UserUpload/uploadResNRepNCom.vue'),
+      },
 
       // user module
       { path: 'stud/login', component: () => import('pages/user/StudentLogin.vue') },
@@ -73,6 +78,8 @@ const routes: RouteRecordRaw[] = [
       { path: 'emp/profile/edit', component: () => import('pages/user/EmpEditProfile.vue') },
     ],
   },
+
+  
 
   // Always leave this as last one,
   // but you can also remove it

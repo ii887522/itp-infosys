@@ -162,6 +162,8 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
         cursor.close()
 
 
+
+
 @itp_post_controller.route("/students/<student_id>/applications", methods=["GET"])
 def list_outgoing_applications(student_id: str):
     # Input
@@ -532,6 +534,58 @@ def update_application(company_name: str, internship_title: str, student_id: str
 
         # Output
         return {"title": internship_title, "company_name": company_name, "student_id": student_id, "status": status}
+
+    finally:
+        cursor.close()
+#xlyw
+
+@itp_post_controller.route(
+    "/companies/<company_name>/internships/<internship_title>/applications/<student_id>", methods=["POST"]
+)
+def apply_internship(company_name: str, internship_title: str, student_id: str):
+    # Input
+    note_to_employer = request.json.get("note_to_employer", "") if request.json else ""
+
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn.ping()
+
+    cursor = db_conn.cursor()
+    now = int(time.time())
+
+    try:
+        # Create internship application record in the database
+        cursor.execute(
+            "INSERT INTO application VALUES (%s, %s, %s, %s, DEFAULT, %s)",
+            (student_id, internship_title, company_name, note_to_employer, now),
+        )
+        db_conn.commit()
+
+        # Output
+        return {
+            "payload": {
+                "title": internship_title,
+                "company_name": company_name,
+                "status": "pending",
+                "note_to_employer": note_to_employer,
+                "created_at": now,
+                "resume_url": s3.generate_presigned_url(
+                    "get_object",
+                    Params={
+                        "Bucket": config.custombucket,
+                        "Key": f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+                        # So that PDF file will be displayed in the browser instead of being downloaded
+                        "ResponseContentType": "application/pdf",
+                        "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
+                    },
+                ),
+            },
+            # Generate S3 presigned URL for the student to upload their resume
+            "resume_upload_url": s3.generate_presigned_post(
+                config.custombucket,
+                f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
+                ExpiresIn=10,
+            ),
+        }
 
     finally:
         cursor.close()

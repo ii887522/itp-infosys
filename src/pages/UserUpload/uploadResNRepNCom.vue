@@ -1,0 +1,315 @@
+<template>
+    <q-card class="bg-info q-mt-lg q-ml-lg q-mr-lg " style="width: 1500px">
+      <q-card-section>
+        <div class="text-h5 q-mb-lg q-size-bo">Internship Application</div>
+  
+        <q-form @submit="apply">
+          <q-file
+            class="q-mb-lg"
+            name="resume_url"
+            max-files="1"
+            clearable
+            label-slot
+            v-model="resume"
+            outlined
+            counter
+            lazy-rules="ondemand"
+            bg-color="white"
+            accept=".pdf"
+            :rules="[value => !!value || 'Resume is required']"
+            :disable="isSubmitClicked1"
+
+          >
+            <template #label>
+              <q-icon name="attach_file" left size="xs" />
+              <span>Resume / CV</span>
+              <span class="text-negative"> *</span>
+            </template>
+          </q-file>
+
+  
+          <div class="text-center">
+            <q-btn type="submit" icon="touch_app" label="Save And Submit" color="positive" />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+
+    <br/><br/>
+
+
+    <q-card class="bg-info q-ml-lg q-mr-lg" style="width: 1500px">
+      <q-card-section>
+        <div class="text-h5 q-mb-lg">Company Details</div>
+  
+        <q-form @submit="CompanyApply">
+
+        <q-input
+          class="q-mb-lg"
+          name="ComName"
+          clearable
+          label-slot
+          autogrow
+          v-model="comName"
+          outlined
+          bg-color="white"
+          :rules="[value => !!value || 'Company Name is required']"
+          :disable="isSubmitClicked2"
+
+        >
+          <template #label>
+            <span>Company Name</span>
+            <span class="text-negative"> *</span>
+          </template>
+        </q-input>
+
+        <q-input
+          class="q-mb-lg"
+          name="ComAdd"
+          clearable
+          label-slot
+          autogrow
+          v-model="comAdd"
+          outlined
+          bg-color="white"
+          :rules="[value => !!value || 'Company Address is required']"
+          :disable="isSubmitClicked2"
+
+        >
+          <template #label>
+            <span>Company Address</span>
+            <span class="text-negative"> *</span>
+          </template>
+        </q-input>
+
+       <q-input
+        class="q-mb-lg"
+        name="MonAllowance"
+        clearable
+        label-slot
+        autogrow
+        v-model="MonAllowance"
+        outlined
+        bg-color="white"
+        :rules="[
+        value => !!value || 'Monthly Allowance is required',
+        value => /^[0-9]+(\.[0-9]+)?$/.test(value) || 'Please enter a valid number'
+        ]"
+        :disable="isSubmitClicked2"
+
+      >
+       <template #label>
+       <span>Monthly Allowance</span>
+        <span class="text-negative"> *</span>
+      </template>
+      </q-input>
+
+        <q-input
+          class="q-mb-lg"
+          name="ComSuperName"
+          clearable
+          label-slot
+          autogrow
+          v-model="ComSuperName"
+          outlined
+          bg-color="white"
+          :rules="[value => !!value || 'Company Supervisor Name is required']"
+          :disable="isSubmitClicked2"
+
+        >
+          <template #label>
+            <span>Company Supervisor Name</span>
+            <span class="text-negative"> *</span>
+          </template>
+        </q-input>
+
+        <q-input
+          class="q-mb-lg"
+          name="ComSuperEmail"
+          clearable
+          label-slot
+          autogrow
+          v-model="ComSuperEmail"
+          outlined
+          bg-color="white"
+          :rules="[value => !!value || 'Company Supervisor Email is required',
+          value => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value) || 'Please enter a valid email address'
+          ]"
+          :disable="isSubmitClicked2"
+
+        >
+          <template #label>
+            <span>Company Supervisor Email</span>
+            <span class="text-negative"> *</span>
+          </template>
+        </q-input>
+            
+
+        <!-- Upload Company File -->
+          <q-file
+            class="q-mb-lg"
+            name="ComAccept_url"
+            max-files="1"
+            clearable
+            label-slot
+            v-model="ComAccept"
+            outlined
+            counter
+            lazy-rules="ondemand"
+            bg-color="white"
+            accept=".pdf"
+            :rules="[value => !!value || 'Com. Acceptance Form is required']"
+            :disable="isSubmitClicked2"
+
+          >
+            <template #label>
+              <q-icon name="attach_file" left size="xs" />
+              <span>Com. Acceptance Form</span>
+              <span class="text-negative"> *</span>
+            </template>
+          </q-file>
+
+          <q-file
+            class="q-mb-lg"
+            name="ParentAckForm_url"
+            max-files="1"
+            clearable
+            label-slot
+            v-model="ParentAckForm"
+            outlined
+            counter
+            lazy-rules="ondemand"
+            bg-color="white"
+            accept=".pdf"
+            :rules="[value => !!value || 'Resume is required']"
+            :disable="isSubmitClicked2"
+
+          >
+            <template #label>
+              <q-icon name="attach_file" left size="xs" />
+              <span>Parent Ack. Form</span>
+              <span class="text-negative"> *</span>
+            </template>
+          </q-file>
+
+          <q-file
+            class="q-mb-lg"
+            name="LetterOfIdem_url"
+            max-files="1"
+            clearable
+            label-slot
+            v-model="LetterOfIdem"
+            outlined
+            counter
+            lazy-rules="ondemand"
+            bg-color="white"
+            accept=".pdf"
+            :rules="[value => !!value || 'Resume is required']"
+            :disable="isSubmitClicked2"
+
+          >
+            <template #label>
+              <q-icon name="attach_file" left size="xs" />
+              <span>Letter of Indemnity</span>
+              <span class="text-negative"> *</span>
+            </template>
+          </q-file>
+
+          <div class="text-center">
+            <q-btn type="submit" icon="touch_app" label="Save and Submit" color="positive" />
+          </div>
+          
+        </q-form>
+      </q-card-section>
+    </q-card>
+
+    <br/><br/>
+
+    <!--Submission of Monthly Report-->
+    <q-card class="bg-info q-ml-lg q-mr-lg" style="width: 1500px">
+      <q-card-section>
+        <div class="text-h5 q-mb-lg">Submission Of Monthly Report</div>
+  
+        <q-form @submit="MonthlyReportUpload">
+          <q-file
+            class="q-mb-lg"
+            name="monthlyReportPDF_url"
+            max-files="1"
+            clearable
+            label-slot
+            v-model="monthlyReportPDF"
+            outlined
+            counter
+            lazy-rules="ondemand"
+            bg-color="white"
+            accept=".pdf"
+            :rules="[value => !!value || 'Monthly Report is required']"
+            :disable="isSubmitClicked3"
+
+          >
+            <template #label>
+              <q-icon name="attach_file" left size="xs" />
+              <span>Monthly Report (PDF)</span>
+              <span class="text-negative"> *</span>
+            </template>
+          </q-file>
+          
+          <div class="text-center">
+            <q-btn type="submit" icon="touch_app" label="Save And Submit" color="positive" />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+
+    <br/><br/><br/>
+
+
+  </template>
+  
+  <script setup lang="ts">
+  import { ref } from 'vue'
+  import { useStore } from 'src/stores/user-store'
+  const store = useStore()
+
+  //Resume
+  const resume = ref()
+
+  //Company Details
+  const ComAccept = ref()
+  const ParentAckForm = ref()
+  const LetterOfIdem = ref()
+  const comName = ref('')
+  const comAdd = ref('')
+  const MonAllowance = ref('')
+  const ComSuperName = ref('')
+  const ComSuperEmail = ref('')
+
+  const isSubmitClicked1 = ref(false)
+  const isSubmitClicked2 = ref(false)
+  const isSubmitClicked3 = ref(false)
+
+
+  //Report
+  const monthlyReportPDF = ref()
+  const monthlyReportDOCX = ref()
+  
+  function apply() {
+  // Disable input fields when the submit button is clicked
+  isSubmitClicked1.value = true;
+  console.log('Upload');
+}
+
+function CompanyApply() {
+  // Disable input fields when the submit button is clicked
+  isSubmitClicked2.value = true;
+  console.log('Upload');
+  const studentId = store.getUsername()
+}
+
+function MonthlyReportUpload() {
+  // Disable input fields when the submit button is clicked
+  isSubmitClicked3.value = true;
+  console.log('Upload');
+}
+
+  </script>

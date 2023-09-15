@@ -37,6 +37,7 @@ const nav = [
   { to: '/stud/itp-post/internship-app-queue', icon: 'list', label: 'My Application' },
   { to: '/admin/itp-prog', icon: 'construction', label: 'Program' },
   { to: '/emp/itp-post/internship-app-queue', icon: 'list', label: 'Student Applications' },
+  { to: '/stud/UserUpload/submit-report-file',icon: 'list',label:'My Submission'},
 ]
 
 const showSearch = ref(false)
