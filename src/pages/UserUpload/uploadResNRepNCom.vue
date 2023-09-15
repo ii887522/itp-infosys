@@ -269,7 +269,9 @@
   <script setup lang="ts">
   import { ref } from 'vue'
   import { useStore } from 'src/stores/user-store'
+  import { useStore as useUploadStore } from 'src/stores/upload'
   const store = useStore()
+  const uploadStore = useUploadStore()
 
   //Resume
   const resume = ref()
@@ -304,6 +306,7 @@ function CompanyApply() {
   isSubmitClicked2.value = true;
   console.log('Upload');
   const studentId = store.getUsername()
+  uploadStore.companyApply
 }
 
 function MonthlyReportUpload() {

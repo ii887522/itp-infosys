@@ -10,8 +10,6 @@ from flask import Blueprint, request
 itp_post_controller = Blueprint("itp_post_controller", __name__)
 db_conn = DbConnection.get_instance()
 s3 = boto3.client("s3")
-sns = boto3.resource("sns", itp_post_consts.AWS_REGION)
-itp_applied_topic = sns.Topic(itp_post_consts.ITP_APPLIED_TOPIC_ARN)
 
 
 @itp_post_controller.route("/internships", methods=["GET"])
@@ -52,7 +50,7 @@ FROM internship
     ON internship.title = learning_outcome.itp_title AND internship.company_name = learning_outcome.company_name
   INNER JOIN company
     ON internship.company_name = company.`name`
-WHERE internship.title > %s OR internship.title = %s AND internship.company_name > %s AND vacancy_count > 0
+WHERE internship.title > %s OR internship.title = %s AND internship.company_name > %s
 GROUP BY internship.title, internship.company_name
 ORDER BY internship.title, internship.company_name
 LIMIT %s
@@ -133,14 +131,6 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
         )
         db_conn.commit()
 
-        # Send email confirmation to student after applied
-        itp_applied_topic.publish(
-            Message=f"Thank you for applying {internship_title} from {company_name}. Your application has been sent to "
-            f"{company_name}",
-            Subject="Internship Application Sent",
-            MessageAttributes={"student_id": {"DataType": "String", "StringValue": student_id}},
-        )
-
         # Output
         return {
             "payload": {
@@ -170,8 +160,6 @@ def apply_internship(company_name: str, internship_title: str, student_id: str):
 
     finally:
         cursor.close()
-
-
 
 
 @itp_post_controller.route("/students/<student_id>/applications", methods=["GET"])
@@ -547,55 +535,5 @@ def update_application(company_name: str, internship_title: str, student_id: str
 
     finally:
         cursor.close()
-#xlyw
 
-@itp_post_controller.route(
-    "/companies/<company_name>/internships/<internship_title>/applications/<student_id>", methods=["POST"]
-)
-def apply_internship(company_name: str, internship_title: str, student_id: str):
-    # Input
-    note_to_employer = request.json.get("note_to_employer", "") if request.json else ""
 
-    # Reopen the timed out database connection to avoid PyMySQL interface error
-    db_conn.ping()
-
-    cursor = db_conn.cursor()
-    now = int(time.time())
-
-    try:
-        # Create internship application record in the database
-        cursor.execute(
-            "INSERT INTO application VALUES (%s, %s, %s, %s, DEFAULT, %s)",
-            (student_id, internship_title, company_name, note_to_employer, now),
-        )
-        db_conn.commit()
-
-        # Output
-        return {
-            "payload": {
-                "title": internship_title,
-                "company_name": company_name,
-                "status": "pending",
-                "note_to_employer": note_to_employer,
-                "created_at": now,
-                "resume_url": s3.generate_presigned_url(
-                    "get_object",
-                    Params={
-                        "Bucket": config.custombucket,
-                        "Key": f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
-                        # So that PDF file will be displayed in the browser instead of being downloaded
-                        "ResponseContentType": "application/pdf",
-                        "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
-                    },
-                ),
-            },
-            # Generate S3 presigned URL for the student to upload their resume
-            "resume_upload_url": s3.generate_presigned_post(
-                config.custombucket,
-                f"companies/{company_name}/internships/{internship_title}/applications/{student_id}.pdf",
-                ExpiresIn=10,
-            ),
-        }
-
-    finally:
-        cursor.close()
