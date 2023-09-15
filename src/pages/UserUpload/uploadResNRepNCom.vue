@@ -282,7 +282,7 @@
   const LetterOfIdem = ref()
   const comName = ref('')
   const comAdd = ref('')
-  const MonAllowance = ref('')
+  const MonAllowance = ref(0)
   const ComSuperName = ref('')
   const ComSuperEmail = ref('')
 
@@ -301,12 +301,19 @@
   console.log('Upload');
 }
 
-function CompanyApply() {
+async function CompanyApply(){
   // Disable input fields when the submit button is clicked
   isSubmitClicked2.value = true;
   console.log('Upload');
-  const studentId = store.getUsername()
-  uploadStore.companyApply
+  const studentId = store.getUsername()as string
+  await uploadStore.companyApply({
+                student_id: studentId,
+                company_name: comName.value,
+                company_address: comAdd.value,
+                monthly_allowance: MonAllowance.value,
+                company_supervisor_name: ComSuperName.value,
+                company_supervisor_email: ComSuperEmail.value,
+            })
 }
 
 function MonthlyReportUpload() {

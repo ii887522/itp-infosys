@@ -27,7 +27,7 @@ def company_apply():
     try:
         # Add student record to the database
         cursor.execute(
-            "INSERT INTO placement VALUES (%s, %s, %s, %f, %s, %s, %s, %s)",
+            "INSERT INTO placement VALUES (%s, %s, %s, %f, %s, %s)",
             (student_id, company_name, company_address, monthly_allowance, 
              company_supervisor_name, company_supervisor_email),
         )

@@ -10,6 +10,7 @@ export interface Student {
   faculty: string[]
 }
 
+
 export function makeStudent(): Student {
   return {
     student_id: '',
