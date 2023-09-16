@@ -7,7 +7,8 @@ SELECT student_name FROM student WHERE student_id = "21WMR05319";
 -- Fetch user name by employee id
 SELECT emp_name FROM employee WHERE emp_id = "1";
 
--- TODO: Fetch uesr name by admin id
+-- Fetch user name by admin id
+SELECT username FROM `admin` WHERE admin_id = 0;
 
-
--- TODO: Fetch user name by supervisor id
+-- Fetch user name by supervisor id
+SELECT supervisor_name FROM supervisor WHERE supervisor_id = "0";
