@@ -43,7 +43,7 @@ const userName = ref('')
 setTimeout(async () => {
   const resp = await api.get(`/user/users/${localStorage.getItem('authUserType')}/${localStorage.getItem('username')}`)
   userName.value = resp.data.result
-}, 1000)
+}, 2000)
 
 const confirmLogOut = () => {
   dialog({
