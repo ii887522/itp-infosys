@@ -363,25 +363,21 @@ def get_user_name(user_type: str, user_id: str):
     cursor = db_conn.cursor()
 
     try:
-        match user_type:
-            case "stud":
-                # Fetch student name by student id from the database
-                cursor.execute("SELECT student_name FROM student WHERE student_id = %s", (user_id,))
+        if user_type == "stud":
+            # Fetch student name by student id from the database
+            cursor.execute("SELECT student_name FROM student WHERE student_id = %s", (user_id,))
 
-            case "emp":
-                # Fetch employee name by employee id from the database
-                cursor.execute("SELECT emp_name FROM employee WHERE emp_id = %s", (user_id,))
+        elif user_type == "emp":
+            # Fetch employee name by employee id from the database
+            cursor.execute("SELECT emp_name FROM employee WHERE emp_id = %s", (user_id,))
 
-            case "admin":
-                # TODO: Fetch admin name by admin id from the database
-                pass
+        elif user_type == "admin":
+            # TODO: Fetch admin name by admin id from the database
+            pass
 
-            case "sup":
-                # TODO: Fetch supervisor name by supervisor id from the database
-                pass
-
-            case _:
-                raise Exception('User type must be one of the following values: "stud", "emp", "admin", "sup"')
+        elif user_type == "sup":
+            # TODO: Fetch supervisor name by supervisor id from the database
+            pass
 
         db_conn.commit()
         db_row = cursor.fetchone()
