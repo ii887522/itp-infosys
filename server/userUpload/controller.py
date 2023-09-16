@@ -1,10 +1,10 @@
 import boto3
 
-from common.db_connection import DbConnection
+from common.db_connection_pool import DbConnectionPool
 from flask import Blueprint, request
 
 userUpload_controller = Blueprint("userUpload_controller", __name__)
-db_conn = DbConnection.get_instance()
+db_conn = DbConnectionPool.get_instance()
 s3 = boto3.client("s3")
 
 
