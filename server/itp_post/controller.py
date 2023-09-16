@@ -11,7 +11,7 @@ from flask import Blueprint, request
 itp_post_controller = Blueprint("itp_post_controller", __name__)
 db_conn_pool = DbConnectionPool.get_instance()
 s3 = boto3.client("s3")
-sns = boto3.resource("sns", itp_post_consts.AWS_REGION)
+sns = boto3.resource("sns", consts.AWS_REGION)
 itp_applied_topic = sns.Topic(itp_post_consts.ITP_APPLIED_TOPIC_ARN)
 
 
