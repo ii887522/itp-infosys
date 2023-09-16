@@ -21,11 +21,11 @@ import ItpNav from './ItpNav.vue'
 import UserCard from './UserCard.vue'
 import InternshipSearch from './itp-post/InternshipSearch.vue'
 import { type RouteLocationNormalized, onBeforeRouteUpdate } from 'vue-router'
-import { useStore } from 'stores/user-store'
+import { useLocalStorageStore } from 'stores/localstorage-store'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const store = useStore()
+const lsStore = useLocalStorageStore()
 
 const nav = [
   {
@@ -35,8 +35,8 @@ const nav = [
       showSearch.value = !showSearch.value
     },
     show: (to: RouteLocationNormalized) =>
-      store.getIsAuthenticated() === true &&
-      store.getAuthUserType() === 'stud' &&
+      lsStore.getIsAuthenticated() === true &&
+      lsStore.getAuthUserType() === 'stud' &&
       (to.fullPath === '/' ||
         to.fullPath === '/stud/itp-post/internships' ||
         to.fullPath === '/emp/itp-post/internships'),
@@ -45,7 +45,7 @@ const nav = [
     to: '/stud/itp-post/internship-app-queue',
     icon: 'list',
     label: 'My Application',
-    show: () => store.getIsAuthenticated() === true && store.getAuthUserType() === 'stud',
+    show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'stud',
   },
   {
     to: '/admin/itp-prog',
@@ -56,15 +56,15 @@ const nav = [
     to: '/emp/itp-post/internship-app-queue',
     icon: 'list',
     label: 'Student Applications',
-    show: () => store.getIsAuthenticated() === true && store.getAuthUserType() === 'emp',
+    show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'emp',
   },
 ]
 
 const showSearch = ref(false)
-const showUserCard = ref(store.getIsAuthenticated() === true)
+const showUserCard = ref(lsStore.getIsAuthenticated() === true)
 
 watch(router.currentRoute, () => {
-  showUserCard.value = store.getIsAuthenticated() === true
+  showUserCard.value = lsStore.getIsAuthenticated() === true
 })
 
 onBeforeRouteUpdate(() => {
