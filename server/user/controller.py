@@ -1,8 +1,6 @@
-# import json
-
 import boto3
-
-# import config
+import config
+from botocore.exceptions import NoCredentialsError
 from common.db_connection import DbConnection
 from flask import Blueprint, jsonify, request
 
@@ -26,6 +24,7 @@ def register_student():
     programme = request.json.get("programme", [])
     student_email = request.json.get("student_email", "")
     personal_email = request.json.get("personal_email", "")
+    faculty = request.json.get("faculty", [])
 
     db_conn.ping()
     cursor = db_conn.cursor()
@@ -33,8 +32,8 @@ def register_student():
     try:
         # Add student record to the database
         cursor.execute(
-            "INSERT INTO student VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (student_id, student_name, password, ic_no, gender, programme, student_email, personal_email),
+            "INSERT INTO student VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (student_id, student_name, password, ic_no, gender, programme, student_email, personal_email, faculty),
         )
         db_conn.commit()
 
@@ -95,7 +94,7 @@ def register_employee():
         # Add employee record to the database
         cursor.execute(
             "INSERT INTO employee VALUES (%s, %s, %s, %s, %s, %s)",
-            (emp_id, password, emp_name, company_name, emp_email, emp_phone),
+            (emp_id, emp_name, password, company_name, emp_email, emp_phone),
         )
         db_conn.commit()
 
@@ -107,6 +106,67 @@ def register_employee():
             "company_name": company_name,
             "emp_email": emp_email,
             "emp_phone": emp_phone,
+        }
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/register-sup", methods=["POST"])
+def register_supervisor():
+    if not request.json:
+        return {"code": 4000}
+
+    supervisor_id = request.json.get("supervisor_id", "")
+    supervisor_name = request.json.get("supervisor_name", "")
+    password = request.json.get("password", "")
+    gender = request.json.get("gender", "")
+    faculty = request.json.get("faculty", "")
+    supervisor_email = request.json.get("supervisor_email", "")
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO supervisor VALUES (%s, %s, %s, %s, %s, %s)",
+            (supervisor_id, supervisor_name, password, gender, faculty, supervisor_email),
+        )
+        db_conn.commit()
+
+        return {
+            "supervisor_id": supervisor_id,
+            "supervisor_name": supervisor_name,
+            "password": password,
+            "gender": gender,
+            "faculty": faculty,
+            "supervisor_email": supervisor_email,
+        }
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/register-admin", methods=["POST"])
+def register_admin():
+    if not request.json:
+        return {"code": 4000}
+
+    admin_username = request.json.get("username", "")
+    admin_email = request.json.get("email", "")
+    password = request.json.get("password", "")
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute("INSERT INTO admin VALUES (%s, %s, %s)", (admin_username, admin_email, password))
+        db_conn.commit()
+
+        return {
+            "username": admin_username,
+            "email": admin_email,
+            "password": password,
         }
 
     finally:
@@ -175,6 +235,54 @@ def login_employee():
         else:
             # Employee login failed
             return {"message": "Invalid email or password"}, 401
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/login-sup", methods=["POST"])
+def login_supervisor():
+    if not request.json:
+        return {"code": 4000}
+
+    supervisor_id = request.json.get("supervisor_id", "")
+    password = request.json.get("password", "")
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM supervisor WHERE supervisor_id = %s AND password = %s", (supervisor_id, password))
+        supervisor_data = cursor.fetchone()
+
+        if supervisor_data:
+            return {"message": "Supervisor login successful", "supervisor_id": supervisor_data[0]}, 200
+        else:
+            return {"message": "Invalid supervisor ID or password"}, 401
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/login-admin", methods=["POST"])
+def login_admin():
+    if not request.json:
+        return {"code": 4000}
+
+    username = request.json.get("username", "")
+    password = request.json.get("password", "")
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM admin WHERE username = %s AND password = %s", (username, password))
+        admin_data = cursor.fetchone()
+
+        if admin_data:
+            return {"message": "Supervisor login successful", "username": admin_data[0]}, 200
+        else:
+            return {"message": "Invalid username or password"}, 401
 
     finally:
         cursor.close()
@@ -270,3 +378,137 @@ def get_user_name(user_type: str, user_id: str):
 
     finally:
         cursor.close()
+
+
+@user_controller.route("/update-stud-profile", methods=["POST"])
+def update_stud_profile():
+    if not request.json:
+        return {"code": 4000}
+
+    # Parse the JSON data sent in the request
+    student_id = request.json.get("student_id", "")
+    student_name = request.json.get("student_name", "")
+    ic_no = request.json.get("ic_no", "")
+    gender = request.json.get("gender", [])
+    programme = request.json.get("programme", [])
+    student_email = request.json.get("student_email", "")
+    personal_email = request.json.get("personal_email", "")
+    faculty = request.json.get("faculty", [])
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "UPDATE student SET student_name = %s, ic_no = %s, gender = %s, programme = %s, student_email = %s,"
+            + " personal_email = %s, faculty = %s WHERE student_id = %s",
+            (student_name, ic_no, gender, programme, student_email, personal_email, faculty, student_id),
+        )
+        db_conn.commit()
+
+        return {"message": "Student profile updated successfully"}, 200
+
+    except Exception as e:
+        # Handle any exceptions, log errors, and return an appropriate response
+        print("Error updating student profile:", str(e))
+        return {"message": "Failed to update student profile"}, 500
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/update-stud-password", methods=["POST"])
+def update_stud_password():
+    if not request.json:
+        return {"code": 4000}
+
+    student_id = request.json.get("student_id", "")
+    current_password = request.json.get("current_password", "")  # Current password
+    new_password = request.json.get("new_password", "")  # New password
+
+    db_conn.ping()
+    cursor = db_conn.cursor()
+
+    try:
+        # Check if the current password matches the one in the database
+        cursor.execute("SELECT password FROM student WHERE student_id = %s", (student_id,))
+        stored_password = cursor.fetchone()
+
+        if not stored_password:
+            return {"message": "Student not found"}, 404
+
+        if current_password != stored_password[0]:
+            return {"message": "Current password does not match"}, 400
+
+        # Update the password to the new one
+        cursor.execute("UPDATE student SET password = %s WHERE student_id = %s", (new_password, student_id))
+        db_conn.commit()
+
+        return {"message": "Password updated successfully"}, 200
+
+    except Exception as e:
+        # Handle any exceptions, log errors, and return an appropriate response
+        print("Error updating password:", str(e))
+        return {"message": "Failed to update password"}, 500
+
+    finally:
+        cursor.close()
+
+
+@user_controller.route("/update-resume", methods=["POST"])
+def update_resume(student_id: str):
+    # Input: Assuming you receive the updated resume file in the request
+    """next = request.args.get("next", "").split("#")
+    size = request.args.get("size", 1000, type=int)
+    next_title = next[0]
+    next_company_name = next[1] if 1 < len(next) else None"""
+
+    updated_resume_file = request.files.get("resume")
+
+    if not updated_resume_file:
+        return {"message": "Updated resume file not found"}, 400
+
+    s3_key = f"resume/{student_id}.pdf"
+
+    # Upload the updated resume file to S3 and overwrite the existing file
+    try:
+        s3.upload_fileobj(
+            updated_resume_file,
+            config.custombucket,
+            s3_key,
+            ExtraArgs={
+                "ContentType": "application/pdf",
+                "ContentDisposition": f'inline; filename="{student_id}.pdf"',
+            },
+        )
+
+        # Output: Provide a success message or any other necessary response
+        return {"message": "Resume updated successfully"}, 200
+
+    except Exception as e:
+        # Handle any exceptions that may occur during the S3 upload
+        print("Error updating resume on S3:", str(e))
+        return {"message": "Failed to update resume"}, 500
+
+
+@user_controller.route("/get-resume-url/<student_id>", methods=["GET"])
+def get_resume_url(student_id: str):
+    try:
+        s3_key = f"resume/{student_id}.pdf"
+
+        # Generate a pre-signed URL for the resume file
+        resume_url = s3.generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": config.custombucket,
+                "Key": s3_key,
+            },
+            ExpiresIn=3600,  # URL expiration time in seconds
+        )
+
+        # Return the pre-signed URL in the response
+        return {"resumeUrl": resume_url}
+
+    except NoCredentialsError:
+        print("No AWS credentials found.")
+        return {"message": "Failed to generate pre-signed URL"}, 500

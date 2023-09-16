@@ -13,7 +13,7 @@
                       <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
   
                       <div>
-                        <q-btn flat color="primary" label="Sign Up" class="q-mt-md" />
+                        <q-btn flat color="primary" label="Sign Up" class="q-mt-md" @click="empSignUp" />
                         <q-btn type="submit" label="Login" color="primary" class="q-mt-md" />
                       </div>
                     </q-form>
@@ -30,10 +30,12 @@ import { ref, computed } from 'vue'
 import { useMeta, type QInput } from 'quasar'
 import { useStore } from 'stores/user-store'
 import { useRouter } from 'vue-router';
+import { useLocalStorageStore } from 'src/stores/localstorage-store';
   
 useMeta({ title: 'Employee Login | MyITPHub' })
 
 const store = useStore();
+const lsStore = useLocalStorageStore();
 const email = ref('');
 const password = ref('');
 const router = useRouter();
@@ -42,7 +44,14 @@ const displayErrorMessage = computed(() => {
   return store.loginError && store.errorMessage !== '';
 });
 
+function empSignUp() {
+  router.push('/emp/signup')
+}
+
 async function login() {
+  store.loginError = false;
+  store.errorMessage = '';
+
   await store.logInEmployee({
     emp_name: '',
     password: password.value,
@@ -51,6 +60,7 @@ async function login() {
     emp_phone: '',
   })
 
+  console.log('Is Authenticated:', lsStore.isAuthenticated);
   if (!store.loginError) {
     router.push('/')
   }

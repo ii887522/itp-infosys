@@ -1,4 +1,3 @@
-<!-- TODO: Adjust the details according to comments provided -->
 <template>
     <q-page>
       <div class="q-pa-md">
@@ -79,6 +78,7 @@ import { useRouter } from 'vue-router';
 import { useMeta } from 'quasar';
 import { useStore } from 'src/stores/user-store';
 import { api } from 'src/boot/axios';
+import { useLocalStorageStore } from 'src/stores/localstorage-store';
 
 useMeta({ title: 'Student Profile | MyITPHub' })
 
@@ -102,6 +102,7 @@ const itp_end_at = ref('');
 // utilties
 const router = useRouter();
 const store = useStore();
+const lsStore = useLocalStorageStore();
 const loading = ref(true);
 const internDataAvailable = ref(true);
 
@@ -181,7 +182,7 @@ const internRows = computed(() => [
 
 async function fetchStudentProfile() {
   try {
-    const studentId = store.getUsername();
+    const studentId = lsStore.getUsername();
     const resp = await api.get(`/user/get-student-profile/${studentId}`);
     console.log('API Response:', resp); // Log the response
   
@@ -216,9 +217,20 @@ onMounted(() => {
   }, 1000);
 })
 
-const viewResume = () => {
-  // get the resume, this router push is temporary
-  router.push('');
+const viewResume = async () => {
+  try {
+    const studentId = lsStore.getUsername();
+    const response = await api.get(`/user/get-resume-url/${studentId}`);
+
+    if (response.data && response.data.resumeUrl) {
+      // Open the resume in a new browser window or tab
+      window.open(response.data.resumeUrl, '_blank');
+    } else {
+      console.error('Resume URL not found in the response.');
+    }
+  } catch (error) {
+    console.error('Error fetching resume URL:', error);
+  }
 }
   
 const editProfile = () => {

@@ -10,6 +10,12 @@ export interface Student {
   faculty: string[]
 }
 
+export interface StudChangePassword {
+  student_id: string
+  current_password: string
+  new_password: string
+}
+
 export function makeStudent(): Student {
   return {
     student_id: '',
@@ -21,5 +27,13 @@ export function makeStudent(): Student {
     student_email: '',
     personal_email: '',
     faculty: [],
+  }
+}
+
+export function makeStudChangePassword(): StudChangePassword {
+  return {
+    student_id: '',
+    current_password: '',
+    new_password: '',
   }
 }

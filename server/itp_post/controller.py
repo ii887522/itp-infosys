@@ -182,7 +182,6 @@ def list_outgoing_applications(student_id: str):
 
     # Reopen the timed out database connection to avoid PyMySQL interface error
     db_conn.ping()
-
     cursor = db_conn.cursor()
 
     try:
