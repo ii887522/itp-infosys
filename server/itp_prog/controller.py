@@ -1,10 +1,10 @@
 import time
 
-from common.db_connection import DbConnection
+from common.db_connection_pool import DbConnectionPool
 from flask import Blueprint, request
 
 itp_prog_controller = Blueprint("itp_prog_controller", __name__)
-db_conn = DbConnection.get_instance()
+db_conn_pool = DbConnectionPool.get_instance()
 
 
 @itp_prog_controller.route("/students", methods=["GET"])
@@ -14,7 +14,7 @@ def list_students():
     size = request.args.get("size", 1000, type=int)
 
     # Reopen the timed out database connection to avoid PyMySQL interface error
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
 
     cursor = db_conn.cursor()
 
@@ -64,12 +64,13 @@ LIMIT %s;
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @itp_prog_controller.route("/students/<student_id>", methods=["DELETE"])
 def remove_student(student_id: str):
     # Reopen the timed out database connection to avoid PyMySQL interface error
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
 
     cursor = db_conn.cursor()
 
@@ -83,6 +84,7 @@ def remove_student(student_id: str):
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @itp_prog_controller.route("/students/<student_id>", methods=["PUT"])
@@ -98,7 +100,7 @@ def update_student(student_id: str):
     itp_end_at = request.json.get("itp_end_at")
 
     # Reopen the timed out database connection to avoid PyMySQL interface error
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
 
     cursor = db_conn.cursor()
 
@@ -165,12 +167,13 @@ WHERE student_id = %s
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @itp_prog_controller.route("/students/count", methods=["GET"])
 def count_students():
     # Reopen the timed out database connection to avoid PyMySQL interface error
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
 
     cursor = db_conn.cursor()
 
@@ -185,12 +188,13 @@ def count_students():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @itp_prog_controller.route("/supervisors/count", methods=["GET"])
 def count_supervisors():
     # Reopen the timed out database connection to avoid PyMySQL interface error
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
 
     cursor = db_conn.cursor()
 
@@ -205,3 +209,4 @@ def count_supervisors():
 
     finally:
         cursor.close()
+        db_conn.close()
