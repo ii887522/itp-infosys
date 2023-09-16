@@ -2,6 +2,7 @@ import json
 import time
 
 import boto3
+import common.consts as consts
 import config
 import itp_post.itp_post_consts as itp_post_consts
 from common.db_connection import DbConnection
@@ -9,8 +10,8 @@ from flask import Blueprint, request
 
 itp_post_controller = Blueprint("itp_post_controller", __name__)
 db_conn = DbConnection.get_instance()
-s3 = boto3.client("s3")
-sns = boto3.resource("sns", itp_post_consts.AWS_REGION)
+s3 = boto3.client("s3", consts.AWS_REGION)
+sns = boto3.resource("sns", consts.AWS_REGION)
 itp_applied_topic = sns.Topic(itp_post_consts.ITP_APPLIED_TOPIC_ARN)
 
 

@@ -1,4 +1,5 @@
 import boto3
+import common.consts as consts
 import config
 from botocore.exceptions import NoCredentialsError
 from common.db_connection import DbConnection
@@ -6,7 +7,7 @@ from flask import Blueprint, jsonify, request
 
 user_controller = Blueprint("user_controller", __name__)
 db_conn = DbConnection.get_instance()
-s3 = boto3.client("s3")
+s3 = boto3.client("s3", consts.AWS_REGION)
 
 
 # Function to handle student registration
