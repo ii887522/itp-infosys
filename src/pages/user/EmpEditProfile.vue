@@ -17,7 +17,6 @@
                                 <q-card class="bg-blue-1">
                                     <q-card-section>
                                         <q-input v-model="employeeName" label="Employee Name"/>
-                                        <q-input v-model="employeeRole" label="Employee Role"/>
                                         <q-input v-model="companyName" label="Company Name"/>
                                         <q-input v-model="employeeEmail" label="Employee Email"/>
                                         <q-input v-model="employeePhone" label="Employee Phone"/>

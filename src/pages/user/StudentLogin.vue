@@ -13,7 +13,7 @@
                     <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
 
                     <div>
-                      <q-btn flat color="primary" label="Sign Up" class="q-mt-md" /> <!--link to student sign up page-->
+                      <q-btn flat color="primary" label="Sign Up" class="q-mt-md" @click="studSignUp" /> <!--link to student sign up page-->
                       <q-btn type="submit" label="Login" color="primary" class="q-mt-md" />
                     </div>
                   </q-form>
@@ -30,19 +30,25 @@ import { ref, computed } from 'vue'
 import { useMeta, type QInput } from 'quasar'
 import { useStore } from 'stores/user-store'
 import { useRouter } from 'vue-router';
+import { useLocalStorageStore } from 'src/stores/localstorage-store';
 
 useMeta({ title: 'Student Login | MyITPHub' })
 
 const store = useStore();
+const lsStore = useLocalStorageStore();
 const studentId = ref('');
 const password = ref('');
 const router = useRouter();
 
-console.log('Is Authenticated:', store.isAuthenticated);
+console.log('Is Authenticated:', lsStore.isAuthenticated);
 
 const displayErrorMessage = computed(() => {
   return store.loginError && store.errorMessage !== '';
 });
+
+function studSignUp() {
+  router.push('/stud/signup');
+}
 
 async function login() {
   store.loginError = false;
@@ -57,9 +63,10 @@ async function login() {
     programme: [],
     student_email: '',
     personal_email: '',
+    faculty: [],
   })
 
-  console.log('Is Authenticated:', store.isAuthenticated);
+  console.log('Is Authenticated:', lsStore.isAuthenticated);
   if (!store.loginError) {
     router.push('/')
   }

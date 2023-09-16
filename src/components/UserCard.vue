@@ -40,10 +40,10 @@ const { dialog, localStorage } = useQuasar()
 const userName = ref('')
 
 // Init
-setTimeout(async () => {
+;(async () => {
   const resp = await api.get(`/user/users/${localStorage.getItem('authUserType')}/${localStorage.getItem('username')}`)
   userName.value = resp.data.result
-}, 1000)
+})()
 
 const confirmLogOut = () => {
   dialog({

@@ -36,10 +36,6 @@
 </template>
 
 <script setup lang="ts">
-// PLANNED:
-// company name: retrieve all the existing companies and display in a dropdown, plus "Add new..." at the bottom
-// if click "Add new...", displays a text box
-
 import { onMounted, ref } from 'vue'
 import { useMeta, useQuasar, type QInput } from 'quasar'
 import { useRouter } from 'vue-router'

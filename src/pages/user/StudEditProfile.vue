@@ -26,7 +26,7 @@ TODO:
                                 <q-card class="bg-blue-1">
                                     <q-card-section>
                                         <q-input v-model="student_name" label="Student Name" :rules="[requiredRule]"/>
-                                        <q-input v-model="student_id" label="Student ID" :rules="[requiredRule, studentIdRule]"/>
+                                        <q-input v-model="student_id" label="Student ID" :rules="[requiredRule, studentIdRule]" disable/>
                                         <q-input v-model="icNo" label="IC Number" :rules="[requiredRule, icNumberRule]"/>
                                         <q-select v-model="gender" :options="genders" label="Gender" :rules="[requiredRule]" />
                                         <q-select v-model="programme" :options="programmes" label="Programme" :rules="[requiredRule]"/>
@@ -55,16 +55,16 @@ TODO:
                                             <strong>Warning:</strong> Uploading a new resume will overwrite your current one. You can view your existing resume in your profile.
                                         </q-banner>
                                         <br/>
-                                        <q-file filled bottom-slots v-model="model" label="Upload New Resume" counter accept=".pdf,.docx">
+                                        <q-file filled bottom-slots v-model="resumeInput" label="Upload New Resume" counter accept=".pdf">
                                             <template v-slot:prepend>
                                                 <q-icon name="cloud_upload" @click.stop.prevent />
                                             </template>
                                             <template v-slot:append>
-                                                <q-icon name="close" @click.stop.prevent="model = null" class="cursor-pointer"/>
+                                                <q-icon name="close" @click.stop.prevent="resumeInput = null" class="cursor-pointer"/>
                                             </template>
 
                                             <template v-slot:hint>
-                                                must be in pdf or word
+                                                must be in pdf
                                             </template>
                                         </q-file>
                                         <br/>
@@ -101,8 +101,6 @@ TODO:
 </template>
 
 <script setup lang="ts">
-// TODO: Dialog for confirm to save changes
-
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { allGenders, allProgrammes, allFaculty } from 'src/consts/student'
@@ -110,6 +108,7 @@ import { useMeta, Notify, useQuasar } from 'quasar';
 import { useStore } from 'src/stores/user-store';
 import { api } from 'src/boot/axios';
 import { isTextEmpty } from 'src/common';
+import { useLocalStorageStore } from 'src/stores/localstorage-store';
 
 useMeta({ title: 'Editing Student Profile | MyITPHub' })
 
@@ -126,6 +125,9 @@ const faculty = ref([]);
 const programmes = allProgrammes;
 const genders = allGenders;
 const faculties = allFaculty;
+
+// Change Resume Section
+const resumeInput = ref(null);
 
 // Change Password Section
 const currentPassword = ref('');
@@ -145,9 +147,9 @@ const confirmPasswordRule = (value: string) => value === newPassword.value || 'P
 
 // utilties
 const loading = ref(true);
-const model = ref(null);
 const router = useRouter();
 const store = useStore();
+const lsStore = useLocalStorageStore();
 const { dialog } = useQuasar();
 
 // trackers
@@ -176,10 +178,11 @@ const changesMade = computed(() => {
 
     return JSON.stringify(formData) !== JSON.stringify(initialFormData.value);
 })
+const updatingResume = ref(false);
 
 async function fetchStudentProfile() {
     try {
-        const studentId = store.getUsername();
+        const studentId = lsStore.getUsername();
         const resp = await api.get(`/user/get-student-profile/${studentId}`);
         console.log('API Response:', resp); // Log the response
 
@@ -226,46 +229,35 @@ const updateProfile = () => {
         cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
         ok: { icon: 'update', label: 'Save Changes', color: 'primary' },
     }).onOk(async() => {
-        // Call the function to save changes
-        executeUpdateProfile();
+        try {
+            await store.updateStudProfile({
+                student_id: student_id.value,
+                student_name: student_name.value,
+                password: '',
+                ic_no: icNo.value,
+                gender: gender.value,
+                programme: programme.value,
+                student_email: studentEmail.value,
+                personal_email: personalEmail.value,
+                faculty: faculty.value,
+            })
+
+            // set profileUpdated to true after a successful update
+            profileUpdated.value = true;
+
+            // Show a successful message
+            Notify.create('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+
+            // Show an error message here
+            Notify.create({
+                message: 'Failed to update profile',
+                color: 'negative',
+            });
+        }
     })
 };
-
-const executeUpdateProfile = async () => {
-    try {
-        // Implement update profile data logic here
-
-        // set profileUpdated to true after a successful update
-        profileUpdated.value = true;
-
-        // Show a successful message
-        Notify.create('Profile updated successfully');
-    } catch (error) {
-        console.error('Error updating profile:', error);
-
-        // Show an error message here
-        Notify.create({
-            message: 'Failed to update profile',
-            color: 'negative',
-        });
-    }
-}
-
-const updateResume = () => {
-    dialog({
-        title: 'Confirm Resume Update',
-        message: 'Are you sure you want to update your resume?',
-        cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
-        ok: { icon: 'update', label: 'Update Resume', color: 'primary' },
-    }).onOk(async() => {
-        executeUpdateResume();
-    })
-};
-
-const executeUpdateResume = async() => {
-    // Implement logic here
-    router.push('/profile');
-}
 
 const updatePassword = () => {
     dialog({
@@ -274,8 +266,54 @@ const updatePassword = () => {
         cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
         ok: { icon: 'update', label: 'Change Password', color: 'primary' },
     }).onOk(async() => {
-        executeUpdatePassword();
+        try {
+            await store.updateStudPassword({
+                student_id: student_id.value,
+                current_password: newPassword.value,
+                new_password: newPassword.value,
+            })
+        } catch (error) {
+            console.error('Error updating password:', error);
+
+            Notify.create({
+                message: 'Failed to update password',
+                color: 'negative',
+            })
+        }
     })
+};
+
+const updateResume = () => {
+    dialog({
+        title: 'Confirm Resume Update',
+        message: 'Are you sure you want to update your resume?',
+        cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
+        ok: { icon: 'update', label: 'Update Resume', color: 'primary' },
+    }).onOk(async() => {
+        const fileInput = resumeInput!.value; // Access the file input using the ref
+        if (!fileInput) {
+            // No file selected
+            console.error('No file selected.');
+            return;
+        }
+
+        const resumeFile = fileInput[0]; // Get the selected file
+        
+        try {
+            // Call the updateResume store function and pass the file
+            await store.updateResume(resumeFile);
+
+            Notify.create('Resume updated successfully');
+        } catch (error) {
+            console.error('Error uploading resume:', error);
+
+            // Show an error message here
+            Notify.create({
+                message: 'Failed to upload resume',
+                color: 'negative',
+            });
+        }
+    });
 };
 
 const executeUpdatePassword = async () => {

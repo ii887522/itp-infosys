@@ -1,6 +1,6 @@
 import boto3
 import config
-from common.db_connection import DbConnection
+from common.db_connection_pool import DbConnectionPool
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from itp_post.controller import itp_post_controller
@@ -9,7 +9,7 @@ from user.controller import user_controller
 from userUpload.controller import userUpload_controller
 
 app = Flask(__name__, static_folder="../dist/spa", static_url_path="/")
-db_conn = DbConnection.get_instance()
+db_conn_pool = DbConnectionPool.get_instance()
 app.register_blueprint(itp_post_controller, url_prefix="/api/itp-post")
 app.register_blueprint(user_controller, url_prefix="/api/user")
 app.register_blueprint(itp_prog_controller, url_prefix="/api/itp-prog")
@@ -39,7 +39,7 @@ def AddEmp():
     insert_sql = "INSERT INTO employee VALUES (%s, %s, %s, %s, %s)"
 
     # Reopen the timed out database connection to avoid PyMySQL interface error
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
 
     cursor = db_conn.cursor()
 
@@ -75,6 +75,7 @@ def AddEmp():
 
     finally:
         cursor.close()
+        db_conn.close()
 
     print("all modification done...")
     return render_template("AddEmpOutput.html", name=emp_name)
