@@ -108,10 +108,6 @@ export const useStore = defineStore('itp-post', () => {
   const loadingIncomingApplications = ref(false)
   const updatingApplication = ref(false)
 
-  function testing() {
-
-  }
-
   async function listInternships() {
     if (internships.value.length !== 0) return
     loadingInternships.value = true
