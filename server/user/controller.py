@@ -2,11 +2,11 @@ import boto3
 import common.consts as consts
 import config
 from botocore.exceptions import NoCredentialsError
-from common.db_connection import DbConnection
+from common.db_connection_pool import DbConnectionPool
 from flask import Blueprint, jsonify, request
 
 user_controller = Blueprint("user_controller", __name__)
-db_conn = DbConnection.get_instance()
+db_conn_pool = DbConnectionPool.get_instance()
 s3 = boto3.client("s3", consts.AWS_REGION)
 
 
@@ -27,7 +27,7 @@ def register_student():
     personal_email = request.json.get("personal_email", "")
     faculty = request.json.get("faculty", [])
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -54,6 +54,7 @@ def register_student():
         }
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/register-emp", methods=["POST"])
@@ -68,7 +69,7 @@ def register_employee():
     emp_email = request.json.get("emp_email", "")
     emp_phone = request.json.get("emp_phone", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -111,6 +112,7 @@ def register_employee():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/register-sup", methods=["POST"])
@@ -125,7 +127,7 @@ def register_supervisor():
     faculty = request.json.get("faculty", "")
     supervisor_email = request.json.get("supervisor_email", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -146,6 +148,7 @@ def register_supervisor():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/register-admin", methods=["POST"])
@@ -157,7 +160,7 @@ def register_admin():
     admin_email = request.json.get("email", "")
     password = request.json.get("password", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -172,10 +175,12 @@ def register_admin():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/get-companies", methods=["GET"])
 def get_companies():
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
     try:
         # Query the database to retrieve a list of company names
@@ -184,6 +189,7 @@ def get_companies():
         return {"companies": companies}
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/login-stud", methods=["POST"])
@@ -195,6 +201,7 @@ def login_student():
     student_id = request.json.get("student_id", "")
     password = request.json.get("password", "")
 
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -211,6 +218,7 @@ def login_student():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/login-emp", methods=["POST"])
@@ -222,7 +230,7 @@ def login_employee():
     emp_email = request.json.get("emp_email", "")
     password = request.json.get("password", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -239,6 +247,7 @@ def login_employee():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/login-sup", methods=["POST"])
@@ -249,7 +258,7 @@ def login_supervisor():
     supervisor_id = request.json.get("supervisor_id", "")
     password = request.json.get("password", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -263,6 +272,7 @@ def login_supervisor():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/login-admin", methods=["POST"])
@@ -273,7 +283,7 @@ def login_admin():
     username = request.json.get("username", "")
     password = request.json.get("password", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -287,11 +297,12 @@ def login_admin():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/get-student-profile/<student_id>", methods=["GET"])
 def get_student_profile(student_id: str):
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
     try:
         cursor.execute("SELECT * FROM student WHERE student_id = %s", (student_id,))
@@ -341,12 +352,13 @@ def get_student_profile(student_id: str):
             return jsonify({"message": "Student not found"}), 404
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/users/<user_type>/<user_id>", methods=["GET"])
 def get_user_name(user_type: str, user_id: str):
     # Reopen the timed out database connection to avoid PyMySQL interface error
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
 
     cursor = db_conn.cursor()
 
@@ -379,6 +391,7 @@ def get_user_name(user_type: str, user_id: str):
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/update-stud-profile", methods=["POST"])
@@ -396,7 +409,7 @@ def update_stud_profile():
     personal_email = request.json.get("personal_email", "")
     faculty = request.json.get("faculty", [])
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -416,6 +429,7 @@ def update_stud_profile():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/update-stud-password", methods=["POST"])
@@ -427,7 +441,7 @@ def update_stud_password():
     current_password = request.json.get("current_password", "")  # Current password
     new_password = request.json.get("new_password", "")  # New password
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -454,6 +468,7 @@ def update_stud_password():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/update-resume", methods=["POST"])
