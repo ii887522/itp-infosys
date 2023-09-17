@@ -164,7 +164,10 @@ def register_admin():
     cursor = db_conn.cursor()
 
     try:
-        cursor.execute("INSERT INTO admin VALUES (%s, %s, %s)", (admin_username, admin_email, password))
+        cursor.execute(
+            "INSERT INTO `admin` (username, email, `password`) VALUES (%s, %s, %s)",
+            (admin_username, admin_email, password),
+        )
         db_conn.commit()
 
         return {
