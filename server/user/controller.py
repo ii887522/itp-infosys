@@ -416,54 +416,7 @@ def get_employee_profile(emp_email: str):
 # Get company details
 @user_controller.route("/get-company-details/<company_name>", methods=['GET'])
 def get_company_details(company_name: str):
-    db_conn.ping()
-    cursor = db_conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM company WHERE name = %s", (company_name,))
-        company_data = cursor.fetchone()
-
-        if company_data:
-            return jsonify({
-                "company_name": company_data[0],
-                "company_desc": company_data[1],
-                "company_size": company_data[2],
-                "company_address": company_data[3],
-                "company_url": company_data[4],
-            })
-        else:
-            return jsonify({"message": "Company not found"}), 404
-
-    finally:
-        cursor.close()
-
-
-@user_controller.route("/get-emp-profile/<emp_email>", methods=['GET'])
-def get_employee_profile(emp_email: str):
-    db_conn.ping()
-    cursor = db_conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM employee WHERE emp_email = %s", (emp_email,))
-        employee_data = cursor.fetchone()
-
-        if employee_data:
-            return jsonify({
-                "emp_name": employee_data[1],
-                "password": employee_data[2],
-                "company_name": employee_data[3],
-                "emp_email": employee_data[4],
-                "emp_phone": employee_data[5],
-            })
-        else:
-            return jsonify({"message": "Student not found"}), 404
-
-    finally:
-        cursor.close()
-
-
-# Get company details
-@user_controller.route("/get-company-details/<company_name>", methods=['GET'])
-def get_company_details(company_name: str):
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
     try:
         cursor.execute("SELECT * FROM company WHERE name = %s", (company_name,))
@@ -533,7 +486,7 @@ def update_emp_profile():
     employee_email = request.json.get("employee_email", "")
     employee_phone = request.json.get("employee_phone", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
