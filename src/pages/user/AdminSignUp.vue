@@ -59,7 +59,7 @@ async function register() {
     notify({
         progress: true,
         type: 'positive',
-        message: 'Supervisor successfully registered. You may now login with your credentials.',
+        message: 'Admin successfully registered. You may now login with your credentials.',
         icon: 'done',
     })
 

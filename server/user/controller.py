@@ -298,7 +298,7 @@ def login_admin():
         admin_data = cursor.fetchone()
 
         if admin_data:
-            return {"message": "Supervisor login successful", "username": admin_data[0]}, 200
+            return {"message": "Admin login successful", "username": admin_data[0]}, 200
         else:
             return {"message": "Invalid username or password"}, 401
 
@@ -487,7 +487,7 @@ def update_emp_profile():
     if not request.json:
         return {"code": 4000}
 
-    ori_employee_name = request.json.get("ori_employee_name", "")
+    ori_employee_email = request.json.get("ori_employee_email", "")
     employee_name = request.json.get("employee_name", "")
     company_name = request.json.get("company_name", "")
     employee_email = request.json.get("employee_email", "")
@@ -499,7 +499,7 @@ def update_emp_profile():
     try:
         cursor.execute(
             "UPDATE employee SET emp_name = %s, company_name = %s, emp_email = %s, emp_phone = %s WHERE emp_name = %s",
-            (employee_name, company_name, employee_email, employee_phone, ori_employee_name)
+            (employee_name, company_name, employee_email, employee_phone, ori_employee_email)
         )
         db_conn.commit()
 
@@ -543,6 +543,75 @@ def update_stud_password():
         # Handle any exceptions, log errors, and return an appropriate response
         print("Error updating password:", str(e))
         return {"message": "Failed to update password"}, 500
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/update-emp-password", methods=['POST'])
+def update_emp_password():
+    if not request.json:
+        return {"code": 4000}
+
+    emp_email = request.json.get("emp_email", "")
+    current_password = request.json.get("current_password", "")
+    new_password = request.json.get("new_password", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute("SELECT password FROM employee WHERE emp_email = %s", (emp_email,))
+        stored_password = cursor.fetchone()
+
+        if not stored_password:
+            return {"message": "Employee not found"}, 404
+
+        if current_password != stored_password[0]:
+            return {"message": "Current password does not match"}, 400
+
+        cursor.execute("UPDATE employee SET password = %s WHERE emp_email = %s", (new_password, emp_email))
+        db_conn.commit()
+
+        return {"message": "Password updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating password:", str(e))
+        return {"message": "Failed to update password"}, 500
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/update-company-details", methods=['POST'])
+def update_company_details():
+    if not request.json:
+        return {"code": 4000}
+
+    ori_company_name = request.json.get("ori_company_name", "")
+    company_name = request.json.get("company_name", "")
+    company_desc = request.json.get("company_desc", "")
+    company_size = request.json.get("company_size", "")
+    company_address = request.json.get("company_address", "")
+    company_url = request.json.get("company_url", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "UPDATE company SET name = %s, descrption = %s, size = %d, address = %s, url = %s WHERE name = %s",
+            (company_name, company_desc, company_size, company_address, company_url, ori_company_name)
+        )
+        db_conn.commit()
+
+        return {"message": "Company details updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating company details:", str(e))
+        return {"message": "Failed to update company details"}, 500
 
     finally:
         cursor.close()

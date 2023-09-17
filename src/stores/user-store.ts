@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { api } from 'boot/axios'
 import { defineStore } from 'pinia'
 import { StudChangePassword, Student } from 'src/models/student'
-import { Employee } from 'src/models/employee'
+import { CompanyDetails, EmpChangePassword, EmpEditProfile, Employee } from 'src/models/employee'
 import { AxiosError } from 'axios'
 import { LocalStorage } from 'quasar'
 import { Admin } from 'src/models/admin'
@@ -23,6 +23,9 @@ export const useStore = defineStore('user', () => {
   const updatingStudentProfile = ref(false)
   const updatingStudentPassword = ref(false)
   const updatingResume = ref(false)
+  const updatingEmployeeProfile = ref(false)
+  const updatingEmployeePassword = ref(false)
+  const updatingCompanyDetails = ref(false)
 
   const lsStore = useLocalStorageStore()
 
@@ -30,10 +33,6 @@ export const useStore = defineStore('user', () => {
     registeringStudent.value = true
     await api.post('/user/register-stud', value)
     registeringStudent.value = false
-  }
-
-  function testing(value: string) {
-    console.log(value);
   }
 
   async function registerEmployee(value: Employee) {
@@ -129,7 +128,7 @@ export const useStore = defineStore('user', () => {
   async function logInAdmin(value: Admin) {
     try {
       loggingInAdmin.value = true
-      const resp = await api.post('/user/login-admin/', value)
+      const resp = await api.post('/user/login-admin', value)
 
       if (resp.status === 200) {
         loginError.value = false
@@ -190,6 +189,24 @@ export const useStore = defineStore('user', () => {
     updatingResume.value = false
   }
 
+  async function updateEmpProfile(value: EmpEditProfile) {
+    updatingEmployeeProfile.value = true
+    await api.post('/user/update-emp-profile', value)
+    updatingEmployeeProfile.value = true
+  }
+
+  async function updateEmpPassword(value: EmpChangePassword) {
+    updatingEmployeePassword.value = true
+    await api.post('/user/update-emp-password', value)
+    updatingEmployeePassword.value = false
+  }
+
+  async function updateCompanyDetails(value: CompanyDetails) {
+    updatingCompanyDetails.value = true
+    await api.post('/user/update-company-details', value)
+    updatingCompanyDetails.value = false
+  }
+
   return {
     registeringStudent,
     registeringEmployee,
@@ -204,6 +221,9 @@ export const useStore = defineStore('user', () => {
     updatingStudentProfile,
     updatingStudentPassword,
     updatingResume,
+    updatingEmployeeProfile,
+    updatingEmployeePassword,
+    updatingCompanyDetails,
     registerStudent,
     registerEmployee,
     registerSupervisor,
@@ -216,6 +236,8 @@ export const useStore = defineStore('user', () => {
     updateStudProfile,
     updateStudPassword,
     updateResume,
-    testing,
+    updateEmpProfile,
+    updateEmpPassword,
+    updateCompanyDetails,
   }
 })

@@ -33,9 +33,6 @@
 
                         <br/>
                         <!-- Company Details -->
-                        <!--
-                            Company Name, Company description, Company size, Company address, Company URL
-                        -->
                         <q-form @submit="updateCompany">
                             <q-expansion-item popup icon="business" label="Edit Company Details">
                                 <q-separator/>
@@ -81,28 +78,31 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useMeta } from 'quasar';
+import { Notify, useMeta, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { isTextEmpty } from 'src/common';
 import { useLocalStorageStore } from 'src/stores/localstorage-store'
+import { useStore } from 'src/stores/user-store'
 
 useMeta({ title: 'Editing Employee Profile | MyITPHub' })
 
 // On loading
-onMounted(() => {
-  setTimeout(() => {
-    loading.value = false;
-  }, 1000); // 1000 milliseconds = 1 second
+onMounted(async () => {
+    setTimeout(() => {
+        loading.value = false;
+    }, 1000); // 1000 milliseconds = 1 second
 
-  fetchEmployeeProfile();
-  fetchCompanyNames();
-  fetchCompanyDetails();
+    const default_company_name = fetchEmployeeProfile()
+    fetchCompanyNames()
+    fetchCompanyDetails(await default_company_name)
 });
 
 // Utilties
 const loading = ref(true);
 const router = useRouter();
+const store = useStore();
 const lsStore = useLocalStorageStore();
+const { dialog } = useQuasar();
 
 // Basic Form details
 const employeeName = ref('');
@@ -111,6 +111,8 @@ const companyOptions = ref([]);
 const selectedCompany = ref('');
 const newCompany = ref('');
 const employeeEmail = ref('');
+const ori_employeeEmail = ref('');
+const ori_companyName = ref('');
 const employeePhone = ref('');
 
 // Company details
@@ -137,11 +139,16 @@ async function fetchEmployeeProfile() {
     const resp = await api.get(`/user/get-emp-profile/${empEmail}`);
     
     employeeName.value = resp.data.emp_name;
-    companyName.value = resp.data.company_name;
+    selectedCompany.value = resp.data.company_name;
     employeeEmail.value = resp.data.emp_email;
+    ori_employeeEmail.value = resp.data.emp_email;
     employeePhone.value = resp.data.emp_phone;
+
+    // Pass the company name to retrieve company details
+    return(resp.data.company_name);
   } catch (error) {
     console.error('Error fetching employee profile:', error);
+    return ('')
   }
 }
 
@@ -162,11 +169,12 @@ async function fetchCompanyNames() {
 }
 
 // Fetch company details
-async function fetchCompanyDetails() {
+async function fetchCompanyDetails(company_name : string) {
     try {
-        const resp = await api.get(`/user/get-company-details/${companyName}`);
+        const resp = await api.get(`/user/get-company-details/${company_name}`);
 
         companyName.value = resp.data.company_name;
+        ori_companyName.value = resp.data.company_name;
         companyDesc.value = resp.data.company_desc;
         companySize.value = resp.data.company_size;
         companyAddress.value = resp.data.company_address;
@@ -176,20 +184,86 @@ async function fetchCompanyDetails() {
     }
 }
 
+const updateProfile = () => {
+    dialog({
+        title: 'Confirm Profile Update',
+        message: 'Are you sure you want to save changes to your profile?',
+        cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
+        ok: { icon: 'update', label: 'Save Changes', color: 'primary' },
+    }).onOk(async() => {
+        try {
+            await store.updateEmpProfile({
+                ori_emp_email: ori_employeeEmail.value,
+                emp_name: employeeName.value,
+                company_name: companyName.value,
+                emp_email: employeeEmail.value,
+                emp_phone: employeePhone.value,
+            })
 
-const updateProfile = async () => {
-  // Implement logic to update the profile data
-  router.push('/profile'); // Redirect to the profile page
+            Notify.create('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+
+            Notify.create({
+                message: 'Failed to update profile',
+                color: 'negative',
+            });
+        }
+    })
 };
 
 const updateCompany = async () => {
-    // Send a message to confirm whether the user want to update the company details.
-    // If yes, the request is sent to admin for approval
-    router.push('/profile');
+    dialog({
+        title: 'Confirm Company Update',
+        message: 'Are you sure you want to update company details?',
+        cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
+        ok: { icon: 'update', label: 'Change Password', color: 'primary' },
+    }).onOk(async() => {
+        try {
+            await store.updateCompanyDetails({
+                ori_company_name: ori_companyName.value,
+                company_name: companyName.value,
+                company_desc: companyDesc.value,
+                company_size: companySize.value,
+                company_address: companyAddress.value,
+                company_url: companyUrl.value,
+            })
+
+            Notify.create('Company details updated successfully');
+        } catch (error) {
+            console.error('Error updating company details:', error);
+
+            Notify.create({
+                message: 'Failed to update company details',
+                color: 'negative',
+            });
+        }
+    })
 }
 
-const updatePassword = async () => {
-  // Implement logic to update the password
-  router.push('/profile'); // Redirect to the profile page
+const updatePassword = () => {
+    dialog({
+        title: 'Confirm Password Update',
+        message: 'Are you sure you want to change password?',
+        cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
+        ok: { icon: 'update', label: 'Change Password', color: 'primary' },
+    }).onOk(async() => {
+        try {
+            await store.updateEmpPassword({
+                emp_email: employeeEmail.value,
+                current_password: currentPassword.value,
+                new_password: newPassword.value,
+            })
+
+            Notify.create('Password updated successfully');
+        } catch (error) {
+            console.error('Error updating password:', error);
+
+            Notify.create({
+                message: 'Failed to update password',
+                color: 'negative',
+            })
+        }
+    })
 };
 </script>

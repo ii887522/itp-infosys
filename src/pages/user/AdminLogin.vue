@@ -10,7 +10,7 @@
                 <div v-if="displayErrorMessage" class="error-message">{{ store.errorMessage }}</div>
                 <!-- Error Message (conditional) -->
 
-                <q-input filled v-model="studentId" label="Student ID" dense class="input-field" />
+                <q-input filled v-model="username" label="Username" dense class="input-field" />
                 <q-input filled v-model="password" label="Password" type="password" dense class="input-field" />
 
                 <div>
@@ -34,11 +34,11 @@ import { useStore } from 'stores/user-store'
 import { useRouter } from 'vue-router'
 import { useLocalStorageStore } from 'src/stores/localstorage-store'
 
-useMeta({ title: 'Student Login | MyITPHub' })
+useMeta({ title: 'Admin Login | MyITPHub' })
 
 const store = useStore()
 const lsStore = useLocalStorageStore()
-const studentId = ref('')
+const username = ref('')
 const password = ref('')
 const router = useRouter()
 
@@ -56,16 +56,10 @@ async function login() {
   store.loginError = false
   store.errorMessage = ''
 
-  await store.logInStudent({
-    student_id: studentId.value,
-    student_name: '',
+  await store.logInAdmin({
+    username: username.value,
+    email: '',
     password: password.value,
-    ic_no: '',
-    gender: [],
-    programme: [],
-    student_email: '',
-    personal_email: '',
-    faculty: [],
   })
 
   console.log('Is Authenticated:', lsStore.isAuthenticated)
