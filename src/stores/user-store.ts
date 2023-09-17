@@ -32,6 +32,10 @@ export const useStore = defineStore('user', () => {
     registeringStudent.value = false
   }
 
+  function testing(value: string) {
+    console.log(value);
+  }
+
   async function registerEmployee(value: Employee) {
     registeringEmployee.value = true
     await api.post('/user/register-emp', value)
@@ -169,7 +173,6 @@ export const useStore = defineStore('user', () => {
     updatingStudentPassword.value = false;
   }
 
-  // not sure
   async function updateResume(resume: File) {
     updatingResume.value = true;
 
@@ -209,5 +212,6 @@ export const useStore = defineStore('user', () => {
     updateStudProfile,
     updateStudPassword,
     updateResume,
+    testing,
   }
 })
