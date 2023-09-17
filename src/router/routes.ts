@@ -4,7 +4,7 @@ import {
   useInternshipEditStore,
   useInternshipDetailsEmpStore,
 } from 'stores/itp-post-store'
-import { requireAuthStud, requireAuthEmp, alreadyAuth } from 'src/common/user/guards' // Import the route guard
+import { requireAuthStud, requireAuthEmp, alreadyAuth, requireAuthAdmin } from 'src/common/user/guards' // Import the route guard
 import { useLocalStorageStore } from 'stores/localstorage-store'
 
 const routes: RouteRecordRaw[] = [
@@ -95,10 +95,12 @@ const routes: RouteRecordRaw[] = [
       // internship program module
       {
         path: 'admin/itp-prog',
+        beforeEnter: requireAuthAdmin,
         component: () => import('pages/itp-prog/IndexPage.vue'),
       },
       {
         path: 'admin/itp-prog/students',
+        beforeEnter: requireAuthAdmin,
         component: () => import('pages/itp-prog/StudList.vue'),
       },
 
