@@ -164,7 +164,10 @@ def register_admin():
     cursor = db_conn.cursor()
 
     try:
-        cursor.execute("INSERT INTO admin VALUES (%s, %s, %s)", (admin_username, admin_email, password))
+        cursor.execute(
+            "INSERT INTO `admin` (username, email, `password`) VALUES (%s, %s, %s)",
+            (admin_username, admin_email, password),
+        )
         db_conn.commit()
 
         return {
@@ -240,7 +243,11 @@ def login_employee():
 
         if employee_data:
             # Employee login successful
-            return {"message": "Employee login successful", "emp_id": employee_data[0]}, 200
+            return {
+                "message": "Employee login successful",
+                "emp_id": employee_data[0],
+                "company_name": employee_data[3],
+            }, 200
         else:
             # Employee login failed
             return {"message": "Invalid email or password"}, 401
