@@ -372,12 +372,12 @@ def get_user_name(user_type: str, user_id: str):
             cursor.execute("SELECT emp_name FROM employee WHERE emp_id = %s", (user_id,))
 
         elif user_type == "admin":
-            # TODO: Fetch admin name by admin id from the database
-            pass
+            # Fetch admin name by admin id from the database
+            cursor.execute("SELECT username FROM `admin` WHERE admin_id = %s", (user_id,))
 
         elif user_type == "sup":
-            # TODO: Fetch supervisor name by supervisor id from the database
-            pass
+            # Fetch supervisor name by supervisor id from the database
+            cursor.execute("SELECT supervisor_name FROM supervisor WHERE supervisor_id = %s", (user_id,))
 
         db_conn.commit()
         db_row = cursor.fetchone()
