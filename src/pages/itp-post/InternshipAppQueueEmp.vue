@@ -111,10 +111,12 @@ import InternshipAppEmpDialog from 'components/itp-post/InternshipAppEmpDialog.v
 import { useStore, useInternshipAppQueueEmpStore } from 'stores/itp-post-store'
 import Fuse from 'fuse.js'
 import { formatTime } from 'src/common'
+import { useLocalStorageStore } from 'stores/localstorage-store'
 
 useMeta({ title: 'Student Internship Application | MyITPHub' })
 const { dialog, notify, localStorage } = useQuasar()
 const store = useStore()
+const lsStore = useLocalStorageStore()
 const internshipAppQueueEmpStore = useInternshipAppQueueEmpStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -162,7 +164,7 @@ const columns: any[] = [
 ]
 
 // Init
-store.listIncomingApplications('CMY Enterprise')
+store.listIncomingApplications(lsStore.getCompanyName()?.toString() ?? '')
 let timer: NodeJS.Timer
 
 onMounted(() => {
@@ -222,7 +224,7 @@ function openConfirmAcceptDialog(title: string, studentName: string) {
     // Accept the requested internship application
     await store.updateApplication({
       internshipTitle: title,
-      companyName: 'CMY Enterprise',
+      companyName: lsStore.getCompanyName()?.toString() ?? '',
       studentId: localStorage.getItem('username') ?? '',
       status: 'accepted',
     })
@@ -264,7 +266,7 @@ function openConfirmRejectDialog(title: string, studentName: string) {
     // Reject the requested internship application
     await store.updateApplication({
       internshipTitle: title,
-      companyName: 'CMY Enterprise',
+      companyName: lsStore.getCompanyName()?.toString() ?? '',
       studentId: localStorage.getItem('username') ?? '',
       status: 'rejected',
     })

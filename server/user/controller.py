@@ -240,7 +240,11 @@ def login_employee():
 
         if employee_data:
             # Employee login successful
-            return {"message": "Employee login successful", "emp_id": employee_data[0]}, 200
+            return {
+                "message": "Employee login successful",
+                "emp_id": employee_data[0],
+                "company_name": employee_data[3],
+            }, 200
         else:
             # Employee login failed
             return {"message": "Invalid email or password"}, 401

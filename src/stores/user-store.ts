@@ -86,6 +86,7 @@ export const useStore = defineStore('user', () => {
         lsStore.setIsAuthenticated(true)
         lsStore.setAuthUserType('emp')
         lsStore.setUsername(value.emp_email)
+        lsStore.setCompanyName(resp.data.company_name)
       }
       loggingInEmployee.value = false
     } catch (error) {
@@ -95,6 +96,7 @@ export const useStore = defineStore('user', () => {
       lsStore.setIsAuthenticated(false)
       lsStore.setAuthUserType('none')
       lsStore.setUsername('none')
+      lsStore.setCompanyName('none')
     }
   }
 
@@ -148,10 +150,12 @@ export const useStore = defineStore('user', () => {
     lsStore.setIsAuthenticated(false) // Set the authentication status to unauthenticated
     lsStore.setAuthUserType('none')
     lsStore.setUsername('none')
+    lsStore.setCompanyName('none')
 
     LocalStorage.remove('isAuthenticated')
     LocalStorage.remove('authUserType')
     LocalStorage.remove('username')
+    LocalStorage.remove('companyName')
     console.log(lsStore.getIsAuthenticated())
     console.log(lsStore.getAuthUserType())
     console.log(lsStore.getUsername())
