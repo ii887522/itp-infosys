@@ -1,50 +1,62 @@
-import { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
-import { useLocalStorageStore } from 'stores/localstorage-store';
+import { RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
+import { useLocalStorageStore } from 'stores/localstorage-store'
 
-export const requireAuthStud = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = useLocalStorageStore();
-  console.log('Is Authenticated:', store.getIsAuthenticated());
-  console.log('Authenticated Type:', store.getAuthUserType());
-  
+export const requireAuthStud = (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) => {
+  const store = useLocalStorageStore()
+  console.log('Is Authenticated:', store.getIsAuthenticated())
+  console.log('Authenticated Type:', store.getAuthUserType())
+
   // Check if the user is authenticated and is student or not
   if (store.getIsAuthenticated() && store.getAuthUserType() === 'stud') {
-    next(); // User is authenticated, proceed to the route
+    next() // User is authenticated, proceed to the route
   } else {
-    next('/login'); // User is not authenticated, redirect to the login page
+    next('/login') // User is not authenticated, redirect to the login page
   }
-};
+}
 
-export const requireAuthEmp = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = useLocalStorageStore();
+export const requireAuthEmp = (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) => {
+  const store = useLocalStorageStore()
   //console.log('Is Authenticated:', store.getIsAuthenticated());
   //console.log('Authenticated Type:', store.getAuthUserType());
 
   if (store.getIsAuthenticated() && store.getAuthUserType() === 'emp') {
-    next();
+    next()
   } else {
-    next('/login');
+    next('/login')
   }
 }
 
-export const requireAuthAdmin = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = useLocalStorageStore();
-  console.log('Is Authenticated:', store.getIsAuthenticated());
-  console.log('Authenticated Type:', store.getAuthUserType());
+export const requireAuthAdmin = (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) => {
+  const store = useLocalStorageStore()
+  console.log('Is Authenticated:', store.getIsAuthenticated())
+  console.log('Authenticated Type:', store.getAuthUserType())
 
   if (store.getIsAuthenticated() && store.getAuthUserType() === 'admin') {
-    next();
+    next()
   } else {
-    next('/login');
+    next('/login')
   }
 }
 
 // Function to check if the user is already logged in or not
 export const alreadyAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const store = useLocalStorageStore();
+  const store = useLocalStorageStore()
 
   if (!store.getIsAuthenticated()) {
-    next(); // User is authenticated, proceed to the route
+    next() // User is authenticated, proceed to the route
   } else {
-    next('/'); // User is not authenticated, redirect to the login page
+    next('/login') // User is not authenticated, redirect to the login page
   }
 }

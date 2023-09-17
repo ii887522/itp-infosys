@@ -5,18 +5,38 @@ import {
   useInternshipDetailsEmpStore,
 } from 'stores/itp-post-store'
 import { requireAuthStud, requireAuthEmp, alreadyAuth } from 'src/common/user/guards' // Import the route guard
+import { useLocalStorageStore } from 'stores/localstorage-store'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
+      {
+        path: '',
+        redirect: () => {
+          const lsStore = useLocalStorageStore()
+
+          switch (lsStore.getAuthUserType()) {
+            case 'admin':
+              return '/admin/itp-prog'
+            case 'emp':
+              return '/emp/itp-post/internships'
+            case 'stud':
+              return '/stud/itp-post/internships'
+            case 'sup':
+              return '/unknown' // FIXME: Waiting for supervisor page :'(
+          }
+
+          return '/login'
+        },
+      },
+
       // internship posting module
       {
         path: 'stud/itp-post/internships',
         component: () => import('pages/itp-post/InternshipListStud.vue'),
         beforeEnter: requireAuthStud,
-        alias: '',
       },
       {
         path: 'stud/itp-post/internship-details',

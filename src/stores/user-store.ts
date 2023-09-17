@@ -24,7 +24,7 @@ export const useStore = defineStore('user', () => {
   const updatingStudentPassword = ref(false)
   const updatingResume = ref(false)
 
-  const lsStore = useLocalStorageStore();
+  const lsStore = useLocalStorageStore()
 
   async function registerStudent(value: Student) {
     registeringStudent.value = true
@@ -63,19 +63,19 @@ export const useStore = defineStore('user', () => {
       if (resp.status === 200) {
         // if login successful
         loginError.value = false
-        lsStore.setIsAuthenticated(true);
-        lsStore.setAuthUserType('stud');
-        lsStore.setUsername(value.student_id);
+        lsStore.setIsAuthenticated(true)
+        lsStore.setAuthUserType('stud')
+        lsStore.setUsername(value.student_id)
       }
       loggingInStudent.value = false
     } catch (error) {
-        const errorMsg = error as AxiosError
-        //console.log('Login error:', errorMsg)
-        loginError.value = true
-        errorMessage.value = (errorMsg.response?.data as { message: string }).message
-        lsStore.setIsAuthenticated(false)
-        lsStore.setAuthUserType('none');
-        lsStore.setUsername('none');
+      const errorMsg = error as AxiosError
+      //console.log('Login error:', errorMsg)
+      loginError.value = true
+      errorMessage.value = (errorMsg.response?.data as { message: string }).message
+      lsStore.setIsAuthenticated(false)
+      lsStore.setAuthUserType('none')
+      lsStore.setUsername('none')
     }
   }
 
@@ -87,105 +87,105 @@ export const useStore = defineStore('user', () => {
       // Check the response status code
       if (resp.status === 200) {
         loginError.value = false
-        lsStore.setIsAuthenticated(true);
-        lsStore.setAuthUserType('emp');
-        lsStore.setUsername(value.emp_email);
+        lsStore.setIsAuthenticated(true)
+        lsStore.setAuthUserType('emp')
+        lsStore.setUsername(value.emp_email)
       }
-      loggingInEmployee.value = true
+      loggingInEmployee.value = false
     } catch (error) {
       const errorMsg = error as AxiosError
       loginError.value = true
       errorMessage.value = (errorMsg.response?.data as { message: string }).message // get the error message
-      lsStore.setIsAuthenticated(false);
-      lsStore.setAuthUserType('none');
-      lsStore.setUsername('none');
+      lsStore.setIsAuthenticated(false)
+      lsStore.setAuthUserType('none')
+      lsStore.setUsername('none')
     }
   }
 
   async function logInSupervisor(value: Supervisor) {
     try {
-      loggingInSupervisor.value = true;
+      loggingInSupervisor.value = true
       const resp = await api.post('/user/login-supervisor/', value)
 
       if (resp.status === 200) {
-        loginError.value = false;
-        lsStore.setIsAuthenticated(true);
-        lsStore.setAuthUserType('sup');
-        lsStore.setUsername(value.supervisor_id);
-        loggingInSupervisor.value = false;
+        loginError.value = false
+        lsStore.setIsAuthenticated(true)
+        lsStore.setAuthUserType('sup')
+        lsStore.setUsername(value.supervisor_id)
+        loggingInSupervisor.value = false
       }
     } catch (error) {
       const errorMsg = error as AxiosError
       loginError.value = true
       errorMessage.value = (errorMsg.response?.data as { message: string }).message
-      lsStore.setIsAuthenticated(false);
-      lsStore.setAuthUserType('none');
-      lsStore.setUsername('none');
+      lsStore.setIsAuthenticated(false)
+      lsStore.setAuthUserType('none')
+      lsStore.setUsername('none')
     }
   }
 
   async function logInAdmin(value: Admin) {
     try {
-      loggingInAdmin.value = true;
+      loggingInAdmin.value = true
       const resp = await api.post('/user/login-admin/', value)
 
       if (resp.status === 200) {
-        loginError.value = false;
-        lsStore.setIsAuthenticated(true);
-        lsStore.setAuthUserType('admin');
+        loginError.value = false
+        lsStore.setIsAuthenticated(true)
+        lsStore.setAuthUserType('admin')
         //setUsername();
       }
-      loggingInAdmin.value = false;
+      loggingInAdmin.value = false
     } catch (error) {
       const errorMsg = error as AxiosError
       loginError.value = true
       errorMessage.value = (errorMsg.response?.data as { message: string }).message
-      lsStore.setIsAuthenticated(false);
-      lsStore.setAuthUserType('none');
-      lsStore.setUsername('none');
+      lsStore.setIsAuthenticated(false)
+      lsStore.setAuthUserType('none')
+      lsStore.setUsername('none')
     }
   }
 
   async function logOut() {
-    console.log('Logout function called');
+    console.log('Logout function called')
     // Clear user-related data and reset to initial values
-    lsStore.setIsAuthenticated(false); // Set the authentication status to unauthenticated
-    lsStore.setAuthUserType('none');
-    lsStore.setUsername('none');
+    lsStore.setIsAuthenticated(false) // Set the authentication status to unauthenticated
+    lsStore.setAuthUserType('none')
+    lsStore.setUsername('none')
 
-    LocalStorage.remove('isAuthenticated');
-    LocalStorage.remove('authUserType');
-    LocalStorage.remove('username');
-    console.log(lsStore.getIsAuthenticated());
-    console.log(lsStore.getAuthUserType());
-    console.log(lsStore.getUsername());
+    LocalStorage.remove('isAuthenticated')
+    LocalStorage.remove('authUserType')
+    LocalStorage.remove('username')
+    console.log(lsStore.getIsAuthenticated())
+    console.log(lsStore.getAuthUserType())
+    console.log(lsStore.getUsername())
   }
 
   async function updateStudProfile(value: Student) {
-    updatingStudentProfile.value = true;
+    updatingStudentProfile.value = true
     await api.post('/user/update-stud-profile', value)
-    updatingStudentProfile.value = false;
+    updatingStudentProfile.value = false
   }
 
   async function updateStudPassword(value: StudChangePassword) {
-    updatingStudentPassword.value = true;
+    updatingStudentPassword.value = true
     await api.post('/user/update-stud-password', value)
-    updatingStudentPassword.value = false;
+    updatingStudentPassword.value = false
   }
 
   async function updateResume(resume: File) {
-    updatingResume.value = true;
+    updatingResume.value = true
 
     // Create a FormData object and append the resume file
-    const formData = new FormData();
-    formData.append('resume', resume);
+    const formData = new FormData()
+    formData.append('resume', resume)
 
     // Make a POST request to the server with the FormData containing the resume file
-    await api.post('/update-resume', formData);
+    await api.post('/update-resume', formData)
 
-    updatingResume.value = false;
+    updatingResume.value = false
   }
-  
+
   return {
     registeringStudent,
     registeringEmployee,

@@ -369,11 +369,11 @@ def get_user_name(user_type: str, user_id: str):
 
         elif user_type == "emp":
             # Fetch employee name by employee id from the database
-            cursor.execute("SELECT emp_name FROM employee WHERE emp_id = %s", (user_id,))
+            cursor.execute("SELECT emp_name FROM employee WHERE emp_email = %s", (user_id,))
 
         elif user_type == "admin":
             # Fetch admin name by admin id from the database
-            cursor.execute("SELECT username FROM `admin` WHERE admin_id = %s", (user_id,))
+            cursor.execute("SELECT username FROM `admin` WHERE email = %s", (user_id,))
 
         elif user_type == "sup":
             # Fetch supervisor name by supervisor id from the database
