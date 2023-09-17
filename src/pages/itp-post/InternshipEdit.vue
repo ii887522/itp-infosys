@@ -177,12 +177,14 @@ import InputList from 'components/InputList.vue'
 import { useInternshipEditStore } from 'stores/itp-post-store'
 import AutoNumeric from 'autonumeric'
 import { useStore } from 'stores/itp-post-store'
+import { useLocalStorageStore } from 'stores/localstorage-store'
 
 useMeta({ title: 'Edit Internship | MyITPHub' })
 
 const { notify } = useQuasar()
 const store = useStore()
 const editStore = useInternshipEditStore()
+const lsStore = useLocalStorageStore()
 const vacancyCountInput = ref<QInput | null>(null)
 const learningOutcomesError = ref(false)
 const learningOutcomesErrorMsg = ref('')
@@ -230,7 +232,7 @@ async function edit() {
   // Update this internship
   await store.editInternship(editStore.oldTitle, {
     title: editStore.newTitle,
-    company_name: 'CMY Enterprise',
+    company_name: lsStore.getCompanyName()?.toString() ?? '',
     categories: editStore.categories,
     min_allowance: editStore.allowanceRange.min,
     max_allowance: editStore.allowanceRange.max,

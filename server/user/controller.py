@@ -164,7 +164,10 @@ def register_admin():
     cursor = db_conn.cursor()
 
     try:
-        cursor.execute("INSERT INTO admin VALUES (%s, %s, %s)", (admin_username, admin_email, password))
+        cursor.execute(
+            "INSERT INTO `admin` (username, email, `password`) VALUES (%s, %s, %s)",
+            (admin_username, admin_email, password),
+        )
         db_conn.commit()
 
         return {
@@ -240,7 +243,11 @@ def login_employee():
 
         if employee_data:
             # Employee login successful
-            return {"message": "Employee login successful", "emp_id": employee_data[0]}, 200
+            return {
+                "message": "Employee login successful",
+                "emp_id": employee_data[0],
+                "company_name": employee_data[3],
+            }, 200
         else:
             # Employee login failed
             return {"message": "Invalid email or password"}, 401
@@ -369,11 +376,11 @@ def get_user_name(user_type: str, user_id: str):
 
         elif user_type == "emp":
             # Fetch employee name by employee id from the database
-            cursor.execute("SELECT emp_name FROM employee WHERE emp_id = %s", (user_id,))
+            cursor.execute("SELECT emp_name FROM employee WHERE emp_email = %s", (user_id,))
 
         elif user_type == "admin":
             # Fetch admin name by admin id from the database
-            cursor.execute("SELECT username FROM `admin` WHERE admin_id = %s", (user_id,))
+            cursor.execute("SELECT username FROM `admin` WHERE email = %s", (user_id,))
 
         elif user_type == "sup":
             # Fetch supervisor name by supervisor id from the database

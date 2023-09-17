@@ -36,21 +36,13 @@ const nav = [
     },
     show: (to: RouteLocationNormalized) =>
       lsStore.getIsAuthenticated() === true &&
-      lsStore.getAuthUserType() === 'stud' &&
-      (to.fullPath === '/' ||
-        to.fullPath === '/stud/itp-post/internships' ||
-        to.fullPath === '/emp/itp-post/internships'),
+      (to.fullPath === '/stud/itp-post/internships' || to.fullPath === '/emp/itp-post/internships'),
   },
   {
     to: '/stud/itp-post/internship-app-queue',
     icon: 'list',
     label: 'My Application',
     show: () => store.getIsAuthenticated() === true && store.getAuthUserType() === 'stud',
-  },
-  {
-    to: '/admin/itp-prog',
-    icon: 'construction',
-    label: 'Program',
   },
   {
     to: '/emp/itp-post/internship-app-queue',
