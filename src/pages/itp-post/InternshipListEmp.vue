@@ -86,6 +86,7 @@ import { categoryColor } from 'src/consts/itp-post'
 import sanitizeHtml from 'sanitize-html'
 import { useRouter } from 'vue-router'
 import { useStore } from 'stores/itp-post-store'
+import { useLocalStorageStore } from 'stores/localstorage-store'
 
 useMeta({ title: 'Manage Internships | MyITPHub' })
 const { dialog, notify } = useQuasar()
@@ -94,6 +95,7 @@ const store = useStore()
 const searchStore = useInternshipSearchStore()
 const editStore = useInternshipEditStore()
 const detailsStore = useInternshipDetailsEmpStore()
+const lsStore = useLocalStorageStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
@@ -150,7 +152,7 @@ const columns: any[] = [
 
 // Init
 searchStore.reset()
-store.listPostedInternships('CMY Enterprise')
+store.listPostedInternships(lsStore.getCompanyName()?.toString() ?? '')
 
 function getRowKey(row: Internship) {
   return `${row.title}#${row.company_name}`
@@ -198,7 +200,7 @@ function openConfirmDelDialog(title: string) {
     })
 
     // Remove the requested internship
-    await store.removeInternship('CMY Enterprise', title)
+    await store.removeInternship(lsStore.getCompanyName()?.toString() ?? '', title)
 
     // Signal the employee that the internship is successfully removed
     notif({

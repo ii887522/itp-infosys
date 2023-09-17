@@ -205,10 +205,12 @@ import { allCategories, categoryColor, minAllowance, maxAllowance, allLocations 
 import InputList from 'components/InputList.vue'
 import AutoNumeric from 'autonumeric'
 import { useStore } from 'stores/itp-post-store'
+import { useLocalStorageStore } from 'stores/localstorage-store'
 
 useMeta({ title: 'Add Internship | MyITPHub' })
 
 const store = useStore()
+const lsStore = useLocalStorageStore()
 const { notify } = useQuasar()
 
 const vacancyCountInput = ref<QInput | null>(null)
@@ -266,7 +268,7 @@ async function add() {
   // Add this internship
   await store.postInternship({
     title: title.value,
-    company_name: 'CMY Enterprise',
+    company_name: lsStore.getCompanyName()?.toString() ?? '',
     categories: categories.value,
     min_allowance: allowanceRange.value.min,
     max_allowance: allowanceRange.value.max,
