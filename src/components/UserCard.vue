@@ -6,9 +6,8 @@
         <span>Welcome</span>
 
         <div class="text-overflow-ellipsis">
-          <span>YONG CHI MIN</span>
-          <!-- TODO: get name from user type and username -->
-          <q-tooltip>YONG CHI MIN</q-tooltip>
+          <span>{{ userName }}</span>
+          <q-tooltip>{{ userName }}</q-tooltip>
         </div>
       </div>
     </template>
@@ -28,13 +27,23 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { useStore } from 'src/stores/user-store'
 import { useRouter } from 'vue-router'
+import { api } from 'boot/axios'
 
 const store = useStore()
 const router = useRouter()
-const { dialog } = useQuasar()
+const { dialog, localStorage } = useQuasar()
+
+const userName = ref('')
+
+// Init
+;(async () => {
+  const resp = await api.get(`/user/users/${localStorage.getItem('authUserType')}/${localStorage.getItem('username')}`)
+  userName.value = resp.data.result
+})()
 
 const confirmLogOut = () => {
   dialog({

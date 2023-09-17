@@ -1,16 +1,17 @@
 import boto3
+import common.consts as consts
 import config
-from common.db_connection import DbConnection
-from flask import Blueprint, request, jsonify
 from botocore.exceptions import NoCredentialsError
+from common.db_connection_pool import DbConnectionPool
+from flask import Blueprint, jsonify, request
 
 user_controller = Blueprint("user_controller", __name__)
-db_conn = DbConnection.get_instance()
-s3 = boto3.client("s3")
+db_conn_pool = DbConnectionPool.get_instance()
+s3 = boto3.client("s3", consts.AWS_REGION)
 
 
 # Function to handle student registration
-@user_controller.route("/register-stud", methods=['POST'])
+@user_controller.route("/register-stud", methods=["POST"])
 def register_student():
     if not request.json:
         return {"code": 4000}
@@ -26,7 +27,7 @@ def register_student():
     personal_email = request.json.get("personal_email", "")
     faculty = request.json.get("faculty", [])
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -53,9 +54,10 @@ def register_student():
         }
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/register-emp", methods=['POST'])
+@user_controller.route("/register-emp", methods=["POST"])
 def register_employee():
     if not request.json:
         return {"code": 4000}
@@ -67,7 +69,7 @@ def register_employee():
     emp_email = request.json.get("emp_email", "")
     emp_phone = request.json.get("emp_phone", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -110,9 +112,10 @@ def register_employee():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/register-sup", methods=['POST'])
+@user_controller.route("/register-sup", methods=["POST"])
 def register_supervisor():
     if not request.json:
         return {"code": 4000}
@@ -124,7 +127,7 @@ def register_supervisor():
     faculty = request.json.get("faculty", "")
     supervisor_email = request.json.get("supervisor_email", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -145,9 +148,10 @@ def register_supervisor():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/register-admin", methods=['POST'])
+@user_controller.route("/register-admin", methods=["POST"])
 def register_admin():
     if not request.json:
         return {"code": 4000}
@@ -156,14 +160,11 @@ def register_admin():
     admin_email = request.json.get("email", "")
     password = request.json.get("password", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
-        cursor.execute(
-            "INSERT INTO admin VALUES (%s, %s, %s)",
-            (admin_username, admin_email, password)
-        )
+        cursor.execute("INSERT INTO admin VALUES (%s, %s, %s)", (admin_username, admin_email, password))
         db_conn.commit()
 
         return {
@@ -174,10 +175,12 @@ def register_admin():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/get-companies", methods=['GET'])
+@user_controller.route("/get-companies", methods=["GET"])
 def get_companies():
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
     try:
         # Query the database to retrieve a list of company names
@@ -186,9 +189,10 @@ def get_companies():
         return {"companies": companies}
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/login-stud", methods=['POST'])
+@user_controller.route("/login-stud", methods=["POST"])
 def login_student():
     if not request.json:
         return {"code": 4000}
@@ -197,6 +201,7 @@ def login_student():
     student_id = request.json.get("student_id", "")
     password = request.json.get("password", "")
 
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -213,9 +218,10 @@ def login_student():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/login-emp", methods=['POST'])
+@user_controller.route("/login-emp", methods=["POST"])
 def login_employee():
     if not request.json:
         return {"code": 4000}
@@ -224,7 +230,7 @@ def login_employee():
     emp_email = request.json.get("emp_email", "")
     password = request.json.get("password", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -241,9 +247,10 @@ def login_employee():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/login-sup", methods=['POST'])
+@user_controller.route("/login-sup", methods=["POST"])
 def login_supervisor():
     if not request.json:
         return {"code": 4000}
@@ -251,14 +258,11 @@ def login_supervisor():
     supervisor_id = request.json.get("supervisor_id", "")
     password = request.json.get("password", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
-        cursor.execute(
-            "SELECT * FROM supervisor WHERE supervisor_id = %s AND password = %s",
-            (supervisor_id, password)
-        )
+        cursor.execute("SELECT * FROM supervisor WHERE supervisor_id = %s AND password = %s", (supervisor_id, password))
         supervisor_data = cursor.fetchone()
 
         if supervisor_data:
@@ -268,9 +272,10 @@ def login_supervisor():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/login-admin", methods=['POST'])
+@user_controller.route("/login-admin", methods=["POST"])
 def login_admin():
     if not request.json:
         return {"code": 4000}
@@ -278,7 +283,7 @@ def login_admin():
     username = request.json.get("username", "")
     password = request.json.get("password", "")
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -292,11 +297,12 @@ def login_admin():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/get-student-profile/<student_id>", methods=['GET'])
+@user_controller.route("/get-student-profile/<student_id>", methods=["GET"])
 def get_student_profile(student_id: str):
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
     try:
         cursor.execute("SELECT * FROM student WHERE student_id = %s", (student_id,))
@@ -307,36 +313,126 @@ def get_student_profile(student_id: str):
 
         if student_data and intern_data:
             # Construct and return the student profile
-            return jsonify({
-                "student_id": student_data[0],
-                "student_name": student_data[1],
-                "password": student_data[2],
-                "ic_no": student_data[3],
-                "gender": student_data[4],
-                "programme": student_data[5],
-                "student_email": student_data[6],
-                "personal_email": student_data[7],
-                "faculty": student_data[8],
-                "supervisor_assigned_at": intern_data[1],
-                "company_name": intern_data[2],
-                "supervisor_name": intern_data[3],
-                "itp_start_at": intern_data[4],
-                "itp_end_at": intern_data[5],
-            }), 200
+            return (
+                jsonify(
+                    {
+                        "student_id": student_data[0],
+                        "student_name": student_data[1],
+                        "password": student_data[2],
+                        "ic_no": student_data[3],
+                        "gender": student_data[4],
+                        "programme": student_data[5],
+                        "student_email": student_data[6],
+                        "personal_email": student_data[7],
+                        "faculty": student_data[8],
+                        "supervisor_assigned_at": intern_data[1],
+                        "company_name": intern_data[2],
+                        "supervisor_name": intern_data[3],
+                        "itp_start_at": intern_data[4],
+                        "itp_end_at": intern_data[5],
+                    }
+                ),
+                200,
+            )
         elif student_data:
+            return jsonify(
+                {
+                    "student_id": student_data[0],
+                    "student_name": student_data[1],
+                    "password": student_data[2],
+                    "ic_no": student_data[3],
+                    "gender": student_data[4],
+                    "programme": student_data[5],
+                    "student_email": student_data[6],
+                    "personal_email": student_data[7],
+                    "faculty": student_data[8],
+                }
+            )
+        else:
+            return jsonify({"message": "Student not found"}), 404
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/users/<user_type>/<user_id>", methods=["GET"])
+def get_user_name(user_type: str, user_id: str):
+    # Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+
+    cursor = db_conn.cursor()
+
+    try:
+        if user_type == "stud":
+            # Fetch student name by student id from the database
+            cursor.execute("SELECT student_name FROM student WHERE student_id = %s", (user_id,))
+
+        elif user_type == "emp":
+            # Fetch employee name by employee id from the database
+            cursor.execute("SELECT emp_name FROM employee WHERE emp_id = %s", (user_id,))
+
+        elif user_type == "admin":
+            # Fetch admin name by admin id from the database
+            cursor.execute("SELECT username FROM `admin` WHERE admin_id = %s", (user_id,))
+
+        elif user_type == "sup":
+            # Fetch supervisor name by supervisor id from the database
+            cursor.execute("SELECT supervisor_name FROM supervisor WHERE supervisor_id = %s", (user_id,))
+
+        db_conn.commit()
+        db_row = cursor.fetchone()
+
+        # Output
+        return {"result": db_row[0] if db_row else ""}
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/get-emp-profile/<emp_email>", methods=['GET'])
+def get_employee_profile(emp_email: str):
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM employee WHERE emp_email = %s", (emp_email,))
+        employee_data = cursor.fetchone()
+
+        if employee_data:
             return jsonify({
-                "student_id": student_data[0],
-                "student_name": student_data[1],
-                "password": student_data[2],
-                "ic_no": student_data[3],
-                "gender": student_data[4],
-                "programme": student_data[5],
-                "student_email": student_data[6],
-                "personal_email": student_data[7],
-                "faculty": student_data[8],
+                "emp_name": employee_data[1],
+                "password": employee_data[2],
+                "company_name": employee_data[3],
+                "emp_email": employee_data[4],
+                "emp_phone": employee_data[5],
             })
         else:
             return jsonify({"message": "Student not found"}), 404
+
+    finally:
+        cursor.close()
+
+
+# Get company details
+@user_controller.route("/get-company-details/<company_name>", methods=['GET'])
+def get_company_details(company_name: str):
+    db_conn.ping()
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM company WHERE name = %s", (company_name,))
+        company_data = cursor.fetchone()
+
+        if company_data:
+            return jsonify({
+                "company_name": company_data[0],
+                "company_desc": company_data[1],
+                "company_size": company_data[2],
+                "company_address": company_data[3],
+                "company_url": company_data[4],
+            })
+        else:
+            return jsonify({"message": "Company not found"}), 404
+
     finally:
         cursor.close()
 
@@ -403,13 +499,13 @@ def update_stud_profile():
     personal_email = request.json.get("personal_email", "")
     faculty = request.json.get("faculty", [])
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
         cursor.execute(
-            "UPDATE student SET student_name = %s, ic_no = %s, gender = %s, programme = %s, student_email = %s," +
-            " personal_email = %s, faculty = %s WHERE student_id = %s",
+            "UPDATE student SET student_name = %s, ic_no = %s, gender = %s, programme = %s, student_email = %s,"
+            + " personal_email = %s, faculty = %s WHERE student_id = %s",
             (student_name, ic_no, gender, programme, student_email, personal_email, faculty, student_id),
         )
         db_conn.commit()
@@ -423,6 +519,7 @@ def update_stud_profile():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
 @user_controller.route("/update-emp-profile", methods=['POST'])
@@ -462,7 +559,7 @@ def update_stud_password():
     current_password = request.json.get("current_password", "")  # Current password
     new_password = request.json.get("new_password", "")  # New password
 
-    db_conn.ping()
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
 
     try:
@@ -489,15 +586,16 @@ def update_stud_password():
 
     finally:
         cursor.close()
+        db_conn.close()
 
 
-@user_controller.route("/update-resume", methods=['POST'])
+@user_controller.route("/update-resume", methods=["POST"])
 def update_resume(student_id: str):
     # Input: Assuming you receive the updated resume file in the request
-    """ next = request.args.get("next", "").split("#")
+    """next = request.args.get("next", "").split("#")
     size = request.args.get("size", 1000, type=int)
     next_title = next[0]
-    next_company_name = next[1] if 1 < len(next) else None """
+    next_company_name = next[1] if 1 < len(next) else None"""
 
     updated_resume_file = request.files.get("resume")
 
@@ -515,7 +613,7 @@ def update_resume(student_id: str):
             ExtraArgs={
                 "ContentType": "application/pdf",
                 "ContentDisposition": f'inline; filename="{student_id}.pdf"',
-            }
+            },
         )
 
         # Output: Provide a success message or any other necessary response
@@ -527,19 +625,19 @@ def update_resume(student_id: str):
         return {"message": "Failed to update resume"}, 500
 
 
-@user_controller.route("/get-resume-url/<student_id>", methods=['GET'])
+@user_controller.route("/get-resume-url/<student_id>", methods=["GET"])
 def get_resume_url(student_id: str):
     try:
         s3_key = f"resume/{student_id}.pdf"
 
         # Generate a pre-signed URL for the resume file
         resume_url = s3.generate_presigned_url(
-            'get_object',
+            "get_object",
             Params={
-                'Bucket': config.custombucket,
-                'Key': s3_key,
+                "Bucket": config.custombucket,
+                "Key": s3_key,
             },
-            ExpiresIn=3600  # URL expiration time in seconds
+            ExpiresIn=3600,  # URL expiration time in seconds
         )
 
         # Return the pre-signed URL in the response
