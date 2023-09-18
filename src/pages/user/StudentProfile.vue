@@ -79,6 +79,7 @@ import { useMeta } from 'quasar';
 import { useStore } from 'src/stores/user-store';
 import { api } from 'src/boot/axios';
 import { useLocalStorageStore } from 'src/stores/localstorage-store';
+import { formatTime } from 'src/common';
 
 useMeta({ title: 'Student Profile | MyITPHub' })
 
@@ -195,11 +196,11 @@ async function fetchStudentProfile() {
     gender.value = resp.data.gender;
 
     // Optional: assign if found data in student intern table
-    supervisor_assigned_at.value = resp.data?.supervisor_assigned_at;
+    supervisor_assigned_at.value = formatTime(resp.data?.supervisor_assigned_at, 'D/M/YYYY h:mm A');
     company_name.value = resp.data?.company_name;
     supervisor_name.value = resp.data?.supervisor_name;
-    itp_start_at.value = resp.data?.itp_start_at;
-    itp_end_at.value = resp.data?.itp_end_at;
+    itp_start_at.value = formatTime(resp.data?.itp_start_at, 'D/M/YYYY h:mm A');
+    itp_end_at.value = formatTime(resp.data?.itp_end_at, 'D/M/YYYY h:mm A');
   } catch (error) {
     console.error('Error fetching student profile:', error);
   }

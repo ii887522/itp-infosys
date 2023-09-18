@@ -169,7 +169,6 @@ def register_admin():
             (admin_username, admin_email, password),
         )
         db_conn.commit()
-
         return {
             "username": admin_username,
             "email": admin_email,
@@ -296,7 +295,6 @@ def login_admin():
     try:
         cursor.execute("SELECT * FROM admin WHERE username = %s AND password = %s", (username, password))
         admin_data = cursor.fetchone()
-
         if admin_data:
             return {"message": "Admin login successful", "username": admin_data[0]}, 200
         else:
@@ -536,6 +534,40 @@ def update_emp_profile():
         return {"message": "Failed to update employee profile"}, 500
 
 
+@user_controller.route("/update-sup-profile", methods=['POST'])
+def update_sup_profile():
+    if not request.json:
+        return {"code": 4000}
+
+    ori_supervisor_id = request.json.get("ori_supervisor_id", "")
+    supervisor_id = request.json.get("supervisor_id", "")
+    supervisor_name = request.json.get("supervisor_name", "")
+    gender = request.json.get("gender", "")
+    faculty = request.json.get("faculty", "")
+    supervisor_email = request.json.get("supervisor_email", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "UPDATE supervisor SET supervisor_id = %s, supervisor_name = %s, gender = %s, faculty = %s," +
+            "supervisor_email = %s WHERE supervisor_id = %s",
+            (supervisor_id, supervisor_name, gender, faculty, supervisor_email, ori_supervisor_id)
+        )
+        db_conn.commit()
+
+        return {"message": "Supervisor profile updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating supervisor profile:", str(e))
+        return {"message": "Failed to update supervisor profile"}, 500
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
 @user_controller.route("/update-stud-password", methods=['POST'])
 def update_stud_password():
     if not request.json:
@@ -598,6 +630,42 @@ def update_emp_password():
             return {"message": "Current password does not match"}, 400
 
         cursor.execute("UPDATE employee SET password = %s WHERE emp_email = %s", (new_password, emp_email))
+        db_conn.commit()
+
+        return {"message": "Password updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating password:", str(e))
+        return {"message": "Failed to update password"}, 500
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/update-sup-password", methods=['POST'])
+def update_sup_password():
+    if not request.json:
+        return {"code": 4000}
+
+    supervisor_id = request.json.get("supervisor_id", "")
+    current_password = request.json.get("current_password", "")
+    new_password = request.json.get("new_password", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute("SELECT password FROM supervisor WHERE supervisor_id = %s", (supervisor_id,))
+        stored_password = cursor.fetchone()
+
+        if not stored_password:
+            return {"message": "Supervisor not found"}, 404
+
+        if current_password != stored_password[0]:
+            return {"message": "Current password does not match"}, 400
+
+        cursor.execute("UPDATE employee SET password = %s WHERE supervisor_id = %s", (new_password, supervisor_id))
         db_conn.commit()
 
         return {"message": "Password updated successfully"}, 200

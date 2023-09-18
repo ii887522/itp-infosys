@@ -6,7 +6,7 @@ import { CompanyDetails, EmpChangePassword, EmpEditProfile, Employee } from 'src
 import { AxiosError } from 'axios'
 import { LocalStorage } from 'quasar'
 import { Admin } from 'src/models/admin'
-import { Supervisor } from 'src/models/supervisor'
+import { SupChangePassword, SupEditProfile, Supervisor } from 'src/models/supervisor'
 import { useLocalStorageStore } from './localstorage-store'
 
 export const useStore = defineStore('user', () => {
@@ -26,6 +26,9 @@ export const useStore = defineStore('user', () => {
   const updatingEmployeeProfile = ref(false)
   const updatingEmployeePassword = ref(false)
   const updatingCompanyDetails = ref(false)
+  const updatingSupervisorProfile = ref(false)
+  const updatingSupervisorPassword = ref(false)
+  const updatingAdminPassword = ref(false)
 
   const lsStore = useLocalStorageStore()
 
@@ -207,6 +210,22 @@ export const useStore = defineStore('user', () => {
     updatingCompanyDetails.value = false
   }
 
+  async function updateSupProfile(value: SupEditProfile) {
+    updatingSupervisorProfile.value = true
+    await api.post('/user/update-sup-profile', value)
+    updatingSupervisorProfile.value = false
+  }
+
+  async function updateSupPassword(value: SupChangePassword) {
+    updatingSupervisorPassword.value = true
+    await api.post('/user/update-sup-password', value)
+    updatingSupervisorPassword.value = false
+  }
+
+  async function updateAdminPassword() {
+
+  }
+
   return {
     registeringStudent,
     registeringEmployee,
@@ -224,6 +243,9 @@ export const useStore = defineStore('user', () => {
     updatingEmployeeProfile,
     updatingEmployeePassword,
     updatingCompanyDetails,
+    updatingSupervisorProfile,
+    updatingSupervisorPassword,
+    updatingAdminPassword,
     registerStudent,
     registerEmployee,
     registerSupervisor,
@@ -239,5 +261,8 @@ export const useStore = defineStore('user', () => {
     updateEmpProfile,
     updateEmpPassword,
     updateCompanyDetails,
+    updateSupProfile,
+    updateSupPassword,
+    updateAdminPassword,
   }
 })
