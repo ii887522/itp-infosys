@@ -187,7 +187,7 @@ export const useStore = defineStore('user', () => {
     formData.append('resume', resume)
 
     // Make a POST request to the server with the FormData containing the resume file
-    await api.post('/update-resume', formData)
+    await api.post('/user/update-resume', formData)
 
     updatingResume.value = false
   }

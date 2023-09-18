@@ -712,7 +712,7 @@ def update_company_details():
         db_conn.close()
 
 
-@user_controller.route("/update-resume", methods=["POST"])
+@user_controller.route("/update-resume", methods=['POST'])
 def update_resume(student_id: str):
     # Input: Assuming you receive the updated resume file in the request
     """next = request.args.get("next", "").split("#")
@@ -748,7 +748,7 @@ def update_resume(student_id: str):
         return {"message": "Failed to update resume"}, 500
 
 
-@user_controller.route("/get-resume-url/<student_id>", methods=["GET"])
+@user_controller.route("/get-resume-url/<student_id>", methods=['GET'])
 def get_resume_url(student_id: str):
     try:
         s3_key = f"resume/{student_id}.pdf"
