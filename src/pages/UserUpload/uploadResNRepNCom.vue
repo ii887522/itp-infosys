@@ -2,7 +2,7 @@
     <q-card class="bg-info q-mt-lg q-ml-lg q-mr-lg " style="width: 1500px">
       <q-card-section>
         <div class="text-h5 q-mb-lg q-size-bo">Internship Application</div>
-  
+
         <q-form @submit="apply">
           <q-file
             class="q-mb-lg"
@@ -27,7 +27,7 @@
             </template>
           </q-file>
 
-  
+
           <div class="text-center">
             <q-btn type="submit" icon="touch_app" label="Save And Submit" color="positive" />
           </div>
@@ -41,7 +41,7 @@
     <q-card class="bg-info q-ml-lg q-mr-lg" style="width: 1500px">
       <q-card-section>
         <div class="text-h5 q-mb-lg">Company Details</div>
-  
+
         <q-form @submit="CompanyApply">
 
         <q-input
@@ -143,7 +143,7 @@
             <span class="text-negative"> *</span>
           </template>
         </q-input>
-            
+
 
         <!-- Upload Company File -->
           <q-file
@@ -218,7 +218,7 @@
           <div class="text-center">
             <q-btn type="submit" icon="touch_app" label="Save and Submit" color="positive" />
           </div>
-          
+
         </q-form>
       </q-card-section>
     </q-card>
@@ -229,7 +229,7 @@
     <q-card class="bg-info q-ml-lg q-mr-lg" style="width: 1500px">
       <q-card-section>
         <div class="text-h5 q-mb-lg">Submission Of Monthly Report</div>
-  
+
         <q-form @submit="MonthlyReportUpload">
           <q-file
             class="q-mb-lg"
@@ -253,7 +253,7 @@
               <span class="text-negative"> *</span>
             </template>
           </q-file>
-          
+
           <div class="text-center">
             <q-btn type="submit" icon="touch_app" label="Save And Submit" color="positive" />
           </div>
@@ -265,13 +265,15 @@
 
 
   </template>
-  
+
   <script setup lang="ts">
   import { ref } from 'vue'
   import { useStore } from 'src/stores/user-store'
   import { useStore as useUploadStore } from 'src/stores/upload'
+  import { useLocalStorageStore } from 'src/stores/localstorage-store'
   const store = useStore()
   const uploadStore = useUploadStore()
+  const lsStore = useLocalStorageStore()
 
   //Resume
   const resume = ref()
@@ -294,18 +296,23 @@
   //Report
   const monthlyReportPDF = ref()
   const monthlyReportDOCX = ref()
-  
-  function apply() {
+
+  async function apply() {
   // Disable input fields when the submit button is clicked
   isSubmitClicked1.value = true;
-  console.log('Upload');
+  console.log('apply');
+  const studentId = lsStore.getUsername()as string
+  await uploadStore.resumeUpload({
+    student_id: studentId,
+    resume_file : resume.value
+  })
 }
 
 async function CompanyApply(){
   // Disable input fields when the submit button is clicked
   isSubmitClicked2.value = true;
   console.log('Upload');
-  const studentId = store.getUsername()as string
+  const studentId = lsStore.getUsername()as string
   await uploadStore.companyApply({
                 student_id: studentId,
                 company_name: comName.value,
@@ -313,13 +320,21 @@ async function CompanyApply(){
                 monthly_allowance: MonAllowance.value,
                 company_supervisor_name: ComSuperName.value,
                 company_supervisor_email: ComSuperEmail.value,
+                company_acc_file: ComAccept.value,
+                parent_file: ParentAckForm.value,
+                letter_file: LetterOfIdem.value
             })
 }
 
-function MonthlyReportUpload() {
+async function MonthlyReportUpload() {
   // Disable input fields when the submit button is clicked
   isSubmitClicked3.value = true;
-  console.log('Upload');
+  console.log('report');
+  const studentId = lsStore.getUsername()as string
+  await uploadStore.reportUpload({
+    student_id: studentId,
+    report_file : monthlyReportPDF.value
+  })
 }
 
   </script>

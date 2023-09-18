@@ -42,13 +42,13 @@ const nav = [
     to: '/stud/itp-post/internship-app-queue',
     icon: 'list',
     label: 'My Application',
-    show: () => store.getIsAuthenticated() === true && store.getAuthUserType() === 'stud',
+    show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'stud',
   },
   {
     to: '/emp/itp-post/internship-app-queue',
     icon: 'list',
     label: 'Student Applications',
-    show: () => store.getIsAuthenticated() === true && store.getAuthUserType() === 'emp',
+    show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'emp',
   },
 ]
 
