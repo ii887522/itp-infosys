@@ -48,11 +48,15 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
+import { Notify, useQuasar } from 'quasar';
+import { api } from 'src/boot/axios';
 import { isTextEmpty } from 'src/common';
 import { allFaculty, allGenders } from 'src/consts/student';
+import { useLocalStorageStore } from 'src/stores/localstorage-store';
+import { useStore } from 'src/stores/user-store';
 import { ref, onMounted, computed } from 'vue';
 
+const ori_supervisorId = ref('')
 const supervisorId = ref('')
 const supervisorName = ref('')
 const gender = ref([])
@@ -62,12 +66,13 @@ const supervisorEmail = ref('')
 const currentPassword = ref('');
 const newPassword = ref('');
 const confirmNewPassword = ref('');
-const existing_password = ref(''); // to compare with the input current password
 
 const loading = ref(true)
 const genders = allGenders
 const faculties = allFaculty
 const { dialog } = useQuasar();
+const store = useStore();
+const lsStore = useLocalStorageStore();
 
 const requiredRule = (value: string) => !isTextEmpty(value) || 'This field is required';
 const passwordRule = (value: string) => value.length >= 8 || 'Password must be at least 8 characters';
@@ -92,11 +97,27 @@ const changesMade = computed(() => {
 })
 
 onMounted(() => {
-    //fetchStudentProfile();
+    fetchSupervisorProfile()
     setTimeout(() => {
         loading.value = false;
     }, 1000); // 1000 milliseconds = 1 second
 });
+
+async function fetchSupervisorProfile() {
+    try {
+        const supId = lsStore.getUsername();
+        const resp = await api.get(`/user/get-supervisor-profile/${supId}`);
+
+        ori_supervisorId.value = resp.data.supervisor_id
+        supervisorId.value = resp.data.supervisor_id
+        supervisorName.value = resp.data.supervisor_name
+        gender.value = resp.data.gender
+        faculty.value = resp.data.faculty
+        supervisorEmail.value = resp.data.supervisor_email
+    } catch (error) {
+        console.error('Error fetching employee profile:', error)
+    }
+}
 
 const updateProfile = () => {
     dialog({
@@ -104,6 +125,27 @@ const updateProfile = () => {
         message: 'Are you sure you want to save changes to your profile?',
         cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
         ok: { icon: 'update', label: 'Save Changes', color: 'primary' },
+    }).onOk(async() => {
+        try {
+            await store.updateSupProfile({
+                ori_supervisor_id: ori_supervisorId.value,
+                supervisor_id: supervisorId.value,
+                supervisor_name: supervisorName.value,
+                gender: gender.value,
+                faculty: faculty.value,
+                supervisor_email: supervisorEmail.value,
+            })
+
+            Notify.create('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+
+            // Show an error message here
+            Notify.create({
+                message: 'Failed to update profile',
+                color: 'negative',
+            });
+        }
     })
 }
 
@@ -113,6 +155,23 @@ const updatePassword = () => {
         message: 'Are you sure you want to change password?',
         cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
         ok: { icon: 'update', label: 'Save Changes', color: 'primary' },
+    }).onOk(async() => {
+        try {
+            await store.updateSupPassword({
+                supervisor_id: supervisorId.value,
+                current_password: currentPassword.value,
+                new_password: newPassword.value,
+            })
+
+            Notify.create('Password updated successfully');
+        } catch (error) {
+            console.error('Error updating password:', error);
+
+            Notify.create({
+                message: 'Failed to update password',
+                color: 'negative',
+            })
+        }
     })
 }
 </script>
