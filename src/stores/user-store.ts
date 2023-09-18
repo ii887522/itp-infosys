@@ -223,7 +223,9 @@ export const useStore = defineStore('user', () => {
   }
 
   async function updateAdminPassword() {
-
+    updatingAdminPassword.value = true
+    // placeholder - in progress
+    updatingAdminPassword.value = false
   }
 
   return {

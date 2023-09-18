@@ -446,6 +446,28 @@ def get_supervisor_profile(supervisor_id : str):
         db_conn.close()
 
 
+@user_controller.route("/get-admin-profile/<username>", methods=["GET"])
+def get_admin_profile(username: str):
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM admin WHERE username = %s", (username,))
+        admin_data = cursor.fetchone()
+
+        if admin_data:
+            return jsonify({
+                "admin_username": admin_data[1],
+                "admin_email": admin_data[2],
+                "password": admin_data[3],
+            })
+        else:
+            return jsonify({"message": "Admin not found"}), 404
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
 # Get company details
 @user_controller.route("/get-company-details/<company_name>", methods=["GET"])
 def get_company_details(company_name: str):

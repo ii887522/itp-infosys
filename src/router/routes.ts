@@ -182,6 +182,16 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: alreadyAuth,
         component: () => import('pages/user/AdminSignUp.vue'),
       },
+      {
+        path: 'admin/profile',
+        beforeEnter: requireAuthAdmin,
+        component: () => import('pages/user/AdminProfile.vue'),
+      },
+      /* {
+        path: 'admin/profile/edit',
+        beforeEnter: requireAuthAdmin,
+        component: () => import('pages/user/AdminEditProfile.vue'),
+      }, - in progress */
 
       // main login page
       {

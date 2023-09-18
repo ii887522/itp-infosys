@@ -48,13 +48,15 @@
 </template>
 
 <script setup lang="ts">
-import { Notify, useQuasar } from 'quasar';
+import { Notify, useMeta, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { isTextEmpty } from 'src/common';
 import { allFaculty, allGenders } from 'src/consts/student';
 import { useLocalStorageStore } from 'src/stores/localstorage-store';
 import { useStore } from 'src/stores/user-store';
 import { ref, onMounted, computed } from 'vue';
+
+useMeta({ title: 'Editing Supervisor Profile | MyITPHub' })
 
 const ori_supervisorId = ref('')
 const supervisorId = ref('')
