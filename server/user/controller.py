@@ -594,6 +594,36 @@ def update_sup_profile():
         db_conn.close()
 
 
+@user_controller.route("/update-admin-profile", methods=['POST'])
+def update_admin_profile():
+    if not request.json:
+        return {"code": 4000}
+
+    ori_username = request.json.get("ori_username", "")
+    username = request.json.get("username", "")
+    email = request.json.get("email", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "UPDATE admin SET username = %s, email = %s WHERE username = %s",
+            (username, email, ori_username)
+        )
+        db_conn.commit()
+
+        return {"message": "Admin profile updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating admin profile:", str(e))
+        return {"message": "Failed to update admin profile"}, 500
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
 @user_controller.route("/update-stud-password", methods=['POST'])
 def update_stud_password():
     if not request.json:
@@ -692,6 +722,42 @@ def update_sup_password():
             return {"message": "Current password does not match"}, 400
 
         cursor.execute("UPDATE employee SET password = %s WHERE supervisor_id = %s", (new_password, supervisor_id))
+        db_conn.commit()
+
+        return {"message": "Password updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating password:", str(e))
+        return {"message": "Failed to update password"}, 500
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/update-admin-password", methods=['POST'])
+def update_admin_password():
+    if not request.json:
+        return {"code": 4000}
+
+    username = request.json.get("username", "")
+    current_password = request.json.get("current_password", "")
+    new_password = request.json.get("new_password", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute("SELECT password FROM admin WHERE username = %s", (username,))
+        stored_password = cursor.fetchone()
+
+        if not stored_password:
+            return {"message": "Admin not found"}, 404
+
+        if current_password != stored_password[0]:
+            return {"message": "Current password does not match"}, 400
+
+        cursor.execute("UPDATE admin SET password = %s WHERE username = %s", (new_password, username))
         db_conn.commit()
 
         return {"message": "Password updated successfully"}, 200

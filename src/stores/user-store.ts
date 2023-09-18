@@ -5,7 +5,7 @@ import { StudChangePassword, Student } from 'src/models/student'
 import { CompanyDetails, EmpChangePassword, EmpEditProfile, Employee } from 'src/models/employee'
 import { AxiosError } from 'axios'
 import { LocalStorage } from 'quasar'
-import { Admin } from 'src/models/admin'
+import { Admin, AdminChangePassword, AdminEditProfile } from 'src/models/admin'
 import { SupChangePassword, SupEditProfile, Supervisor } from 'src/models/supervisor'
 import { useLocalStorageStore } from './localstorage-store'
 
@@ -28,6 +28,7 @@ export const useStore = defineStore('user', () => {
   const updatingCompanyDetails = ref(false)
   const updatingSupervisorProfile = ref(false)
   const updatingSupervisorPassword = ref(false)
+  const updatingAdminProfile = ref(false)
   const updatingAdminPassword = ref(false)
 
   const lsStore = useLocalStorageStore()
@@ -216,13 +217,19 @@ export const useStore = defineStore('user', () => {
     updatingSupervisorProfile.value = false
   }
 
+  async function updateAdminProfile(value: AdminEditProfile) {
+    updatingAdminProfile.value = true
+
+    updatingAdminProfile.value = true
+  }
+
   async function updateSupPassword(value: SupChangePassword) {
     updatingSupervisorPassword.value = true
     await api.post('/user/update-sup-password', value)
     updatingSupervisorPassword.value = false
   }
 
-  async function updateAdminPassword() {
+  async function updateAdminPassword(value: AdminChangePassword) {
     updatingAdminPassword.value = true
     // placeholder - in progress
     updatingAdminPassword.value = false
@@ -265,6 +272,7 @@ export const useStore = defineStore('user', () => {
     updateCompanyDetails,
     updateSupProfile,
     updateSupPassword,
+    updateAdminProfile,
     updateAdminPassword,
   }
 })
