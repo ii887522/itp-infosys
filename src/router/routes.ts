@@ -104,7 +104,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/itp-prog/StudList.vue'),
       },
 
-      // user module
+      // USER MODULE
+      // student
       {
         path: 'stud/login',
         beforeEnter: alreadyAuth,
@@ -126,6 +127,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/StudEditProfile.vue'),
       },
 
+      // employee
       {
         path: 'emp/login',
         beforeEnter: alreadyAuth,
@@ -147,6 +149,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/EmpEditProfile.vue'),
       },
 
+      // supervisor
       {
         path: 'sup/login',
         beforeEnter: alreadyAuth,
@@ -158,6 +161,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/SupervisorSignUp.vue'),
       },
 
+      // admin
       {
         path: 'admin/login',
         beforeEnter: alreadyAuth,
@@ -169,6 +173,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/AdminSignUp.vue'),
       },
 
+      // main login page
       {
         path: 'login',
         beforeEnter: alreadyAuth,

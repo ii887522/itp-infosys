@@ -178,8 +178,6 @@ const internRows = computed(() => [
   },
 ])
 
-// add faculty
-
 async function fetchStudentProfile() {
   try {
     const studentId = lsStore.getUsername();

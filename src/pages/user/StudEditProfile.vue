@@ -92,8 +92,6 @@ TODO:
                             </q-expansion-item>
                         </q-form>
                     </div>
-
-                    <!-- confirmation dialogs -->
                 </q-card-section>
             </q-card>
         </div>
@@ -269,9 +267,11 @@ const updatePassword = () => {
         try {
             await store.updateStudPassword({
                 student_id: student_id.value,
-                current_password: newPassword.value,
+                current_password: currentPassword.value,
                 new_password: newPassword.value,
             })
+
+            Notify.create('Password updated successfully');
         } catch (error) {
             console.error('Error updating password:', error);
 
