@@ -4,7 +4,7 @@ import {
   useInternshipEditStore,
   useInternshipDetailsEmpStore,
 } from 'stores/itp-post-store'
-import { requireAuthStud, requireAuthEmp, alreadyAuth, requireAuthAdmin } from 'src/common/user/guards' // Import the route guard
+import { requireAuthStud, requireAuthEmp, alreadyAuth, requireAuthAdmin, requireAuthSup } from 'src/common/user/guards' // Import the route guard
 import { useLocalStorageStore } from 'stores/localstorage-store'
 
 const routes: RouteRecordRaw[] = [
@@ -109,7 +109,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/UserUpload/uploadResNRepNCom.vue'),
       },
 
-      // user module
+      // USER MODULE
+      // student
       {
         path: 'stud/login',
         beforeEnter: alreadyAuth,
@@ -131,6 +132,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/StudEditProfile.vue'),
       },
 
+      // employee
       {
         path: 'emp/login',
         beforeEnter: alreadyAuth,
@@ -152,6 +154,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/EmpEditProfile.vue'),
       },
 
+      // supervisor
       {
         path: 'sup/login',
         beforeEnter: alreadyAuth,
@@ -162,7 +165,18 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: alreadyAuth,
         component: () => import('pages/user/SupervisorSignUp.vue'),
       },
+      {
+        path: 'sup/profile',
+        beforeEnter: requireAuthSup,
+        component: () => import('pages/user/SupervisorProfile.vue'),
+      },
+      {
+        path: 'sup/profile/edit',
+        beforeEnter: requireAuthSup,
+        component: () => import('pages/user/SupEditProfile.vue'),
+      },
 
+      // admin
       {
         path: 'admin/login',
         beforeEnter: alreadyAuth,
@@ -174,6 +188,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/user/AdminSignUp.vue'),
       },
 
+      // main login page
       {
         path: 'login',
         beforeEnter: alreadyAuth,

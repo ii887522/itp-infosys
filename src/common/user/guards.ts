@@ -1,4 +1,4 @@
-import { RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
+import { RouteLocationNormalized, NavigationGuardNext, RouteLocation } from 'vue-router'
 import { useLocalStorageStore } from 'stores/localstorage-store'
 
 export const requireAuthStud = (
@@ -50,13 +50,31 @@ export const requireAuthAdmin = (
   }
 }
 
+export const requireAuthSup = (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) => {
+  const store = useLocalStorageStore()
+
+  if (store.getIsAuthenticated() && store.getAuthUserType() === 'sup') {
+    next()
+  } else {
+    next('/login')
+  }
+}
+
 // Function to check if the user is already logged in or not
-export const alreadyAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+export const alreadyAuth = (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) => {
   const store = useLocalStorageStore()
 
   if (!store.getIsAuthenticated()) {
-    next() // User is authenticated, proceed to the route
+    next() // User is not authenticated, redirect to login page
   } else {
-    next('/login') // User is not authenticated, redirect to the login page
+    next('/') // User is authenticated, redirect to their own home page
   }
 }

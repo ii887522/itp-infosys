@@ -9,8 +9,5 @@ SELECT student_name FROM student WHERE student_id = "21WMR05319";
 -- Fetch user name by employee email
 SELECT emp_name FROM employee WHERE emp_email = "testing1@cmye.com";
 
--- Fetch user name by admin email
-SELECT username FROM `admin` WHERE email = "ii887522@gmail.com";
-
 -- Fetch user name by supervisor id
 SELECT supervisor_name FROM supervisor WHERE supervisor_id = "0";

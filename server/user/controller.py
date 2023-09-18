@@ -298,7 +298,7 @@ def login_admin():
         admin_data = cursor.fetchone()
 
         if admin_data:
-            return {"message": "Supervisor login successful", "username": admin_data[0]}, 200
+            return {"message": "Admin login successful", "username": admin_data[0]}, 200
         else:
             return {"message": "Invalid username or password"}, 401
 
@@ -379,8 +379,8 @@ def get_user_name(user_type: str, user_id: str):
             cursor.execute("SELECT emp_name FROM employee WHERE emp_email = %s", (user_id,))
 
         elif user_type == "admin":
-            # Fetch admin name by admin id from the database
-            cursor.execute("SELECT username FROM `admin` WHERE email = %s", (user_id,))
+            # Output
+            return {"result": user_id}
 
         elif user_type == "sup":
             # Fetch supervisor name by supervisor id from the database
@@ -395,6 +395,83 @@ def get_user_name(user_type: str, user_id: str):
     finally:
         cursor.close()
         db_conn.close()
+
+
+@user_controller.route("/get-emp-profile/<emp_email>", methods=["GET"])
+def get_employee_profile(emp_email: str):
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM employee WHERE emp_email = %s", (emp_email,))
+        employee_data = cursor.fetchone()
+
+        if employee_data:
+            return jsonify(
+                {
+                    "emp_name": employee_data[1],
+                    "password": employee_data[2],
+                    "company_name": employee_data[3],
+                    "emp_email": employee_data[4],
+                    "emp_phone": employee_data[5],
+                }
+            )
+        else:
+            return jsonify({"message": "Student not found"}), 404
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/get-supervisor-profile/<supervisor_id>", methods=["GET"])
+def get_supervisor_profile(supervisor_id : str):
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM supervisor WHERE supervisor_id = %s", (supervisor_id,))
+        supervisor_data = cursor.fetchone()
+
+        if supervisor_data:
+            return jsonify({
+                "supervisor_id": supervisor_data[0],
+                "supervisor_name": supervisor_data[1],
+                "password": supervisor_data[2],
+                "gender": supervisor_data[3],
+                "faculty": supervisor_data[4],
+                "supervisor_email": supervisor_data[5],
+            })
+        else:
+            return jsonify({"message": "Supervisor not found"}), 404
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+# Get company details
+@user_controller.route("/get-company-details/<company_name>", methods=["GET"])
+def get_company_details(company_name: str):
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM company WHERE name = %s", (company_name,))
+        company_data = cursor.fetchone()
+
+        if company_data:
+            return jsonify(
+                {
+                    "company_name": company_data[0],
+                    "company_desc": company_data[1],
+                    "company_size": company_data[2],
+                    "company_address": company_data[3],
+                    "company_url": company_data[4],
+                }
+            )
+        else:
+            return jsonify({"message": "Company not found"}), 404
+
+    finally:
+        cursor.close()
 
 
 @user_controller.route("/update-stud-profile", methods=["POST"])
@@ -435,6 +512,34 @@ def update_stud_profile():
         db_conn.close()
 
 
+@user_controller.route("/update-emp-profile", methods=["POST"])
+def update_emp_profile():
+    if not request.json:
+        return {"code": 4000}
+
+    ori_employee_email = request.json.get("ori_employee_email", "")
+    employee_name = request.json.get("employee_name", "")
+    company_name = request.json.get("company_name", "")
+    employee_email = request.json.get("employee_email", "")
+    employee_phone = request.json.get("employee_phone", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "UPDATE employee SET emp_name = %s, company_name = %s, emp_email = %s, emp_phone = %s WHERE emp_name = %s",
+            (employee_name, company_name, employee_email, employee_phone, ori_employee_email),
+        )
+        db_conn.commit()
+
+        return {"message": "Employee profile updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating employee profile:", str(e))
+        return {"message": "Failed to update employee profile"}, 500
+
+
 @user_controller.route("/update-stud-password", methods=["POST"])
 def update_stud_password():
     if not request.json:
@@ -468,6 +573,75 @@ def update_stud_password():
         # Handle any exceptions, log errors, and return an appropriate response
         print("Error updating password:", str(e))
         return {"message": "Failed to update password"}, 500
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/update-emp-password", methods=["POST"])
+def update_emp_password():
+    if not request.json:
+        return {"code": 4000}
+
+    emp_email = request.json.get("emp_email", "")
+    current_password = request.json.get("current_password", "")
+    new_password = request.json.get("new_password", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute("SELECT password FROM employee WHERE emp_email = %s", (emp_email,))
+        stored_password = cursor.fetchone()
+
+        if not stored_password:
+            return {"message": "Employee not found"}, 404
+
+        if current_password != stored_password[0]:
+            return {"message": "Current password does not match"}, 400
+
+        cursor.execute("UPDATE employee SET password = %s WHERE emp_email = %s", (new_password, emp_email))
+        db_conn.commit()
+
+        return {"message": "Password updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating password:", str(e))
+        return {"message": "Failed to update password"}, 500
+
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/update-company-details", methods=["POST"])
+def update_company_details():
+    if not request.json:
+        return {"code": 4000}
+
+    ori_company_name = request.json.get("ori_company_name", "")
+    company_name = request.json.get("company_name", "")
+    company_desc = request.json.get("company_desc", "")
+    company_size = request.json.get("company_size", "")
+    company_address = request.json.get("company_address", "")
+    company_url = request.json.get("company_url", "")
+
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+
+    try:
+        cursor.execute(
+            "UPDATE company SET name = %s, descrption = %s, size = %d, address = %s, url = %s WHERE name = %s",
+            (company_name, company_desc, company_size, company_address, company_url, ori_company_name),
+        )
+        db_conn.commit()
+
+        return {"message": "Company details updated successfully"}, 200
+
+    except Exception as e:
+        print("Error updating company details:", str(e))
+        return {"message": "Failed to update company details"}, 500
 
     finally:
         cursor.close()
