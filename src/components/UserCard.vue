@@ -13,6 +13,16 @@
     </template>
 
     <q-list dense>
+      <q-item class="text-info" clickable v-close-popup @click="router.push(`/${lsStore.getAuthUserType()}/profile`)">
+        <q-item-section avatar>
+          <q-avatar icon="person" />
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label>Profile</q-item-label>
+        </q-item-section>
+      </q-item>
+
       <q-item class="text-negative" clickable v-close-popup @click="confirmLogOut">
         <q-item-section avatar>
           <q-avatar icon="logout" />
@@ -32,10 +42,14 @@ import { useQuasar } from 'quasar'
 import { useStore } from 'src/stores/user-store'
 import { useRouter } from 'vue-router'
 import { api } from 'boot/axios'
+import { useLocalStorageStore } from 'stores/localstorage-store'
 
-const store = useStore()
 const router = useRouter()
 const { dialog, localStorage } = useQuasar()
+
+// Pinia stores
+const store = useStore()
+const lsStore = useLocalStorageStore()
 
 const userName = ref('')
 

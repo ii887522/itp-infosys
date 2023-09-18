@@ -106,7 +106,7 @@ export const useStore = defineStore('user', () => {
   async function logInSupervisor(value: Supervisor) {
     try {
       loggingInSupervisor.value = true
-      const resp = await api.post('/user/login-supervisor/', value)
+      const resp = await api.post('/user/login-sup', value)
 
       if (resp.status === 200) {
         loginError.value = false
@@ -134,7 +134,7 @@ export const useStore = defineStore('user', () => {
         loginError.value = false
         lsStore.setIsAuthenticated(true)
         lsStore.setAuthUserType('admin')
-        //setUsername();
+        lsStore.setUsername(value.username)
       }
       loggingInAdmin.value = false
     } catch (error) {

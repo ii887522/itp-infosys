@@ -379,8 +379,8 @@ def get_user_name(user_type: str, user_id: str):
             cursor.execute("SELECT emp_name FROM employee WHERE emp_email = %s", (user_id,))
 
         elif user_type == "admin":
-            # Fetch admin name by admin id from the database
-            cursor.execute("SELECT username FROM `admin` WHERE email = %s", (user_id,))
+            # Output
+            return {"result": user_id}
 
         elif user_type == "sup":
             # Fetch supervisor name by supervisor id from the database
@@ -397,7 +397,7 @@ def get_user_name(user_type: str, user_id: str):
         db_conn.close()
 
 
-@user_controller.route("/get-emp-profile/<emp_email>", methods=['GET'])
+@user_controller.route("/get-emp-profile/<emp_email>", methods=["GET"])
 def get_employee_profile(emp_email: str):
     db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
@@ -406,13 +406,15 @@ def get_employee_profile(emp_email: str):
         employee_data = cursor.fetchone()
 
         if employee_data:
-            return jsonify({
-                "emp_name": employee_data[1],
-                "password": employee_data[2],
-                "company_name": employee_data[3],
-                "emp_email": employee_data[4],
-                "emp_phone": employee_data[5],
-            })
+            return jsonify(
+                {
+                    "emp_name": employee_data[1],
+                    "password": employee_data[2],
+                    "company_name": employee_data[3],
+                    "emp_email": employee_data[4],
+                    "emp_phone": employee_data[5],
+                }
+            )
         else:
             return jsonify({"message": "Student not found"}), 404
 
@@ -421,7 +423,7 @@ def get_employee_profile(emp_email: str):
 
 
 # Get company details
-@user_controller.route("/get-company-details/<company_name>", methods=['GET'])
+@user_controller.route("/get-company-details/<company_name>", methods=["GET"])
 def get_company_details(company_name: str):
     db_conn = db_conn_pool.get_connection(pre_ping=True)
     cursor = db_conn.cursor()
@@ -430,13 +432,15 @@ def get_company_details(company_name: str):
         company_data = cursor.fetchone()
 
         if company_data:
-            return jsonify({
-                "company_name": company_data[0],
-                "company_desc": company_data[1],
-                "company_size": company_data[2],
-                "company_address": company_data[3],
-                "company_url": company_data[4],
-            })
+            return jsonify(
+                {
+                    "company_name": company_data[0],
+                    "company_desc": company_data[1],
+                    "company_size": company_data[2],
+                    "company_address": company_data[3],
+                    "company_url": company_data[4],
+                }
+            )
         else:
             return jsonify({"message": "Company not found"}), 404
 
@@ -444,7 +448,7 @@ def get_company_details(company_name: str):
         cursor.close()
 
 
-@user_controller.route("/update-stud-profile", methods=['POST'])
+@user_controller.route("/update-stud-profile", methods=["POST"])
 def update_stud_profile():
     if not request.json:
         return {"code": 4000}
@@ -482,7 +486,7 @@ def update_stud_profile():
         db_conn.close()
 
 
-@user_controller.route("/update-emp-profile", methods=['POST'])
+@user_controller.route("/update-emp-profile", methods=["POST"])
 def update_emp_profile():
     if not request.json:
         return {"code": 4000}
@@ -499,7 +503,7 @@ def update_emp_profile():
     try:
         cursor.execute(
             "UPDATE employee SET emp_name = %s, company_name = %s, emp_email = %s, emp_phone = %s WHERE emp_name = %s",
-            (employee_name, company_name, employee_email, employee_phone, ori_employee_email)
+            (employee_name, company_name, employee_email, employee_phone, ori_employee_email),
         )
         db_conn.commit()
 
@@ -510,7 +514,7 @@ def update_emp_profile():
         return {"message": "Failed to update employee profile"}, 500
 
 
-@user_controller.route("/update-stud-password", methods=['POST'])
+@user_controller.route("/update-stud-password", methods=["POST"])
 def update_stud_password():
     if not request.json:
         return {"code": 4000}
@@ -549,7 +553,7 @@ def update_stud_password():
         db_conn.close()
 
 
-@user_controller.route("/update-emp-password", methods=['POST'])
+@user_controller.route("/update-emp-password", methods=["POST"])
 def update_emp_password():
     if not request.json:
         return {"code": 4000}
@@ -585,7 +589,7 @@ def update_emp_password():
         db_conn.close()
 
 
-@user_controller.route("/update-company-details", methods=['POST'])
+@user_controller.route("/update-company-details", methods=["POST"])
 def update_company_details():
     if not request.json:
         return {"code": 4000}
@@ -603,7 +607,7 @@ def update_company_details():
     try:
         cursor.execute(
             "UPDATE company SET name = %s, descrption = %s, size = %d, address = %s, url = %s WHERE name = %s",
-            (company_name, company_desc, company_size, company_address, company_url, ori_company_name)
+            (company_name, company_desc, company_size, company_address, company_url, ori_company_name),
         )
         db_conn.commit()
 
