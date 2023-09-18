@@ -418,6 +418,32 @@ def get_employee_profile(emp_email: str):
 
     finally:
         cursor.close()
+        db_conn.close()
+
+
+@user_controller.route("/get-supervisor-profile/<supervisor_id>", methods=["GET"])
+def get_supervisor_profile(supervisor_id : str):
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM supervisor WHERE supervisor_id = %s", (supervisor_id,))
+        supervisor_data = cursor.fetchone()
+
+        if supervisor_data:
+            return jsonify({
+                "supervisor_id": supervisor_data[0],
+                "supervisor_name": supervisor_data[1],
+                "password": supervisor_data[2],
+                "gender": supervisor_data[3],
+                "faculty": supervisor_data[4],
+                "supervisor_email": supervisor_data[5],
+            })
+        else:
+            return jsonify({"message": "Supervisor not found"}), 404
+
+    finally:
+        cursor.close()
+        db_conn.close()
 
 
 # Get company details

@@ -47,7 +47,6 @@ import { useRouter } from 'vue-router';
 import { useMeta } from 'quasar';
 import { useLocalStorageStore } from 'src/stores/localstorage-store';
 import { api } from 'src/boot/axios';
-import { useStore } from 'src/stores/user-store'
 
 useMeta({ title: 'Employee Profile | MyITPHub' })
   
@@ -59,7 +58,6 @@ const employeePhone = ref('')
 
 const router = useRouter();
 const lsStore = useLocalStorageStore();
-const store = useStore();
 const loading = ref(true);
 
 const profileRows = computed(() => [
