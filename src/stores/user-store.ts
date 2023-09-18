@@ -217,21 +217,21 @@ export const useStore = defineStore('user', () => {
     updatingSupervisorProfile.value = false
   }
 
-  async function updateAdminProfile(value: AdminEditProfile) {
-    updatingAdminProfile.value = true
-
-    updatingAdminProfile.value = true
-  }
-
   async function updateSupPassword(value: SupChangePassword) {
     updatingSupervisorPassword.value = true
     await api.post('/user/update-sup-password', value)
     updatingSupervisorPassword.value = false
   }
 
+  async function updateAdminProfile(value: AdminEditProfile) {
+    updatingAdminProfile.value = true
+    await api.post('/user/update-admin-profile', value)
+    updatingAdminProfile.value = true
+  }
+
   async function updateAdminPassword(value: AdminChangePassword) {
     updatingAdminPassword.value = true
-    // placeholder - in progress
+    await api.post('/user/update-admin-password', value)
     updatingAdminPassword.value = false
   }
 

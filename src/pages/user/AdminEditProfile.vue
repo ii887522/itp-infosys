@@ -111,24 +111,21 @@ const updateProfile = () => {
         ok: { icon: 'update', label: 'Save Changes', color: 'primary' },
     }).onOk(async() => {
         try {
-            /* await store.updateSupProfile({
-                ori_supervisor_id: ori_supervisorId.value,
-                supervisor_id: supervisorId.value,
-                supervisor_name: supervisorName.value,
-                gender: gender.value,
-                faculty: faculty.value,
-                supervisor_email: supervisorEmail.value,
-            }) */
+          await store.updateAdminProfile({
+            ori_username: ori_adminUsername.value,
+            username: adminUsername.value,
+            email: adminEmail.value,
+          })
 
-            Notify.create('Profile updated successfully');
+          Notify.create('Profile updated successfully');
         } catch (error) {
-            console.error('Error updating profile:', error);
+          console.error('Error updating profile:', error);
 
-            // Show an error message here
-            Notify.create({
-                message: 'Failed to update profile',
-                color: 'negative',
-            });
+          // Show an error message here
+          Notify.create({
+            message: 'Failed to update profile',
+            color: 'negative',
+          });
         }
     })
 }
@@ -141,20 +138,20 @@ const updatePassword = () => {
         ok: { icon: 'update', label: 'Save Changes', color: 'primary' },
     }).onOk(async() => {
         try {
-            /* await store.updateSupPassword({
-                supervisor_id: supervisorId.value,
-                current_password: currentPassword.value,
-                new_password: newPassword.value,
-            }) */
+          await store.updateAdminPassword({
+            username: adminUsername.value,
+            current_password: currentPassword.value,
+            new_password: newPassword.value,
+          })
 
-            Notify.create('Password updated successfully');
+          Notify.create('Password updated successfully');
         } catch (error) {
-            console.error('Error updating password:', error);
+          console.error('Error updating password:', error);
 
-            Notify.create({
-                message: 'Failed to update password',
-                color: 'negative',
-            })
+          Notify.create({
+            message: 'Failed to update password',
+            color: 'negative',
+          })
         }
     })
 }
