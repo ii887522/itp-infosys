@@ -19,7 +19,7 @@
                                 <q-input filled v-model="confirmPassword" label="Confirm Password" type="password" dense class="input-field" :rules="[requiredRule, confirmPasswordRule]"/>
 
                                 <div>
-                                    <q-btn type="submit" label="Sign Up" color="primary" class="q-mt-md"/>
+                                    <q-btn type="submit" label="Sign Up" color="primary" class="q-mt-md" :disable="signUpSuccess"/>
                                     <q-btn flat label="Reset" color="primary" class="q-mt-md" @click="resetForm" />
                                 </div>
                             </q-form>
@@ -34,7 +34,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useMeta, useQuasar, type QInput } from 'quasar'
-//import { useRouter } from 'vue-router'
 import { isTextEmpty } from 'src/common';
 import { allFaculty, allGenders, allProgrammes } from 'src/consts/student'
 import { useStore } from 'stores/user-store'
@@ -43,6 +42,7 @@ useMeta({ title: 'Student Sign Up | MyITPHub' })
 
 const store = useStore();
 const { notify } = useQuasar();
+const signUpSuccess = ref(false);
 
 const studentName = ref('');
 const studentId = ref('');
@@ -54,9 +54,7 @@ const studentEmail = ref('');
 const personalEmail = ref('');
 const password = ref('');
 const confirmPassword = ref('');
-//const router = useRouter();
 
-//const model = ref<string | null>(null);
 const programmes = allProgrammes;
 const genders = allGenders;
 const faculties = allFaculty;
@@ -92,7 +90,7 @@ async function register() {
     icon: 'done',
   })
 
-  resetForm();
+  signUpSuccess.value = true
 }
 
 const resetForm = () => {
@@ -106,8 +104,6 @@ const resetForm = () => {
     password.value = '';
     confirmPassword.value = '';
 }
-
-// need to confirm email before successfully registered
 </script>
 
 <style scoped>

@@ -16,14 +16,14 @@
                                 <br/>
                                 <!-- Text box for adding a new company (displayed conditionally) -->
                                 <q-input v-if="selectedCompany === 'Add new...'" filled v-model="newCompany" label="New Company" dense class="input-field" :rules="[requiredRule]"/>
-                                
+
                                 <q-input filled v-model="employeeEmail" label="Employee Email" dense class="input-field" placeholder="someone@example.com" :rules="[requiredRule, companyEmailRule]"/>
                                 <q-input filled v-model="employeePhone" label="Employee Phone" dense class="input-field" placeholder="0123456789" :rules="[requiredRule, phoneRule]"/>
                                 <q-input filled v-model="password" label="Password" type="password" dense class="input-field" :rules="[requiredRule, passwordRule]"/>
                                 <q-input filled v-model="confirmPassword" label="Confirm Password" type="password" dense class="input-field" :rules="[requiredRule, confirmPasswordRule]"/>
 
                                 <div>
-                                    <q-btn type="submit" label="Sign Up" color="primary" class="q-mt-md"/>
+                                    <q-btn type="submit" label="Sign Up" color="primary" class="q-mt-md" :disable="signUpSuccess"/>
                                     <q-btn flat label="Reset" color="primary" class="q-mt-md" @click="resetForm" />
                                 </div>
                             </q-form>
@@ -38,7 +38,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useMeta, useQuasar, type QInput } from 'quasar'
-import { useRouter } from 'vue-router'
 import { isTextEmpty } from 'src/common';
 import { useStore } from 'stores/user-store'
 import { api } from 'src/boot/axios';
@@ -47,6 +46,7 @@ useMeta({ title: 'Employee Sign Up | MyITPHub' })
 
 const store = useStore();
 const { notify } = useQuasar();
+const signUpSuccess = ref(false);
 
 const employeeName = ref('');
 const companyName = ref('');
@@ -111,7 +111,7 @@ async function register() {
     icon: 'done',
   })
 
-  resetForm();
+  signUpSuccess.value = true
 }
 
 const resetForm = () => {
