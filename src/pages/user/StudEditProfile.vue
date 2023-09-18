@@ -1,11 +1,3 @@
-<!-- 
-TODO:
-* Implement update profile logic - for Edit Profile Details section; if possible verify student with password
-* Change Resume
-    - Check if the resume exists, if already exists, then display this form section
-    - After upload, then implement the change resume logic
-* Change Password logic - check if the current password matches with the database, and the new password must be different from current one
--->
 <template>
     <q-page>
         <div class="q-pa-md">

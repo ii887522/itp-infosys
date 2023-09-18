@@ -1,5 +1,3 @@
-import { type Student } from 'src/models/student'
-
 export const allGenders = [
     'Male',
     'Female',
