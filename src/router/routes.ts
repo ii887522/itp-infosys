@@ -4,7 +4,7 @@ import {
   useInternshipEditStore,
   useInternshipDetailsEmpStore,
 } from 'stores/itp-post-store'
-import { requireAuthStud, requireAuthEmp, alreadyAuth, requireAuthAdmin } from 'src/common/user/guards' // Import the route guard
+import { requireAuthStud, requireAuthEmp, alreadyAuth, requireAuthAdmin, requireAuthSup } from 'src/common/user/guards' // Import the route guard
 import { useLocalStorageStore } from 'stores/localstorage-store'
 
 const routes: RouteRecordRaw[] = [
@@ -159,6 +159,16 @@ const routes: RouteRecordRaw[] = [
         path: 'sup/signup',
         beforeEnter: alreadyAuth,
         component: () => import('pages/user/SupervisorSignUp.vue'),
+      },
+      {
+        path: 'sup/profile',
+        beforeEnter: requireAuthSup,
+        component: () => import('pages/user/SupervisorProfile.vue'),
+      },
+      {
+        path: 'sup/profile/edit',
+        beforeEnter: requireAuthSup,
+        component: () => import('pages/user/SupEditProfile.vue'),
       },
 
       // admin
