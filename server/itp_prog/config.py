@@ -1,6 +1,0 @@
-customhost = "itp-infosys-db.cokp7ea8echk.us-east-1.rds.amazonaws.com"
-customuser = "aws_user"
-custompass = "Bait3273"
-customdb = "itp_infosys"
-custombucket = "yongchimin-bucket"
-customregion = "us-east-1"
