@@ -16,6 +16,11 @@ export interface StudChangePassword {
   new_password: string
 }
 
+export interface StudUploadResume {
+  student_id: string
+  resume: File
+}
+
 export function makeStudent(): Student {
   return {
     student_id: '',

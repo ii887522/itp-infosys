@@ -804,32 +804,29 @@ def update_company_details():
         db_conn.close()
 
 
-@user_controller.route("/update-resume", methods=['POST'])
+@user_controller.route("/update-resume/<student_id>", methods=['POST'])
 def update_resume(student_id: str):
-    # Input: Assuming you receive the updated resume file in the request
-    """next = request.args.get("next", "").split("#")
-    size = request.args.get("size", 1000, type=int)
-    next_title = next[0]
-    next_company_name = next[1] if 1 < len(next) else None"""
-
-    updated_resume_file = request.files.get("resume")
+    # student_id = request.form["student_id"]
+    updated_resume_file = request.files["resume"]
+    print(updated_resume_file)
 
     if not updated_resume_file:
-        return {"message": "Updated resume file not found"}, 400
+        return {"message": "Resume file not found"}, 400
 
     s3_key = f"resume/{student_id}.pdf"
 
     # Upload the updated resume file to S3 and overwrite the existing file
     try:
-        s3.upload_fileobj(
-            updated_resume_file,
-            config.custombucket,
-            s3_key,
-            ExtraArgs={
-                "ContentType": "application/pdf",
-                "ContentDisposition": f'inline; filename="{student_id}.pdf"',
-            },
-        )
+        s3.put_object(Bucket=config.custombucket, Key=s3_key, Body=updated_resume_file)
+        bucket_location = boto3.client("s3").get_bucket_location(Bucket=config.custombucket)
+        s3_location = bucket_location["LocationConstraint"]
+
+        if s3_location is None:
+            s3_location = ""
+        else:
+            s3_location = "-" + s3_location
+
+        print(s3_location)
 
         # Output: Provide a success message or any other necessary response
         return {"message": "Resume updated successfully"}, 200
@@ -851,6 +848,8 @@ def get_resume_url(student_id: str):
             Params={
                 "Bucket": config.custombucket,
                 "Key": s3_key,
+                "ResponseContentType": "application/pdf",
+                "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
             },
             ExpiresIn=3600,  # URL expiration time in seconds
         )
