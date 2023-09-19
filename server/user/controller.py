@@ -827,15 +827,6 @@ def update_resume(student_id: str):
             s3_location = "-" + s3_location
 
         print(s3_location)
-        """ s3.upload_fileobj(
-            updated_resume_file,
-            config.custombucket,
-            s3_key,
-            ExtraArgs={
-                "ContentType": "application/pdf",
-                "ContentDisposition": f'inline; filename="{student_id}.pdf"',
-            },
-        ) """
 
         # Output: Provide a success message or any other necessary response
         return {"message": "Resume updated successfully"}, 200
