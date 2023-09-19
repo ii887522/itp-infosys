@@ -10,8 +10,8 @@ from user.controller import user_controller
 app = Flask(__name__, static_folder="../dist/spa", static_url_path="/")
 db_conn_pool = DbConnectionPool.get_instance()
 app.register_blueprint(itp_post_controller, url_prefix="/api/itp-post")
-app.register_blueprint(user_controller, url_prefix="/api/user")
 app.register_blueprint(itp_prog_controller, url_prefix="/api/itp-prog")
+app.register_blueprint(user_controller, url_prefix="/api/user")
 CORS(app)
 
 

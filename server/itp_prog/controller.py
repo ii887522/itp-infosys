@@ -1,11 +1,18 @@
 import time
+import json
 
+import boto3
+import common.consts as consts
+import config
+import itp_post.itp_post_consts as itp_post_consts
 from common.db_connection_pool import DbConnectionPool
 from flask import Blueprint, request
 
 itp_prog_controller = Blueprint("itp_prog_controller", __name__)
 db_conn_pool = DbConnectionPool.get_instance()
-
+s3 = boto3.client("s3", consts.AWS_REGION)
+sns = boto3.resource("sns", consts.AWS_REGION)
+itp_applied_topic = sns.Topic(itp_post_consts.ITP_APPLIED_TOPIC_ARN)
 
 @itp_prog_controller.route("/students", methods=["GET"])
 def list_students():
@@ -207,6 +214,151 @@ def count_supervisors():
         # Output
         return {"result": db_row[0] if db_row else 0}
 
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+# Function to handle student evaluation
+@itp_prog_controller.route("/evaluation",methods=['POST'])
+def evaluation_student():
+    if not request.json:
+        return {"code": 4000}
+
+
+    # Inputs
+    name = request.json.get("name", "")
+    email = request.json.get("email", "")
+    faculty = request.json.get("faculty", "")
+    supervisor = request.json.get("supervisor", "")
+    companyName = request.json.get("companyName", "")
+
+    # Second page Asking Evaluation
+    satisfaction = request.json.get("satisfaction", "")
+    satisfaction2 = request.json.get("satisfaction2", "")
+    satisfaction3 = request.json.get("satisfaction3", "")
+    satisfaction4 = request.json.get("satisfaction4", "")
+    satisfaction5 = request.json.get("satisfaction5", "")
+    satisfaction6 = request.json.get("satisfaction6", "")
+    satisfaction7 = request.json.get("satisfaction7", "")
+    satisfaction8 = request.json.get("satisfaction8", "")
+    satisfaction9 = request.json.get("satisfaction9", "")
+    satisfaction10 = request.json.get("satisfaction10", "")
+    satisfaction11 = request.json.get("satisfaction11", "")
+    satisfaction12 = request.json.get("satisfaction12", "")
+    satisfaction13 = request.json.get("satisfaction13", "")
+    satisfaction14 = request.json.get("satisfaction14", "")
+    comments = request.json.get("comments", "")
+
+
+# Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+
+
+    cursor = db_conn.cursor()
+
+
+    try:
+        # Add student evaluation record to the database
+        cursor.execute(
+            "INSERT INTO evaluation VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (name, email, faculty, supervisor, companyName, satisfaction, satisfaction2, satisfaction3, satisfaction4, satisfaction5, satisfaction6, satisfaction7, satisfaction8, satisfaction9, satisfaction10,
+             satisfaction11, satisfaction12, satisfaction13, satisfaction14, comments),
+        )
+        db_conn.commit()
+
+
+        # Output
+        return {
+            "name": name,
+            "email": email,
+            "faculty": faculty,
+            "supervisor": supervisor,
+            "companyName": companyName,
+            "satisfaction": satisfaction,
+            "satisfaction2": satisfaction2,
+            "satisfaction3": satisfaction3,
+            "satisfaction4": satisfaction4,
+            "satisfaction5": satisfaction5,
+            "satisfaction6": satisfaction6,
+            "satisfaction7": satisfaction7,
+            "satisfaction8": satisfaction8,
+            "satisfaction9": satisfaction9,
+            "satisfaction10": satisfaction10,
+            "satisfaction11": satisfaction11,
+            "satisfaction12": satisfaction12,
+            "satisfaction13": satisfaction13,
+            "satisfaction14": satisfaction14,
+            "comments": comments,
+        }
+    finally:
+        cursor.close()
+        db_conn.close()
+
+
+
+
+@itp_prog_controller.route("/report",methods=['POST'])
+def report_student():
+    if not request.json:
+        return {"code": 4000}
+
+
+    # Inputs
+    name = request.json.get("name", "")
+    email = request.json.get("email", "")
+    faculty = request.json.get("faculty", "")
+    supervisor = request.json.get("supervisor", "")
+    companyName = request.json.get("companyName", "")
+
+# Reopen the timed out database connection to avoid PyMySQL interface error
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+
+
+    cursor = db_conn.cursor()
+
+
+    try:
+        # Add student evaluation record to the database
+        cursor.execute(
+            "INSERT INTO report VALUES (%s, %s, %s, %s, %s)",
+            (name, email, faculty, supervisor, companyName),
+        )
+        db_conn.commit()
+
+        # # Send email confirmation to student after applied
+        # itp_applied_topic.publish(
+        #     Message=f"Thank you for applying {internship_title} from {company_name}. Your application has been sent to "
+        #     f"{company_name}",
+        #     Subject="Internship Application Sent",
+        #     MessageAttributes={"student_id": {"DataType": "String", "StringValue": student_id}},
+        # )
+
+        # Output
+        return {
+            "name": name,
+            "email": email,
+            "faculty": faculty,
+            "supervisor": supervisor,
+            "companyName": companyName,
+            
+            "resume_url": s3.generate_presigned_url(
+                "get_object",
+                Params={
+                    "Bucket": config.custombucket,
+                    "Key": f"{name}.pdf",
+                     # So that PDF file will be displayed in the browser instead of being downloaded
+                        "ResponseContentType": "application/pdf",
+                        "ResponseContentDisposition": f'inline; filename="{name}.pdf"',
+                },
+            ),
+            # Generate S3 presigned URL for the student to upload their resume
+            "uploadReport": s3.generate_presigned_post(
+                config.custombucket,
+                f"{name}.pdf",
+                ExpiresIn=10,
+            ),
+        }
     finally:
         cursor.close()
         db_conn.close()

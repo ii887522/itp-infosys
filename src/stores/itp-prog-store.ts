@@ -4,6 +4,8 @@ import { type DateRange } from 'src/consts'
 import { api } from 'boot/axios'
 import { sortedIndexBy } from 'lodash'
 import type Student from 'src/models/itp-prog/student'
+import { Evaluation } from 'src/models/evaluation'
+import { Evaluation2 } from 'src/models/evaluation'
 
 export const useStudListStore = defineStore('itp-prog/stud-list', () => {
   const faculty = ref('ALL')
@@ -24,6 +26,32 @@ export const useStore = defineStore('itp-prog', () => {
   const loadingStudents = ref(false)
   const updatingStudent = ref(false)
   const removingStudent = ref(false)
+  const evaluationFormStudent = ref(false)
+  const reportStudent = ref(false)
+  const name = ref('')
+  const email = ref('')
+  const faculty = ref('')
+  const supervisor = ref('')
+  const companyName = ref('')
+  const satisfaction = ref('')
+  const satisfaction2 = ref('')
+  const satisfaction3 = ref('')
+  const satisfaction4 = ref('')
+  const satisfaction5 = ref('')
+  const satisfaction6 = ref('')
+  const satisfaction7 = ref('')
+  const satisfaction8 = ref('')
+  const satisfaction9 = ref('')
+  const satisfaction10 = ref('')
+  const satisfaction11 = ref('')
+  const satisfaction12 = ref('')
+  const satisfaction13 = ref('')
+  const satisfaction14 = ref('')
+  const comments = ref('')
+  const fileUploaded = ref(false)
+  const uploadedFileName = ref(false)
+  const uploadedFileSize = ref(false)
+
 
   async function listStudents() {
     if (students.value.length !== 0) return
@@ -53,5 +81,53 @@ export const useStore = defineStore('itp-prog', () => {
     removingStudent.value = false
   }
 
-  return { students, loadingStudents, updatingStudent, removingStudent, listStudents, updateStudent, removeStudent }
+  async function evaluationStudent(value: Evaluation) {
+    evaluationFormStudent.value = true
+    const resp = await api.post('/itp-prog/evaluation', value)
+    evaluationFormStudent.value = false
+  }
+
+  async function evaluationStudent2(value: Evaluation2) {
+    reportStudent.value = true
+    const resp = await api.post('/itp-prog/report', value)
+    reportStudent.value = false
+  }
+
+  return {
+    students,
+    loadingStudents,
+    updatingStudent,
+    removingStudent,
+    listStudents,
+    updateStudent,
+    removeStudent,
+    evaluationFormStudent,
+    evaluationStudent,
+    evaluationStudent2,
+    reportStudent,
+    name,
+    email,
+    faculty,
+    supervisor,
+    companyName,
+    satisfaction,
+    satisfaction2,
+    satisfaction3,
+    satisfaction4,
+    satisfaction5,
+    satisfaction6,
+    satisfaction7,
+    satisfaction8,
+    satisfaction9,
+    satisfaction10,
+    satisfaction11,
+    satisfaction12,
+    satisfaction13,
+    satisfaction14,
+    comments,
+    fileUploaded,
+    uploadedFileName,
+    uploadedFileSize,
+  }
 })
+
