@@ -192,7 +192,7 @@
             <q-btn type="submit" icon="add" label="Add" color="positive" :loading="store.postingInternship" />
           </div>
         </q-form>
-      </q-card-section>2
+      </q-card-section>
     </q-card>
   </q-page>
 </template>
