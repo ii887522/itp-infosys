@@ -103,6 +103,18 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: requireAuthAdmin,
         component: () => import('pages/itp-prog/StudList.vue'),
       },
+      {
+        path: 'admin/itp-prog/EvalutionIntership1',
+        component: () => import('pages/itp-prog/EvalutionIntership.vue'),
+      },
+      {
+        path: 'admin/itp-prog/EvalutionIntership2',
+        component: () => import('pages/itp-prog/EvalutionIntership2.vue'),
+      },
+      {
+        path: 'admin/itp-prog/SubmitForm',
+        component: () => import('pages/itp-prog/SubmitForm.vue'),
+      },
 
       // USER MODULE
       // student
