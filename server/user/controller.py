@@ -857,6 +857,8 @@ def get_resume_url(student_id: str):
             Params={
                 "Bucket": config.custombucket,
                 "Key": s3_key,
+                "ResponseContentType": "application/pdf",
+                "ResponseContentDisposition": f'inline; filename="{student_id}.pdf"',
             },
             ExpiresIn=3600,  # URL expiration time in seconds
         )
