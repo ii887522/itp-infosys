@@ -32,7 +32,7 @@
                                 </q-card>
                             </q-expansion-item>
                         </q-form>
-                        
+
                         <br/>
                         <!-- Change Resume Section -->
                         <q-form @submit="updateResume">
@@ -137,7 +137,6 @@ const confirmPasswordRule = (value: string) => value === newPassword.value || 'P
 
 // utilties
 const loading = ref(true);
-const router = useRouter();
 const store = useStore();
 const lsStore = useLocalStorageStore();
 const { dialog } = useQuasar();
@@ -168,7 +167,6 @@ const changesMade = computed(() => {
 
     return JSON.stringify(formData) !== JSON.stringify(initialFormData.value);
 })
-const updatingResume = ref(false);
 
 async function fetchStudentProfile() {
     try {
@@ -187,7 +185,7 @@ async function fetchStudentProfile() {
             personalEmail: resp.data.personal_email,
             faculty: resp.data.faculty,
         }
-  
+
         // Populate the basic profile form fields with fetched data
         student_name.value = resp.data.student_name;
         student_id.value = resp.data.student_id;
@@ -282,18 +280,21 @@ const updateResume = () => {
         cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
         ok: { icon: 'update', label: 'Update Resume', color: 'primary' },
     }).onOk(async() => {
-        const fileInput = resumeInput!.value; // Access the file input using the ref
-        if (!fileInput) {
+        const resumeFile = resumeInput.value as unknown as File; // Access the file input using the ref
+        if (!resumeFile) {
             // No file selected
             console.error('No file selected.');
             return;
         }
+        const studentId = lsStore.getUsername() as string
+        //const resumeFile = fileInput[0]; // Get the selected file
 
-        const resumeFile = fileInput[0]; // Get the selected file
-        
         try {
             // Call the updateResume store function and pass the file
-            await store.updateResume(resumeFile);
+            await store.updateResume({
+              student_id: studentId,
+              resume: resumeFile,
+            });
 
             Notify.create('Resume updated successfully');
         } catch (error) {
@@ -307,9 +308,4 @@ const updateResume = () => {
         }
     });
 };
-
-const executeUpdatePassword = async () => {
-    // Implement logic to update the password here
-    router.push('/profile')
-}
 </script>

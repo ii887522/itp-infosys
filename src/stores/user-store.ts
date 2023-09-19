@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { api } from 'boot/axios'
 import { defineStore } from 'pinia'
-import { StudChangePassword, Student } from 'src/models/student'
+import { StudChangePassword, Student, StudUploadResume } from 'src/models/student'
 import { CompanyDetails, EmpChangePassword, EmpEditProfile, Employee } from 'src/models/employee'
 import { AxiosError } from 'axios'
 import { LocalStorage } from 'quasar'
@@ -180,23 +180,26 @@ export const useStore = defineStore('user', () => {
     updatingStudentPassword.value = false
   }
 
-  async function updateResume(resume: File) {
+  async function updateResume(value: StudUploadResume) {
     updatingResume.value = true
+    console.log(value)
 
-    // Create a FormData object and append the resume file
-    const formData = new FormData()
-    formData.append('resume', resume)
+    const student_id = value.student_id
+    const formData = new FormData();
+    // formData.append('student_id', value.student_id)
+    formData.append('resume', value.resume)
+    //console.log(formData.get('student_id'))
+    console.log(formData.get('resume'))
 
     // Make a POST request to the server with the FormData containing the resume file
-    await api.post('/user/update-resume', formData)
-
+    await api.post(`/user/update-resume/${student_id}`, formData)
     updatingResume.value = false
   }
 
   async function updateEmpProfile(value: EmpEditProfile) {
     updatingEmployeeProfile.value = true
     await api.post('/user/update-emp-profile', value)
-    updatingEmployeeProfile.value = true
+    updatingEmployeeProfile.value = false
   }
 
   async function updateEmpPassword(value: EmpChangePassword) {
