@@ -16,7 +16,7 @@
                                 <q-input filled v-model="confirmPassword" label="Confirm Password" type="password" dense class="input-field" :rules="[requiredRule, confirmPasswordRule]"/>
 
                                 <div>
-                                    <q-btn type="submit" label="Sign Up" color="primary" class="q-mt-md"/>
+                                    <q-btn type="submit" label="Sign Up" color="primary" class="q-mt-md" :disable="signUpSuccess"/>
                                     <q-btn flat label="Reset" color="primary" class="q-mt-md" @click="resetForm" />
                                 </div>
                             </q-form>
@@ -39,6 +39,7 @@ useMeta({ title: 'Supervisor Sign Up | MyITPHub' })
 
 const store = useStore();
 const { notify } = useQuasar();
+const signUpSuccess = ref(false);
 
 const supervisorId = ref('');
 const supervisorName = ref('');
@@ -75,7 +76,7 @@ async function register() {
         icon: 'done',
     })
 
-    resetForm();
+    signUpSuccess.value = true
 }
 
 const resetForm = () => {

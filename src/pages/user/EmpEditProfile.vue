@@ -40,7 +40,7 @@
                                     <q-card-section>
                                         <!-- Retrieve the company name associated with the user from database -->
                                         <q-input v-model="companyName" label="Company Name" dense class="input-field" :rules="[requiredRule]"/>
-                                        <q-input v-model="companyDesc" label="Company Description" type="textarea" dense class="input-field" :rules="[requiredRule]"/>
+                                        <q-editor v-model="companyDesc" label="Company Description" min-height="5rem" dense class="input-field" :rules="[requiredRule]"/>
                                         <q-input v-model.number="companySize" label="Company Size" type="number" dense class="input-field" :rules="[requiredRule]"/>
                                         <q-input v-model="companyAddress" label="Company Address" dense class="input-field" :rules="[requiredRule]"/>
                                         <q-input v-model="companyUrl" label="Company URL" type="url" dense class="input-field" :rules="[requiredRule]"/>
@@ -48,7 +48,6 @@
                                         <q-btn label="Save Changes" color="primary" type="submit" />
                                     </q-card-section>
                                 </q-card>
-                                
                             </q-expansion-item>
                         </q-form>
 
@@ -77,7 +76,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { Notify, useMeta, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { isTextEmpty } from 'src/common';
@@ -99,7 +97,6 @@ onMounted(async () => {
 
 // Utilties
 const loading = ref(true);
-const router = useRouter();
 const store = useStore();
 const lsStore = useLocalStorageStore();
 const { dialog } = useQuasar();
@@ -137,7 +134,7 @@ async function fetchEmployeeProfile() {
   try {
     const empEmail = lsStore.getUsername();
     const resp = await api.get(`/user/get-emp-profile/${empEmail}`);
-    
+
     employeeName.value = resp.data.emp_name;
     selectedCompany.value = resp.data.company_name;
     employeeEmail.value = resp.data.emp_email;
