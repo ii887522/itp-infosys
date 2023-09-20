@@ -8,6 +8,7 @@ import { LocalStorage } from 'quasar'
 import { Admin, AdminChangePassword, AdminEditProfile } from 'src/models/admin'
 import { SupChangePassword, SupEditProfile, Supervisor } from 'src/models/supervisor'
 import { useLocalStorageStore } from './localstorage-store'
+import { UploadAvatar } from 'src/models/user'
 
 export const useStore = defineStore('user', () => {
   const registeringStudent = ref(false)
@@ -20,6 +21,7 @@ export const useStore = defineStore('user', () => {
   const loggingInAdmin = ref(false)
   const loginError = ref(false)
   const errorMessage = ref('')
+  const updatingAvatar = ref(false)
   const updatingStudentProfile = ref(false)
   const updatingStudentPassword = ref(false)
   const updatingResume = ref(false)
@@ -168,6 +170,19 @@ export const useStore = defineStore('user', () => {
     console.log(lsStore.getUsername())
   }
 
+  async function updateAvatar(value: UploadAvatar) {
+    updatingAvatar.value = true
+    console.log(value)
+
+    const user_type = value.user_type
+    const username = value.username
+    const formData = new FormData();
+    formData.append('avatar', value.avatar)
+
+    await api.post(`/user/update-avatar/${user_type}/${username}`, formData)
+    updatingAvatar.value = false
+  }
+
   async function updateStudProfile(value: Student) {
     updatingStudentProfile.value = true
     await api.post('/user/update-stud-profile', value)
@@ -249,6 +264,7 @@ export const useStore = defineStore('user', () => {
     loggingInAdmin,
     loginError,
     errorMessage,
+    updatingAvatar,
     updatingStudentProfile,
     updatingStudentPassword,
     updatingResume,
@@ -267,6 +283,7 @@ export const useStore = defineStore('user', () => {
     logInSupervisor,
     logInAdmin,
     logOut,
+    updateAvatar,
     updateStudProfile,
     updateStudPassword,
     updateResume,
