@@ -7,7 +7,7 @@
     <div class="video-background">
       <!-- <video ref="videoElement" autoplay muted loop poster="" id="video-bg"> -->
       <video width="1000" height="450" controls>
-        <source src="/src/pages/itp-prog/video_job.mp4" type="video/mp4" />
+        <source src="~assets/video_job.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
     </div>
