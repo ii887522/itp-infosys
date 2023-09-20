@@ -9,9 +9,47 @@
                 <div v-else>
                     <q-card-section>
                         <q-avatar size="100px" color="primary" class="center-contents">
-                            <img src="https://via.placeholder.com/100" alt="Profile Picture" />
+                          <img :src="currentAvatar || 'https://via.placeholder.com/100'" alt="Profile Picture" />
                         </q-avatar>
+
+                        <q-dialog v-model="editMode" persistent>
+                          <q-card>
+                            <q-card-section class="row items-center q-pb-none">
+                              <div class="text-h6">Edit Avatar</div>
+                              <q-space />
+                              <q-btn icon="close" flat round dense v-close-popup @click="cancelEdit" />
+                            </q-card-section>
+
+                            <q-card-section>
+                              <!-- avatar preview -->
+                              <q-avatar size="100px" color="primary" class="center-contents">
+                                <img :src="editedImage || 'https://via.placeholder.com/100'" />
+                              </q-avatar>
+                              <br/>
+                              <!-- file upload -->
+                              <q-file filled bottom-slots v-model="inputImage" label="Upload Avatar" counter accept="image/*" @update:model-value="handleImageChange">
+                                <template v-slot:prepend>
+                                  <q-icon name="cloud_upload" @click.stop.prevent />
+                                </template>
+                                <template v-slot:append>
+                                  <q-icon name="close" @click.stop.prevent="editedImage = '', inputImage = null" class="cursor-pointer"/>
+                                </template>
+                              </q-file>
+                            </q-card-section>
+
+                            <q-card-actions align="right">
+                              <q-btn label="Save Changes" color="primary" @click="saveAvatar" />
+                              <q-btn label="Cancel" color="negative" @click="cancelEdit" />
+                            </q-card-actions>
+                          </q-card>
+                        </q-dialog>
+
                         <div class="q-ml-md" style="text-align:center;">
+                          <!-- edit icon -->
+                          <q-icon v-if="!editMode" name="edit" class="edit-icon" @click="editAvatar" />
+
+                          <!-- align center, supervisor name -->
+                          {{ supervisorName }}
                         </div>
                     </q-card-section>
 
@@ -39,15 +77,24 @@
 </template>
 
 <script setup lang="ts">
-import { useMeta } from 'quasar';
+import { Notify, useMeta, useQuasar } from 'quasar';
 import { api } from 'src/boot/axios';
 import { useLocalStorageStore } from 'src/stores/localstorage-store';
+import { useStore } from 'src/stores/user-store';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
-useMeta({ title: 'Employee Profile | MyITPHub' })
+useMeta({ title: 'Supervisor Profile | MyITPHub' })
+
+// avatar
+const editMode = ref(false);
+const inputImage = ref(null); // image in the q-file
+const editedImage = ref(''); // image in the avatar preview
+const currentAvatar = ref(''); // for default display in the profile page
 
 const loading = ref(true);
+const { dialog } = useQuasar();
+const store = useStore();
 const lsStore = useLocalStorageStore(); // get username = Supervisor ID
 const router = useRouter();
 
@@ -85,12 +132,14 @@ const profileRows = computed(() => [
     },
 ])
 
-onMounted(() => {
+onMounted(async () => {
     fetchSupervisorProfile();
-    
+
     setTimeout(() => {
         loading.value = false;
     }, 1000);
+
+    await getAvatar();
 })
 
 async function fetchSupervisorProfile() {
@@ -105,9 +154,79 @@ async function fetchSupervisorProfile() {
         faculty.value = resp.data.faculty
         supervisorEmail.value = resp.data.supervisor_email
     } catch (error) {
-        console.error("Error fetching supervisor profile:", error)
+        console.error('Error fetching supervisor profile:', error)
     }
 }
+
+const getAvatar = async () => {
+  try {
+    const user_type = lsStore.getAuthUserType();
+    const username = lsStore.getUsername();
+    const resp = await api.get(`/user/get-avatar/${user_type}/${username}`);
+    console.log(resp.data)
+    if (resp.data && resp.data.avatarUrl) {
+      currentAvatar.value = resp.data.avatarUrl;
+    } else {
+      console.error('Avatar URL not found in the response.');
+    }
+  } catch (error) {
+    console.error('Error fetching avatar URL:', error);
+  }
+}
+
+const editAvatar = () => {
+  editMode.value = true;
+};
+
+// function to get the input avatar to display as preview
+const handleImageChange = () => {
+  editedImage.value = URL.createObjectURL(inputImage.value as unknown as MediaSource);
+}
+
+const saveAvatar = () => {
+  // Upload the edited image to the server and save it as the current avatar
+  // This is where you would make an API call to save the image
+  dialog({
+    title: 'Confirm Update Avatar',
+    message: 'Are you sure you want to update your avatar?',
+    cancel: { icon: 'close', label: 'Cancel', color: 'negative', flat: true },
+    ok: { icon: 'update', label: 'Upload Avatar', color: 'primary' },
+  }).onOk(async() => {
+    const avatarFile = inputImage.value as unknown as File;
+    if (!avatarFile) {
+      console.error('No file selected.');
+      return;
+    }
+    const userType = lsStore.getAuthUserType() as string
+    const studentId = lsStore.getUsername() as string
+
+    try {
+      await store.updateAvatar({
+        user_type: userType,
+        username: studentId,
+        avatar: avatarFile,
+      })
+
+      Notify.create('Avatar updated successfully');
+      editMode.value = false;
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+
+      // Show an error message here
+      Notify.create({
+        message: 'Failed to upload avatar',
+        color: 'negative',
+      });
+    }
+  })
+};
+
+const cancelEdit = () => {
+  // Reset the edited image and exit edit mode
+  editedImage.value = '';
+  inputImage.value = null;
+  editMode.value = false;
+};
 
 const editProfile = () => {
     // Redirect to the edit profile page

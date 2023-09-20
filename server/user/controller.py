@@ -837,6 +837,55 @@ def update_resume(student_id: str):
         return {"message": "Failed to update resume"}, 500
 
 
+@user_controller.route("/update-avatar/<user_type>/<username>", methods=['POST'])
+def update_avatar(user_type: str, username: str):
+    avatar_file = request.files["avatar"]
+    print(avatar_file)
+
+    if not avatar_file:
+        return {"message": "Resume file not found"}, 400
+
+    s3_key = f"avatar/{user_type}/{username}.png"
+
+    try:
+        s3.put_object(Bucket=config.custombucket, Key=s3_key, Body=avatar_file)
+        bucket_location = boto3.client("s3").get_bucket_location(Bucket=config.custombucket)
+        s3_location = bucket_location["LocationConstraint"]
+
+        if s3_location is None:
+            s3_location = ""
+        else:
+            s3_location = "-" + s3_location
+
+        print(s3_location)
+        return {"message": "Avatar uploaded successfully"}, 200
+
+    except Exception as e:
+        print("Error updating avatar on S3:", str(e))
+        return {"message": "Failed to update avatar"}, 500
+
+
+@user_controller.route("/get-avatar/<user_type>/<username>", methods=['GET'])
+def get_avatar(user_type: str, username: str):
+    try:
+        s3_key = f"avatar/{user_type}/{username}.png"
+
+        avatar_data = s3.generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": config.custombucket,
+                "Key": s3_key,
+                "ResponseContentType": "image/png",
+                "ResponseContentDisposition": f'inline; filename="{username}.png"',
+            },
+        )
+        return {"avatarUrl": avatar_data}
+
+    except NoCredentialsError:
+        print("No AWS credentials found.")
+        return {"message": "Failed to fetch avatar"}, 500
+
+
 @user_controller.route("/get-resume-url/<student_id>", methods=['GET'])
 def get_resume_url(student_id: str):
     try:

@@ -92,7 +92,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { allGenders, allProgrammes, allFaculty } from 'src/consts/student'
 import { useMeta, Notify, useQuasar } from 'quasar';
 import { useStore } from 'src/stores/user-store';
