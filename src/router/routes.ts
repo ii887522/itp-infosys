@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
             case 'stud':
               return '/stud/itp-post/internships'
             case 'sup':
-              return '/unknown' // FIXME: Waiting for supervisor page :'(
+              return '/admin/itp-prog/EvalutionIntership1'
           }
 
           return '/login'
@@ -105,14 +105,17 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'admin/itp-prog/EvalutionIntership1',
+        beforeEnter: requireAuthSup,
         component: () => import('pages/itp-prog/EvalutionIntership.vue'),
       },
       {
         path: 'admin/itp-prog/EvalutionIntership2',
+        beforeEnter: requireAuthSup,
         component: () => import('pages/itp-prog/EvalutionIntership2.vue'),
       },
       {
-        path: 'admin/itp-prog/SubmitForm',
+        path: 'stud/itp-prog/SubmitForm',
+        beforeEnter: requireAuthStud,
         component: () => import('pages/itp-prog/SubmitForm.vue'),
       },
 

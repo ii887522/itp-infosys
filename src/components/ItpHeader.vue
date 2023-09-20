@@ -50,6 +50,12 @@ const nav = [
     label: 'Student Applications',
     show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'emp',
   },
+  {
+    to: '/stud/itp-prog/SubmitForm',
+    icon: 'description',
+    label: 'Monthly Report',
+    show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'stud',
+  },
 ]
 
 const showSearch = ref(false)
