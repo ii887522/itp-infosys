@@ -202,11 +202,11 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: requireAuthAdmin,
         component: () => import('pages/user/AdminProfile.vue'),
       },
-      /* {
+      {
         path: 'admin/profile/edit',
         beforeEnter: requireAuthAdmin,
         component: () => import('pages/user/AdminEditProfile.vue'),
-      }, - in progress */
+      },
 
       // main login page
       {
