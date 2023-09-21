@@ -18,4 +18,5 @@ export interface ResumeUpload{
 export interface ReportUpload{
   student_id: string
   report_file: File
+  submission_date: string
 }

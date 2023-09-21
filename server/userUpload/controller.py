@@ -1,6 +1,6 @@
 import boto3
-import config
 import common.consts as consts
+import config
 from common.db_connection_pool import DbConnectionPool
 from flask import Blueprint, request
 
@@ -52,7 +52,6 @@ def company_apply():
             "monthly_allowance": monthly_allowance,
             "company_supervisor_name": company_supervisor_name,
             "company_supervisor_email": company_supervisor_email,
-
             "acceptance_upload_url": s3.generate_presigned_post(
                 config.custombucket,
                 f"companies/{company_name}/acceptance/{studentId}.pdf",
@@ -83,15 +82,13 @@ def resume_upload():
     studentId = request.json.get("student_id", "")
 
     return {
-            "studentId": studentId,
-
-            "resume_upload_url": s3.generate_presigned_post(
-                config.custombucket,
-                f"resume/{studentId}.pdf",
-                ExpiresIn=10,
-            ),
-
-        }
+        "studentId": studentId,
+        "resume_upload_url": s3.generate_presigned_post(
+            config.custombucket,
+            f"resume/{studentId}.pdf",
+            ExpiresIn=10,
+        ),
+    }
 
 
 @userUpload_controller.route("/report_upload", methods=["POST"])
@@ -101,14 +98,34 @@ def report_upload():
 
     # Inputs
     studentId = request.json.get("student_id", "")
+    submission_date = request.json.get("submission_date", "")
 
-    return {
-            "studentId": studentId,
+    db_conn = db_conn_pool.get_connection(pre_ping=True)
+    cursor = db_conn.cursor()
 
-            "report_upload_url": s3.generate_presigned_post(
-                config.custombucket,
-                f"report/{studentId}.pdf",
-                ExpiresIn=10,
+    try:
+        # Add record to the database
+        cursor.execute(
+            "INSERT INTO submissionDate VALUES (%s, %s)",
+            (
+                studentId,
+                submission_date,
             ),
+        )
+        db_conn.commit()
 
-        }
+        return [
+            {
+                "studentId": studentId,
+                "submission_date": submission_date,
+                "report_upload_url": s3.generate_presigned_post(
+                    config.custombucket,
+                    f"report/{studentId}date/{submission_date}.pdf",
+                    ExpiresIn=10,
+                ),
+            }
+        ]
+
+    finally:
+        cursor.close()
+        db_conn.close()
