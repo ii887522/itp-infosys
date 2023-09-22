@@ -213,6 +213,15 @@ const routes: RouteRecordRaw[] = [
         path: 'login',
         beforeEnter: alreadyAuth,
         component: () => import('pages/user/LoginPage.vue'),
+      { path: 'emp/login', component: () => import('pages/user/EmployeeLogin.vue') },
+      { path: 'emp/signup', component: () => import('pages/user/EmployeeSignUp.vue') },
+      { path: 'emp/profile', component: () => import('pages/user/EmployeeProfile.vue') },
+      { path: 'emp/profile/edit', component: () => import('pages/user/EmpEditProfile.vue') },
+
+      //admin-company module
+      {
+        path: 'admin/itp-company/companyList',
+        component: () => import('pages/itp-company/companyList.vue'),
       },
     ],
   },
