@@ -56,10 +56,12 @@ const nav = [
     label: 'Monthly Report',
     show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'stud',
   },
-  { to: '/stud/itp-post/internship-app-queue', icon: 'list', label: 'My Application' },
-  { to: '/admin/itp-prog', icon: 'construction', label: 'Program' },
-  { to: '/emp/itp-post/internship-app-queue', icon: 'list', label: 'Student Applications' },
-  { to: '/admin/itp-company/companyList', icon: 'toc', label: 'Company' },
+  {
+    to: '/admin/itp-company/companyList',
+    icon: 'toc',
+    label: 'Company',
+    show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'admin',
+  },
 ]
 
 const showSearch = ref(false)
