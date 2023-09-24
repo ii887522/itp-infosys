@@ -1,5 +1,5 @@
 <template>
-  <q-card class="bg-info q-mt-lg q-ml-lg q-mr-lg" style="width: 1500px">
+  <q-card class="q-mt-lg q-ml-lg q-mr-lg" style="width: 1500px; background-color: #90909035">
     <q-card-section>
       <div class="text-h5 q-mb-lg q-size-bo">Internship Application</div>
 
@@ -35,7 +35,7 @@
 
   <br /><br />
 
-  <q-card class="bg-info q-ml-lg q-mr-lg" style="width: 1500px">
+  <q-card class="q-ml-lg q-mr-lg" style="width: 1500px; background-color: #90909035">
     <q-card-section>
       <div class="text-h5 q-mb-lg">Company Details</div>
 
@@ -214,7 +214,7 @@
   <br /><br />
 
   <!--Submission of Monthly Report-->
-  <q-card class="bg-info q-ml-lg q-mr-lg" style="width: 1500px">
+  <q-card class="q-ml-lg q-mr-lg" style="width: 1500px; background-color: #90909035">
     <q-card-section>
       <div class="text-h5 q-mb-lg">Submission Of Monthly Report</div>
 
