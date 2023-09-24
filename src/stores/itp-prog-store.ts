@@ -52,7 +52,6 @@ export const useStore = defineStore('itp-prog', () => {
   const uploadedFileName = ref(false)
   const uploadedFileSize = ref(false)
 
-
   async function listStudents() {
     if (students.value.length !== 0) return
     loadingStudents.value = true
@@ -88,8 +87,21 @@ export const useStore = defineStore('itp-prog', () => {
   }
 
   async function evaluationStudent2(value: Evaluation2) {
+    if (!value.file) return
+
     reportStudent.value = true
     const resp = await api.post('/itp-prog/report', value)
+
+    // Prepare S3 file upload request
+    const payload = new FormData()
+    Object.entries(resp.data.uploadReport.fields).forEach(([key, value]) => {
+      payload.append(key, value as string | Blob)
+    })
+    payload.append('file', value.file)
+
+    // Upload the monthly report to S3 bucket
+    await api.post(resp.data.uploadReport.url, payload)
+
     reportStudent.value = false
   }
 
@@ -130,4 +142,3 @@ export const useStore = defineStore('itp-prog', () => {
     uploadedFileSize,
   }
 })
-
