@@ -99,8 +99,9 @@ export const useStore = defineStore('itp-prog', () => {
     })
     payload.append('file', value.file)
 
-    // Upload the resume to S3 bucket
+    // Upload the monthly report to S3 bucket
     await api.post(resp.data.uploadReport.url, payload)
+
     reportStudent.value = false
   }
 

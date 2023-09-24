@@ -1,5 +1,4 @@
 import time
-import json
 
 import boto3
 import common.consts as consts
@@ -13,6 +12,7 @@ db_conn_pool = DbConnectionPool.get_instance()
 s3 = boto3.client("s3", consts.AWS_REGION)
 sns = boto3.resource("sns", consts.AWS_REGION)
 itp_applied_topic = sns.Topic(itp_post_consts.ITP_APPLIED_TOPIC_ARN)
+
 
 @itp_prog_controller.route("/students", methods=["GET"])
 def list_students():
@@ -220,11 +220,10 @@ def count_supervisors():
 
 
 # Function to handle student evaluation
-@itp_prog_controller.route("/evaluation",methods=['POST'])
+@itp_prog_controller.route("/evaluation", methods=["POST"])
 def evaluation_student():
     if not request.json:
         return {"code": 4000}
-
 
     # Inputs
     name = request.json.get("name", "")
@@ -250,23 +249,39 @@ def evaluation_student():
     satisfaction14 = request.json.get("satisfaction14", "")
     comments = request.json.get("comments", "")
 
-
-# Reopen the timed out database connection to avoid PyMySQL interface error
+    # Reopen the timed out database connection to avoid PyMySQL interface error
     db_conn = db_conn_pool.get_connection(pre_ping=True)
 
-
     cursor = db_conn.cursor()
-
 
     try:
         # Add student evaluation record to the database
         cursor.execute(
             "INSERT INTO evaluation VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (name, email, faculty, supervisor, companyName, satisfaction, satisfaction2, satisfaction3, satisfaction4, satisfaction5, satisfaction6, satisfaction7, satisfaction8, satisfaction9, satisfaction10,
-             satisfaction11, satisfaction12, satisfaction13, satisfaction14, comments),
+            (
+                name,
+                email,
+                faculty,
+                supervisor,
+                companyName,
+                satisfaction,
+                satisfaction2,
+                satisfaction3,
+                satisfaction4,
+                satisfaction5,
+                satisfaction6,
+                satisfaction7,
+                satisfaction8,
+                satisfaction9,
+                satisfaction10,
+                satisfaction11,
+                satisfaction12,
+                satisfaction13,
+                satisfaction14,
+                comments,
+            ),
         )
         db_conn.commit()
-
 
         # Output
         return {
@@ -296,27 +311,22 @@ def evaluation_student():
         db_conn.close()
 
 
-
-
-@itp_prog_controller.route("/report",methods=['POST'])
+@itp_prog_controller.route("/report", methods=["POST"])
 def report_student():
     if not request.json:
         return {"code": 4000}
 
-
     # Inputs
+    student_id = request.json.get("student_id", "")
     name = request.json.get("name", "")
     email = request.json.get("email", "")
     faculty = request.json.get("faculty", "")
     supervisor = request.json.get("supervisor", "")
     companyName = request.json.get("companyName", "")
 
-# Reopen the timed out database connection to avoid PyMySQL interface error
+    # Reopen the timed out database connection to avoid PyMySQL interface error
     db_conn = db_conn_pool.get_connection(pre_ping=True)
-
-
     cursor = db_conn.cursor()
-
 
     try:
         # Add student evaluation record to the database
@@ -341,21 +351,20 @@ def report_student():
             "faculty": faculty,
             "supervisor": supervisor,
             "companyName": companyName,
-            
             "resume_url": s3.generate_presigned_url(
                 "get_object",
                 Params={
                     "Bucket": config.custombucket,
                     "Key": f"{name}.pdf",
-                     # So that PDF file will be displayed in the browser instead of being downloaded
-                        "ResponseContentType": "application/pdf",
-                        "ResponseContentDisposition": f'inline; filename="{name}.pdf"',
+                    # So that PDF file will be displayed in the browser instead of being downloaded
+                    "ResponseContentType": "application/pdf",
+                    "ResponseContentDisposition": f'inline; filename="{name}.pdf"',
                 },
             ),
             # Generate S3 presigned URL for the student to upload their resume
             "uploadReport": s3.generate_presigned_post(
                 config.custombucket,
-                f"{name}.pdf",
+                f"monthly_report/{student_id}.pdf",
                 ExpiresIn=10,
             ),
         }

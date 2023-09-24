@@ -22,6 +22,7 @@ export interface Evaluation {
 }
 
 export interface Evaluation2 {
+  student_id: string
   name: string
   email: string
   faculty: string
@@ -57,6 +58,7 @@ export function makeEvaluation(): Evaluation {
 
 export function makeEvaluation2(): Evaluation2 {
   return {
+    student_id: '',
     name: '',
     email: '',
     faculty: '',

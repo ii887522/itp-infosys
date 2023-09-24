@@ -48,101 +48,58 @@
           placeholder="Huawei Sdn Bhd"
         />
       </div>
+
+      <div class="file-upload-form">
+        <q-page-container>
+          <q-card class="q-pa-md" style="max-width: 400px">
+            <q-card-section>
+              <h2 class="text-h6">File Upload Form</h2>
+              <q-input v-model="selectedFile" outlined label="Select a file" type="file" accept="application/pdf" />
+            </q-card-section>
+          </q-card>
+          <!-- <div class="q-mt-md">
+            <q-card class="q-pa-md" v-if="fileUploaded">
+              <q-card-section>
+                <h2 class="text-h6">Uploaded File</h2>
+                <p>File Name: {{ uploadedFileName }}</p>
+                <p>File Size: {{ uploadedFileSize }}</p>
+              </q-card-section>
+            </q-card>
+          </div> -->
+        </q-page-container>
+      </div>
+
       <div class="col-12 text-center">
         <q-btn type="submit" label="submit" color="positive" :loading="store.reportStudent" />
       </div>
     </q-form>
   </div>
-  <div class="file-upload-form">
-    <q-page-container>
-      <q-card class="q-pa-md" style="max-width: 400px">
-        <q-card-section>
-          <h2 class="text-h6">File Upload Form</h2>
-          <q-input v-model="selectedFile" outlined label="Select a file" @change="handleFileChange" type="file" />
-          <q-btn
-            color="primary"
-            label="Upload File"
-            :loading="uploadFile"
-            @click="uploadFile"
-            :disable="!selectedFile"
-          />
-        </q-card-section>
-      </q-card>
-      <div class="q-mt-md">
-        <q-card class="q-pa-md" v-if="fileUploaded">
-          <q-card-section>
-            <h2 class="text-h6">Uploaded File</h2>
-            <p>File Name: {{ uploadedFileName }}</p>
-            <p>File Size: {{ uploadedFileSize }}</p>
-          </q-card-section>
-        </q-card>
-      </div>
-    </q-page-container>
-  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useMeta, useQuasar, type QInput } from 'quasar'
-import { useRouter } from 'vue-router'
+import { useMeta, type QInput } from 'quasar'
 import { useStore } from 'stores/itp-prog-store'
-import axios from 'axios'
+import { useLocalStorageStore } from 'stores/localstorage-store'
 
 useMeta({ title: 'Student Evaluation | MyITPHub' })
 
+// Pinia stores
 const store = useStore()
-const { notify } = useQuasar()
+const lsStore = useLocalStorageStore()
 
-const name = ref('')
-const email = ref('')
-const faculty = ref('')
-const supervisor = ref('')
-const companyName = ref('')
-const selectedFile = ref(null)
-const uploadedFileName = ref('')
-const uploadedFileSize = ref('')
-const fileUploaded = ref(false)
-
-//add the handleFileChange and uploadFile functions here
-const handleFileChange = event => {
-  // Update the selected file information when a new file is chosen
-  if (event.target.files[0]) {
-    uploadedFileName.value = event.target.files[0].name
-    uploadedFileSize.value = `${(event.target.files[0].size / 1024).toFixed(2)} KB`
-
-    // Set the fileUploaded flag to true
-    fileUploaded.value = true
-  }
-}
-
-const uploadFile = async () => {
-  // Simulate file upload process (you can replace this with your actual file upload code)
-  if (uploadedFileName.value) {
-    // Here, you can send the selected file to your server for processing.
-    // You can use axios or another HTTP library for this.
-
-    // For demonstration purposes, we'll just log the file details.
-    const { data } = await axios.post('/api/report', { file: uploadedFileName.value })
-    console.log('File Name:', data.fileName)
-    console.log('File Size:', data.fileSize)
-
-    // Clear the selected file for the next upload
-    uploadedFileName.value = ''
-    uploadedFileSize.value = ''
-  }
-}
-
-const router = useRouter()
+const selectedFile = ref<FileList | null>(null)
 
 async function report() {
   //add the student evaluation to database
   await store.evaluationStudent2({
+    student_id: lsStore.getUsername()?.toString() ?? '',
     name: store.name,
     email: store.email,
     faculty: store.faculty,
     supervisor: store.supervisor,
     companyName: store.companyName,
-    file: selectedFile.value,
+    file: selectedFile.value ? selectedFile.value[0] : null,
   })
 }
 // export default {
