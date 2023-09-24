@@ -119,6 +119,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/itp-prog/SubmitForm.vue'),
       },
 
+      {
+        path: 'stud/UserUpload/submit-report-file',
+        component: () => import('pages/UserUpload/uploadResNRepNCom.vue'),
+      },
+
       // USER MODULE
       // student
       {

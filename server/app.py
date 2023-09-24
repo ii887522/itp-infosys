@@ -3,10 +3,11 @@ import config
 from common.db_connection_pool import DbConnectionPool
 from flask import Flask, render_template, request
 from flask_cors import CORS
+from itp_company.controller import company_controller
 from itp_post.controller import itp_post_controller
 from itp_prog.controller import itp_prog_controller
 from user.controller import user_controller
-from itp_company.controller import company_controller
+from userUpload.controller import userUpload_controller
 
 app = Flask(__name__, static_folder="../dist/spa", static_url_path="/")
 db_conn_pool = DbConnectionPool.get_instance()
@@ -14,6 +15,7 @@ app.register_blueprint(itp_post_controller, url_prefix="/api/itp-post")
 app.register_blueprint(itp_prog_controller, url_prefix="/api/itp-prog")
 app.register_blueprint(user_controller, url_prefix="/api/user")
 app.register_blueprint(company_controller, url_prefix="/api/itp-company")
+app.register_blueprint(userUpload_controller, url_prefix="/api/userUpload")
 CORS(app)
 
 
