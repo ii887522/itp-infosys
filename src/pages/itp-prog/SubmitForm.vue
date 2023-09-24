@@ -1,60 +1,64 @@
 <template>
   <div class="google-form-header">
-      <h2>Monthly Report</h2>
-      <p>Please Upload the report in pdf.</p>
-    </div>
-    <div class="google-form-content">
-      <q-form class="row q-col-gutter-md" @submit="report">
-        <div class="form-group">
-          <label for="name">Your Name</label>
-          <input type="text" id="name" v-model="store.name" class="form-control" placeholder="Enter your name" />
-        </div>
+    <h2>Monthly Report</h2>
+    <p>Please Upload the report in pdf.</p>
+  </div>
+  <div class="google-form-content">
+    <q-form class="row q-col-gutter-md" @submit="report">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" v-model="store.name" class="form-control" placeholder="Enter your name" />
+      </div>
 
-        <div class="form-group">
-          <label for="email">Your TAR UMT Email</label>
-          <input type="text" id="email" v-model="store.email" class="form-control" placeholder="aws-wm20@student.tarc.edu.my" />
-        </div>
+      <div class="form-group">
+        <label for="email">Your TAR UMT Email</label>
+        <input
+          type="text"
+          id="email"
+          v-model="store.email"
+          class="form-control"
+          placeholder="aws-wm20@student.tarc.edu.my"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="faculty">Faculty</label>
-          <select id="faculty" v-model="store.faculty" class="form-control">
-            <option value="" disabled>Select Faculty</option>
-            <option value="FOCS">FOCS</option>
-            <option value="FSSH">FSSH</option>
-            <option value="FAFB">FAFB</option>
-            <option value="FCCI">FCCI</option>
-            <option value="FOBC">FOBC</option>
-          </select>
-        </div>
+      <div class="form-group">
+        <label for="faculty">Faculty</label>
+        <select id="faculty" v-model="store.faculty" class="form-control">
+          <option value="" disabled>Select Faculty</option>
+          <option value="FOCS">FOCS</option>
+          <option value="FSSH">FSSH</option>
+          <option value="FAFB">FAFB</option>
+          <option value="FCCI">FCCI</option>
+          <option value="FOBC">FOBC</option>
+        </select>
+      </div>
 
-        <div class="form-group">
-          <label for="supervisor">Your Representation Supervisor</label>
-          <input type="text" id="supervisor" v-model="store.supervisor" class="form-control" placeholder="Miss Tan" />
-        </div>
+      <div class="form-group">
+        <label for="supervisor">Your Representation Supervisor</label>
+        <input type="text" id="supervisor" v-model="store.supervisor" class="form-control" placeholder="Miss Tan" />
+      </div>
 
-
-        <div class="form-group">
-          <label for="companyName">Company Name</label>
-          <input type="text" id="companyName" v-model="store.companyName" class="form-control" placeholder="Huawei Sdn Bhd" />
-        </div>
-        <div class="col-12 text-center">
-            <q-btn type="submit" label="submit" color="positive" :loading="store.reportStudent" />
-          </div>
-
-        </q-form>
-        </div>
+      <div class="form-group">
+        <label for="companyName">Company Name</label>
+        <input
+          type="text"
+          id="companyName"
+          v-model="store.companyName"
+          class="form-control"
+          placeholder="Huawei Sdn Bhd"
+        />
+      </div>
+      <div class="col-12 text-center">
+        <q-btn type="submit" label="submit" color="positive" :loading="store.reportStudent" />
+      </div>
+    </q-form>
+  </div>
   <div class="file-upload-form">
     <q-page-container>
-      <q-card class="q-pa-md" style="max-width: 400px;">
+      <q-card class="q-pa-md" style="max-width: 400px">
         <q-card-section>
           <h2 class="text-h6">File Upload Form</h2>
-          <q-input
-            v-model="selectedFile"
-            outlined
-            label="Select a file"
-            @change="handleFileChange"
-            type="file"
-          />
+          <q-input v-model="selectedFile" outlined label="Select a file" @change="handleFileChange" type="file" />
           <q-btn
             color="primary"
             label="Upload File"
@@ -81,36 +85,35 @@
 import { ref } from 'vue'
 import { useMeta, useQuasar, type QInput } from 'quasar'
 import { useRouter } from 'vue-router'
-import { isTextEmpty } from 'src/common';
 import { useStore } from 'stores/itp-prog-store'
-import axios from 'axios';
+import axios from 'axios'
 
 useMeta({ title: 'Student Evaluation | MyITPHub' })
 
-const store = useStore();
-const { notify } = useQuasar();
+const store = useStore()
+const { notify } = useQuasar()
 
-const name = ref('');
-const email = ref('');
-const faculty = ref('');
-const supervisor = ref('');
-const companyName = ref('');
-const selectedFile = ref('');
-const uploadedFileName = ref('');
-const uploadedFileSize = ref('');
-const fileUploaded = ref(false);
+const name = ref('')
+const email = ref('')
+const faculty = ref('')
+const supervisor = ref('')
+const companyName = ref('')
+const selectedFile = ref(null)
+const uploadedFileName = ref('')
+const uploadedFileSize = ref('')
+const fileUploaded = ref(false)
 
 //add the handleFileChange and uploadFile functions here
-const handleFileChange = (event) => {
+const handleFileChange = event => {
   // Update the selected file information when a new file is chosen
   if (event.target.files[0]) {
-    uploadedFileName.value = event.target.files[0].name;
-    uploadedFileSize.value = `${(event.target.files[0].size / 1024).toFixed(2)} KB`;
+    uploadedFileName.value = event.target.files[0].name
+    uploadedFileSize.value = `${(event.target.files[0].size / 1024).toFixed(2)} KB`
 
     // Set the fileUploaded flag to true
-    fileUploaded.value = true;
+    fileUploaded.value = true
   }
-};
+}
 
 const uploadFile = async () => {
   // Simulate file upload process (you can replace this with your actual file upload code)
@@ -119,19 +122,19 @@ const uploadFile = async () => {
     // You can use axios or another HTTP library for this.
 
     // For demonstration purposes, we'll just log the file details.
-    const { data } = await axios.post('/api/report', { file: uploadedFileName.value });
-    console.log('File Name:', data.fileName);
-    console.log('File Size:', data.fileSize);
+    const { data } = await axios.post('/api/report', { file: uploadedFileName.value })
+    console.log('File Name:', data.fileName)
+    console.log('File Size:', data.fileSize)
 
     // Clear the selected file for the next upload
-    uploadedFileName.value = '';
-    uploadedFileSize.value = '';
+    uploadedFileName.value = ''
+    uploadedFileSize.value = ''
   }
-};
+}
 
-const router = useRouter();
+const router = useRouter()
 
-async function report(){
+async function report() {
   //add the student evaluation to database
   await store.evaluationStudent2({
     name: store.name,
@@ -139,7 +142,7 @@ async function report(){
     faculty: store.faculty,
     supervisor: store.supervisor,
     companyName: store.companyName,
-
+    file: selectedFile.value,
   })
 }
 // export default {

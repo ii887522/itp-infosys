@@ -27,6 +27,7 @@ export interface Evaluation2 {
   faculty: string
   supervisor: string
   companyName: string
+  file: File | null
 }
 
 export function makeEvaluation(): Evaluation {
@@ -61,5 +62,6 @@ export function makeEvaluation2(): Evaluation2 {
     faculty: '',
     supervisor: '',
     companyName: '',
+    file: null,
   }
 }
