@@ -63,7 +63,7 @@ const nav = [
     show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'admin',
   },
   {
-    to: 'stud/UserUpload/submit-report-file',
+    to: '/stud/UserUpload/submit-report-file',
     icon: 'description',
     label: 'Upload Form',
     show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'stud',
