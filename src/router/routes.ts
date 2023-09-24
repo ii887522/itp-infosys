@@ -121,6 +121,7 @@ const routes: RouteRecordRaw[] = [
 
       {
         path: 'stud/UserUpload/submit-report-file',
+        beforeEnter: requireAuthStud,
         component: () => import('pages/UserUpload/uploadResNRepNCom.vue'),
       },
 
@@ -227,6 +228,7 @@ const routes: RouteRecordRaw[] = [
       //admin-company module
       {
         path: 'admin/itp-company/companyList',
+        beforeEnter: requireAuthAdmin,
         component: () => import('pages/itp-company/companyList.vue'),
       },
     ],

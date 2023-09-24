@@ -62,6 +62,12 @@ const nav = [
     label: 'Company',
     show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'admin',
   },
+  {
+    to: 'stud/UserUpload/submit-report-file',
+    icon: 'description',
+    label: 'Upload Form',
+    show: () => lsStore.getIsAuthenticated() === true && lsStore.getAuthUserType() === 'stud',
+  },
 ]
 
 const showSearch = ref(false)
