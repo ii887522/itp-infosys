@@ -1,3 +1,5 @@
+import time
+
 import boto3
 import config
 from common.db_connection_pool import DbConnectionPool
@@ -27,6 +29,21 @@ def catch_all(error):
 @app.route("/about", methods=["POST"])
 def about():
     return render_template("www.tarc.edu.my")
+
+
+@app.route("/stress", methods=["GET"])
+def stress():
+    # Record start time
+    prev = int(time.time())
+    now = prev
+
+    # Stress for 10 seconds
+    while now - prev < 10:
+        # Get current time
+        now = int(time.time())
+
+    # Done
+    return {}
 
 
 @app.route("/addemp", methods=["POST"])
